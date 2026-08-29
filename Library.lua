@@ -462,7 +462,7 @@ function Library:CreateWindow(config)
 
     local pages = create("Frame", {
         Name = "Pages", BackgroundTransparency = 1,
-        Size = UDim2.new(1, -178, 1, -16), Position = UDim2.new(0, 178, 0, 8), Parent = contentHolder,
+        Size = UDim2.new(1, -190, 1, -16), Position = UDim2.new(0, 178, 0, 8), Parent = contentHolder,
     })
 
     local window = {
@@ -1025,12 +1025,12 @@ function Library:CreateWindow(config)
             for _, child in ipairs(page:GetChildren()) do
                 if child:IsA("UIListLayout") or child:IsA("UIPadding") then child:Destroy() end
             end
-            padding(page, 8, 16, 6, 10)
+            padding(page, 8, 16, 6, 14)
 
             -- Top row: Profile | About
             local topRow = create("Frame", {
                 Name = "TopRow", BackgroundTransparency = 1,
-                Size = UDim2.new(1, -4, 0, 100), Position = UDim2.new(0, 0, 0, 0), Parent = page,
+                Size = UDim2.new(1, -8, 0, 100), Position = UDim2.new(0, 0, 0, 0), Parent = page,
             })
 
             local profileCard = create("Frame", {
@@ -1090,11 +1090,11 @@ function Library:CreateWindow(config)
             -- Mid row: Discord | Server Info | Executor
             local midRow = create("Frame", {
                 Name = "MidRow", BackgroundTransparency = 1,
-                Size = UDim2.new(1, -4, 0, 96), Position = UDim2.new(0, 0, 0, 112), Parent = page,
+                Size = UDim2.new(1, -8, 0, 96), Position = UDim2.new(0, 0, 0, 112), Parent = page,
             })
 
             local discordCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.24, -8, 1, 0), Parent = midRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.24, -10, 1, 0), Parent = midRow,
             })
             corner(discordCard, 14)
             stroke(discordCard, T.Border, 1, 0.55)
@@ -1123,7 +1123,7 @@ function Library:CreateWindow(config)
             end)
 
             local serverCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.48, -8, 1, 0), Position = UDim2.new(0.24, 8, 0, 0), Parent = midRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.46, -10, 1, 0), Position = UDim2.new(0.24, 8, 0, 0), Parent = midRow,
             })
             corner(serverCard, 14)
             stroke(serverCard, T.Border, 1, 0.55)
@@ -1161,12 +1161,12 @@ function Library:CreateWindow(config)
             end
 
             local executorCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.28, -8, 1, 0), Position = UDim2.new(0.72, 8, 0, 0),
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.30, -12, 1, 0), Position = UDim2.new(0.70, 8, 0, 0),
                 ClipsDescendants = true, Parent = midRow,
             })
             corner(executorCard, 14)
             stroke(executorCard, T.Border, 1, 0.55)
-            padding(executorCard, 14, 14, 14, 14)
+            padding(executorCard, 12, 12, 12, 12)
             local eHeader = create("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Parent = executorCard })
             iconImage(eHeader, "terminal", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
@@ -1175,19 +1175,20 @@ function Library:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left, Parent = eHeader,
             })
             local execBox = create("Frame", {
-                BackgroundColor3 = T.Input, Size = UDim2.new(1, 0, 0, 34), Position = UDim2.new(0, 0, 0, 32), Parent = executorCard,
+                BackgroundColor3 = T.Input, Size = UDim2.new(1, 0, 0, 34), Position = UDim2.new(0, 0, 0, 32),
+                ClipsDescendants = true, Parent = executorCard,
             })
             corner(execBox, 9)
             stroke(execBox, T.Border, 1, 0.5)
             local execName = create("TextLabel", {
-                BackgroundTransparency = 1, Size = UDim2.new(1, -70, 1, 0), Position = UDim2.new(0, 12, 0, 0),
+                BackgroundTransparency = 1, Size = UDim2.new(1, -64, 1, 0), Position = UDim2.new(0, 10, 0, 0),
                 Font = Enum.Font.Gotham, Text = homeConfig.ExecutorName or (identifyexecutor and identifyexecutor() or "Unknown"),
                 TextColor3 = T.TextDim, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left,
                 TextTruncate = Enum.TextTruncate.AtEnd, Parent = execBox,
             })
             local badge = create("TextLabel", {
-                BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 48, 0, 18),
-                Position = UDim2.new(1, -54, 0.5, -9), Text = "Active", Font = Enum.Font.GothamBold,
+                BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 46, 0, 18),
+                Position = UDim2.new(1, -50, 0.5, -9), Text = "Active", Font = Enum.Font.GothamBold,
                 TextColor3 = T.Accent2, TextSize = 10, Parent = execBox,
             })
             corner(badge, 9)
@@ -1196,7 +1197,7 @@ function Library:CreateWindow(config)
             -- Changelog
             local changeCard = create("Frame", {
                 Name = "Changelog", BackgroundColor3 = T.Panel,
-                Size = UDim2.new(1, -4, 0, 240), Position = UDim2.new(0, 0, 0, 220),
+                Size = UDim2.new(1, -8, 0, 240), Position = UDim2.new(0, 0, 0, 220),
                 ClipsDescendants = true, Parent = page,
             })
             corner(changeCard, 14)
@@ -1217,11 +1218,11 @@ function Library:CreateWindow(config)
             }
             if entries[1] then
                 local latest = create("TextLabel", {
-                    BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 56, 0, 20),
-                    Position = UDim2.new(1, -56, 0, 1), Text = entries[1].Version or "v1.0.0",
-                    Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 11, Parent = chHeader,
+                    BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 52, 0, 18),
+                    Position = UDim2.new(1, -52, 0, 2), Text = entries[1].Version or "v1.0.0",
+                    Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 10, Parent = chHeader,
                 })
-                corner(latest, 9)
+                corner(latest, 8)
                 bindTheme(latest, "TextColor3", "Accent2")
             end
 

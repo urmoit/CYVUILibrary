@@ -3,12 +3,12 @@
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/refs/heads/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
 -- Or: local Library = require(path.to.Library)
 
 local Window = Library:CreateWindow({
-    Title    = "CYVHUB",
-    GameName = "game name",
+    Title    = "CYVUI",
+    GameName = "Example",
     Version  = "v1.0",
     Size     = UDim2.new(0, 900, 0, 560),
 })
@@ -22,7 +22,7 @@ Home:CreateHomeLayout({
     Username   = game.Players.LocalPlayer.DisplayName,
     Welcome    = "welcome back",
     AboutTitle = "ABOUT",
-    AboutText  = "CYVHUB is a multi-game script hub built with CYVUI. Clean, fast, modular. Join Discord for updates.",
+    AboutText  = "CYVUI example — dashboard Home, widgets, Settings themes, Lucide icons. Clean, fast, modular.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     ServerStats = {
         { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },

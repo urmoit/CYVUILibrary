@@ -8,7 +8,7 @@ Dark modern Roblox UI library matching the CYVHUB dashboard mockup.
 ## Install
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USER/CYVUI/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
 ```
 
 Local file:
@@ -369,7 +369,7 @@ See [Example.lua](./Example.lua) for a complete Home + Main (Player / Visuals / 
 Minimal copy-paste:
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USER/CYVUI/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
 
 local Window = Library:CreateWindow({
     Title = "CYVHUB",

@@ -1,6 +1,6 @@
 # CYVUI
 
-![CYVUI Library](assets/banner.png)
+![CYVUI Library banner — anime character with CYVHUB UI preview and feature list](assets/banner.png)
 
 
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
@@ -28,7 +28,7 @@ Home and Settings stay the same layout across games — only text, stats, and ch
 ## Install
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USER/CYVUI/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
 ```
 
 Or drop `Library.lua` into your project and require / loadstring the file.
@@ -38,7 +38,7 @@ Or drop `Library.lua` into your project and require / loadstring the file.
 ## Quick start
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USER/CYVUI/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
 
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
