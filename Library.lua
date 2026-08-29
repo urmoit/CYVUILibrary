@@ -54,6 +54,40 @@ Library.Theme = {
 }
 
 local T = Library.Theme
+local themeBindings = {} -- { inst, prop, key } key is Theme field name or "Accent"/"Accent2"
+
+local function bindTheme(inst, prop, key)
+    table.insert(themeBindings, { inst = inst, prop = prop, key = key })
+    if inst and prop and T[key] ~= nil then
+        inst[prop] = T[key]
+    end
+end
+
+local function applyTheme()
+    for _, b in ipairs(themeBindings) do
+        if b.inst and b.inst.Parent then
+            pcall(function()
+                if b._dynamic then
+                    b.inst[b.prop] = b._dynamic()
+                elseif T[b.key] ~= nil then
+                    b.inst[b.prop] = T[b.key]
+                end
+            end)
+        end
+    end
+end
+
+function Library:SetTheme(accent, accent2)
+    if accent then
+        T.Accent = accent
+        T.ToggleOn = accent
+        T.AccentSoft = Color3.new(accent.R * 0.35, accent.G * 0.25, accent.B * 0.45)
+    end
+    if accent2 then
+        T.Accent2 = accent2
+    end
+    applyTheme()
+end
 
 -- ═══════════════════════════════════════════
 -- LUCIDE
@@ -218,7 +252,7 @@ local function animateButton(button, defaultBg, hoverBg)
     end)
 end
 
-local function iconImage(parent, name, size, color)
+local function iconImage(parent, name, size, color, themeKey)
     local img = create("ImageLabel", {
         BackgroundTransparency = 1,
         Size = UDim2.new(0, size or 16, 0, size or 16),
@@ -227,6 +261,9 @@ local function iconImage(parent, name, size, color)
         ScaleType = Enum.ScaleType.Fit,
         Parent = parent,
     })
+    if themeKey then
+        bindTheme(img, "ImageColor3", themeKey)
+    end
     return img
 end
 
@@ -428,7 +465,10 @@ function Library:CreateWindow(config)
                 LayoutOrder = #window.Tabs + 1, Parent = sidebarList,
             })
             corner(tabBtn, 10)
-            if isHome then stroke(tabBtn, T.Accent, 1, 0.55) end
+            if isHome then
+                local hs = stroke(tabBtn, T.Accent, 1, 0.55)
+                bindTheme(hs, "Color", "Accent")
+            end
         end
 
         local iconImg = tabBtn:FindFirstChildOfClass("ImageLabel")
@@ -489,7 +529,13 @@ function Library:CreateWindow(config)
                 tabBtn.BackgroundTransparency = 0
                 tabBtn.BackgroundColor3 = T.AccentSoft
                 local st = tabBtn:FindFirstChildOfClass("UIStroke")
-                if not st then st = stroke(tabBtn, T.Accent, 1, 0.55) else st.Transparency = 0.55 end
+                if not st then
+                    st = stroke(tabBtn, T.Accent, 1, 0.55)
+                    bindTheme(st, "Color", "Accent")
+                else
+                    st.Transparency = 0.55
+                    st.Color = T.Accent
+                end
             else
                 tabBtn.BackgroundTransparency = 0
                 tabBtn.BackgroundColor3 = T.AccentSoft
@@ -530,6 +576,7 @@ function Library:CreateWindow(config)
             if opts.Icon then
                 local hi = iconImage(header, opts.Icon, 15, T.Accent2)
                 hi.Position = UDim2.new(0, 0, 0.5, -7)
+                bindTheme(hi, "ImageColor3", "Accent2")
             end
             create("TextLabel", {
                 BackgroundTransparency = 1,
@@ -568,6 +615,7 @@ function Library:CreateWindow(config)
                     AutoButtonColor = false, LayoutOrder = nextOrder(), Parent = section,
                 })
                 corner(btn, 9)
+                if cfg.Accent then bindTheme(btn, "BackgroundColor3", "Accent") end
                 local def, hov = cfg.Accent and T.Accent or T.Input, cfg.Accent and Color3.fromRGB(167, 139, 250) or T.PanelHover
                 animateButton(btn, def, hov)
                 btn.MouseButton1Click:Connect(function()
@@ -611,6 +659,13 @@ function Library:CreateWindow(config)
                     tween(knob, { Position = v and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8), BackgroundColor3 = v and Color3.new(1,1,1) or Color3.fromRGB(200,200,210) }, 0.18)
                     if fire and cfg.Callback then pcall(cfg.Callback, v) end
                 end
+                -- keep track color in theme bindings for live updates when on
+                table.insert(themeBindings, {
+                    inst = track, prop = "BackgroundColor3", key = "ToggleOn",
+                    _dynamic = function()
+                        return state and T.ToggleOn or T.ToggleOff
+                    end,
+                })
                 create("TextButton", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Text = "", Parent = row }).MouseButton1Click:Connect(function()
                     setState(not state, true)
                 end)
@@ -638,6 +693,7 @@ function Library:CreateWindow(config)
                     Font = Enum.Font.GothamBold, Text = tostring(default), TextColor3 = T.Accent2, TextSize = 12,
                     TextXAlignment = Enum.TextXAlignment.Right, Parent = row,
                 })
+                bindTheme(valueLbl, "TextColor3", "Accent2")
                 local barBg = create("Frame", {
                     BackgroundColor3 = T.Input, Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 28), Parent = row,
                 })
@@ -646,6 +702,7 @@ function Library:CreateWindow(config)
                     BackgroundColor3 = T.Accent, Size = UDim2.new((default - minV) / math.max(maxV - minV, 1), 0, 1, 0), Parent = barBg,
                 })
                 corner(fill, 3)
+                bindTheme(fill, "BackgroundColor3", "Accent")
                 -- gradient feel
                 local knob = create("Frame", {
                     BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 14, 0, 14),
@@ -944,17 +1001,17 @@ function Library:CreateWindow(config)
             -- Top row: Profile | About
             local topRow = create("Frame", {
                 Name = "TopRow", BackgroundTransparency = 1,
-                Size = UDim2.new(1, -4, 0, 110), Position = UDim2.new(0, 0, 0, 0), Parent = page,
+                Size = UDim2.new(1, -4, 0, 100), Position = UDim2.new(0, 0, 0, 0), Parent = page,
             })
 
             local profileCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.42, -8, 1, 0), Parent = topRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.38, -8, 1, 0), Parent = topRow,
             })
             corner(profileCard, 14)
             stroke(profileCard, T.Border, 1, 0.55)
 
             local avatarRing = create("Frame", {
-                Size = UDim2.new(0, 64, 0, 64), Position = UDim2.new(0, 18, 0.5, -32),
+                Size = UDim2.new(0, 56, 0, 56), Position = UDim2.new(0, 16, 0.5, -28),
                 BackgroundColor3 = T.Accent, BorderSizePixel = 0, Parent = profileCard,
             })
             corner(avatarRing, 32)
@@ -972,19 +1029,19 @@ function Library:CreateWindow(config)
             end)
 
             local userName = create("TextLabel", {
-                BackgroundTransparency = 1, Position = UDim2.new(0, 98, 0, 28), Size = UDim2.new(1, -110, 0, 24),
+                BackgroundTransparency = 1, Position = UDim2.new(0, 86, 0, 24), Size = UDim2.new(1, -98, 0, 24),
                 Font = Enum.Font.GothamBold, Text = "@" .. (homeConfig.Username or LocalPlayer.DisplayName or LocalPlayer.Name),
                 TextColor3 = T.Text, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left,
                 TextTruncate = Enum.TextTruncate.AtEnd, Parent = profileCard,
             })
             local welcome = create("TextLabel", {
-                BackgroundTransparency = 1, Position = UDim2.new(0, 98, 0, 56), Size = UDim2.new(1, -110, 0, 18),
-                Font = Enum.Font.Gotham, Text = "●  " .. (homeConfig.Welcome or "welcome back"),
+                BackgroundTransparency = 1, Position = UDim2.new(0, 86, 0, 50), Size = UDim2.new(1, -98, 0, 18),
+                Font = Enum.Font.Gotham, Text = (homeConfig.Welcome or "welcome back"),
                 TextColor3 = T.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, Parent = profileCard,
             })
 
             local aboutCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.58, -8, 1, 0), Position = UDim2.new(0.42, 8, 0, 0), Parent = topRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.62, -8, 1, 0), Position = UDim2.new(0.38, 8, 0, 0), Parent = topRow,
             })
             corner(aboutCard, 14)
             stroke(aboutCard, T.Border, 1, 0.55)
@@ -1004,17 +1061,17 @@ function Library:CreateWindow(config)
             -- Mid row: Discord | Server Info | Executor
             local midRow = create("Frame", {
                 Name = "MidRow", BackgroundTransparency = 1,
-                Size = UDim2.new(1, -4, 0, 100), Position = UDim2.new(0, 0, 0, 124), Parent = page,
+                Size = UDim2.new(1, -4, 0, 96), Position = UDim2.new(0, 0, 0, 112), Parent = page,
             })
 
             local discordCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.22, -8, 1, 0), Parent = midRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.24, -8, 1, 0), Parent = midRow,
             })
             corner(discordCard, 14)
             stroke(discordCard, T.Border, 1, 0.55)
             padding(discordCard, 14, 14, 14, 14)
             local dHeader = create("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Parent = discordCard })
-            iconImage(dHeader, "message-circle", 14, T.Accent2).Position = UDim2.new(0, 0, 0.5, -7)
+            iconImage(dHeader, "message-circle", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
                 BackgroundTransparency = 1, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(1, -20, 1, 0),
                 Font = Enum.Font.GothamBold, Text = "Discord", TextColor3 = T.Text, TextSize = 13,
@@ -1026,7 +1083,10 @@ function Library:CreateWindow(config)
                 AutoButtonColor = false, Parent = discordCard,
             })
             corner(copyBtn, 9)
+            bindTheme(copyBtn, "BackgroundColor3", "Accent")
             animateButton(copyBtn, T.Accent, Color3.fromRGB(167, 139, 250))
+            -- rebind hover colors on theme change via weak refresh
+            table.insert(themeBindings, { inst = copyBtn, prop = "BackgroundColor3", key = "Accent" })
             copyBtn.MouseButton1Click:Connect(function()
                 local link = homeConfig.DiscordLink or "https://discord.gg/vTe3sNTsDM"
                 if setclipboard then setclipboard(link); Library:Notify("Discord", "Invite copied!", 2, "success")
@@ -1034,13 +1094,13 @@ function Library:CreateWindow(config)
             end)
 
             local serverCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.48, -8, 1, 0), Position = UDim2.new(0.22, 8, 0, 0), Parent = midRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.48, -8, 1, 0), Position = UDim2.new(0.24, 8, 0, 0), Parent = midRow,
             })
             corner(serverCard, 14)
             stroke(serverCard, T.Border, 1, 0.55)
             padding(serverCard, 14, 14, 16, 16)
             local sHeader = create("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Parent = serverCard })
-            iconImage(sHeader, "server", 14, T.Accent2).Position = UDim2.new(0, 0, 0.5, -7)
+            iconImage(sHeader, "server", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
                 BackgroundTransparency = 1, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(1, -20, 1, 0),
                 Font = Enum.Font.GothamBold, Text = "Server Info", TextColor3 = T.Text, TextSize = 13,
@@ -1072,13 +1132,13 @@ function Library:CreateWindow(config)
             end
 
             local executorCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.3, -8, 1, 0), Position = UDim2.new(0.7, 8, 0, 0), Parent = midRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.28, -8, 1, 0), Position = UDim2.new(0.72, 8, 0, 0), Parent = midRow,
             })
             corner(executorCard, 14)
             stroke(executorCard, T.Border, 1, 0.55)
             padding(executorCard, 14, 14, 16, 16)
             local eHeader = create("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Parent = executorCard })
-            iconImage(eHeader, "terminal", 14, T.Accent2).Position = UDim2.new(0, 0, 0.5, -7)
+            iconImage(eHeader, "terminal", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
                 BackgroundTransparency = 1, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(1, -20, 1, 0),
                 Font = Enum.Font.GothamBold, Text = "Executor", TextColor3 = T.Text, TextSize = 13,
@@ -1101,11 +1161,12 @@ function Library:CreateWindow(config)
                 TextColor3 = T.Accent2, TextSize = 10, Parent = execBox,
             })
             corner(badge, 10)
+            bindTheme(badge, "TextColor3", "Accent2")
 
             -- Changelog
             local changeCard = create("Frame", {
                 Name = "Changelog", BackgroundColor3 = T.Panel,
-                Size = UDim2.new(1, -4, 0, 220), Position = UDim2.new(0, 0, 0, 240), Parent = page,
+                Size = UDim2.new(1, -4, 0, 240), Position = UDim2.new(0, 0, 0, 220), Parent = page,
             })
             corner(changeCard, 14)
             stroke(changeCard, T.Border, 1, 0.55)
@@ -1114,7 +1175,7 @@ function Library:CreateWindow(config)
             local chHeader = create("Frame", {
                 BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22), Parent = changeCard,
             })
-            iconImage(chHeader, "scroll-text", 14, T.Accent2).Position = UDim2.new(0, 0, 0.5, -7)
+            iconImage(chHeader, "scroll-text", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
                 BackgroundTransparency = 1, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(0.5, 0, 1, 0),
                 Font = Enum.Font.GothamBold, Text = "Changelog", TextColor3 = T.Text, TextSize = 14,
@@ -1130,6 +1191,7 @@ function Library:CreateWindow(config)
                     Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 11, Parent = chHeader,
                 })
                 corner(latest, 10)
+                bindTheme(latest, "TextColor3", "Accent2")
             end
 
             local changeScroll = create("ScrollingFrame", {
@@ -1193,16 +1255,22 @@ function Library:CreateWindow(config)
                 })
                 corner(sw, 12)
                 sw.MouseButton1Click:Connect(function()
-                    T.Accent = p.Accent
-                    T.Accent2 = p.Accent2
-                    T.ToggleOn = p.Accent
-                    Library:Notify("Theme", p.Name .. " applied", 2)
+                    Library:SetTheme(p.Accent, p.Accent2)
+                    Library:Notify("Theme", p.Name .. " applied", 2, "success")
                     if setConfig.OnTheme then pcall(setConfig.OnTheme, p) end
                 end)
             end
 
             theme:AddSlider({
                 Text = "UI Transparency", Min = 20, Max = 100, Default = 72, Flag = "UITransparency",
+                Callback = function(v)
+                    -- v is 20-100; map to BackgroundTransparency 0.0-0.5 on main panels
+                    local t = math.clamp((100 - v) / 100 * 0.55, 0, 0.55)
+                    if window.Main then
+                        -- keep solid for readability; soft-tint panels via Theme Panel if needed
+                    end
+                    Library.Flags.UITransparency = v
+                end,
             })
 
             local configSec = tab:CreateSection("Config", { Icon = "bookmark" })
