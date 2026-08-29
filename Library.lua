@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v2.0
+    CYVUI Library v1.0
     Dark modern Roblox UI — dashboard mockup style
     Home + Main widgets + Settings consistent across hubs
     Lucide icons via Footagesus Icons v2
@@ -16,7 +16,7 @@ local TextService      = game:GetService("TextService")
 local LocalPlayer = Players.LocalPlayer
 
 local Library = {
-    Version     = "2.0.0",
+    Version     = "1.0.0",
     Name        = "CYVUI",
     Windows     = {},
     Flags       = {},
@@ -271,45 +271,74 @@ end
 -- NOTIFY
 -- ═══════════════════════════════════════════
 function Library:Notify(title, message, duration, notifType)
-    duration = duration or 3
+    duration = duration or 2.5
     local color = T.Accent
     if notifType == "success" then color = T.Success
     elseif notifType == "warning" then color = T.Warning
     elseif notifType == "error" then color = T.Error end
 
-    if not self._NotifyHolder then
+    if not self._NotifyHolder or not self._NotifyHolder.Parent then
         local holder = create("ScreenGui", { Name = "CYVUI_Notifications", ResetOnSpawn = false, DisplayOrder = 999, ZIndexBehavior = Enum.ZIndexBehavior.Sibling })
         protectGui(holder)
         self._NotifyHolder = holder
         local list = create("Frame", {
             Name = "List", BackgroundTransparency = 1,
-            Size = UDim2.new(0, 320, 1, 0), Position = UDim2.new(1, -340, 0, 20), Parent = holder,
+            Size = UDim2.new(0, 300, 0, 400), Position = UDim2.new(1, -320, 0, 16), Parent = holder,
         })
-        listLayout(list, 8)
+        local lay = listLayout(list, 8)
+        lay.VerticalAlignment = Enum.VerticalAlignment.Top
+        lay.HorizontalAlignment = Enum.HorizontalAlignment.Right
         self._NotifyList = list
     end
 
+    -- Cap stacked notifications
+    local kids = self._NotifyList:GetChildren()
+    local count = 0
+    for _, c in ipairs(kids) do
+        if c:IsA("Frame") then count += 1 end
+    end
+    if count >= 4 then
+        for _, c in ipairs(kids) do
+            if c:IsA("Frame") then c:Destroy(); break end
+        end
+    end
+
     local card = create("Frame", {
-        BackgroundColor3 = T.Panel, Size = UDim2.new(0, 300, 0, 70),
+        BackgroundColor3 = T.Panel, Size = UDim2.new(0, 280, 0, 64),
         ClipsDescendants = true, Parent = self._NotifyList,
     })
     corner(card, 12)
-    stroke(card, color, 1.5, 0.35)
-    create("Frame", { BackgroundColor3 = color, Size = UDim2.new(0, 4, 1, 0), BorderSizePixel = 0, Parent = card })
-    create("TextLabel", {
-        BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 10), Size = UDim2.new(1, -28, 0, 20),
-        Font = Enum.Font.GothamBold, Text = title or "Notification", TextColor3 = T.Text, TextSize = 14,
+    local cardStroke = stroke(card, color, 1.5, 0.25)
+    local bar = create("Frame", { BackgroundColor3 = color, Size = UDim2.new(0, 4, 1, 0), BorderSizePixel = 0, Parent = card })
+    corner(bar, 2)
+    local titleLbl = create("TextLabel", {
+        BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 10), Size = UDim2.new(1, -28, 0, 18),
+        Font = Enum.Font.GothamBold, Text = title or "Notification", TextColor3 = T.Text, TextSize = 13,
         TextXAlignment = Enum.TextXAlignment.Left, Parent = card,
     })
-    create("TextLabel", {
-        BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 32), Size = UDim2.new(1, -28, 0, 30),
+    local msgLbl = create("TextLabel", {
+        BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 30), Size = UDim2.new(1, -28, 0, 26),
         Font = Enum.Font.Gotham, Text = message or "", TextColor3 = T.TextDim, TextSize = 12,
         TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Parent = card,
     })
+
+    card.BackgroundTransparency = 1
+    titleLbl.TextTransparency = 1
+    msgLbl.TextTransparency = 1
+    cardStroke.Transparency = 1
+    tween(card, { BackgroundTransparency = 0 }, 0.2)
+    tween(titleLbl, { TextTransparency = 0 }, 0.2)
+    tween(msgLbl, { TextTransparency = 0 }, 0.2)
+    tween(cardStroke, { Transparency = 0.25 }, 0.2)
+
     task.delay(duration, function()
-        tween(card, { BackgroundTransparency = 1 }, 0.25)
-        task.wait(0.3)
-        card:Destroy()
+        if not card or not card.Parent then return end
+        tween(card, { BackgroundTransparency = 1 }, 0.22)
+        tween(titleLbl, { TextTransparency = 1 }, 0.22)
+        tween(msgLbl, { TextTransparency = 1 }, 0.22)
+        tween(cardStroke, { Transparency = 1 }, 0.22)
+        task.wait(0.25)
+        if card and card.Parent then card:Destroy() end
     end)
 end
 
@@ -320,7 +349,7 @@ function Library:CreateWindow(config)
     config = config or {}
     local title    = config.Title or "CYVHUB"
     local gameName = config.GameName or "game name"
-    local version  = config.Version or "v2.0"
+    local version  = config.Version or "v1.0"
     local size     = config.Size or UDim2.new(0, 900, 0, 560)
 
     for _, old in ipairs(self.Windows) do
@@ -1132,11 +1161,12 @@ function Library:CreateWindow(config)
             end
 
             local executorCard = create("Frame", {
-                BackgroundColor3 = T.Panel, Size = UDim2.new(0.28, -8, 1, 0), Position = UDim2.new(0.72, 8, 0, 0), Parent = midRow,
+                BackgroundColor3 = T.Panel, Size = UDim2.new(0.28, -8, 1, 0), Position = UDim2.new(0.72, 8, 0, 0),
+                ClipsDescendants = true, Parent = midRow,
             })
             corner(executorCard, 14)
             stroke(executorCard, T.Border, 1, 0.55)
-            padding(executorCard, 14, 14, 16, 16)
+            padding(executorCard, 14, 14, 14, 14)
             local eHeader = create("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Parent = executorCard })
             iconImage(eHeader, "terminal", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
@@ -1156,17 +1186,18 @@ function Library:CreateWindow(config)
                 TextTruncate = Enum.TextTruncate.AtEnd, Parent = execBox,
             })
             local badge = create("TextLabel", {
-                BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 52, 0, 18),
-                Position = UDim2.new(1, -60, 0.5, -9), Text = "Active", Font = Enum.Font.GothamBold,
+                BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 48, 0, 18),
+                Position = UDim2.new(1, -54, 0.5, -9), Text = "Active", Font = Enum.Font.GothamBold,
                 TextColor3 = T.Accent2, TextSize = 10, Parent = execBox,
             })
-            corner(badge, 10)
+            corner(badge, 9)
             bindTheme(badge, "TextColor3", "Accent2")
 
             -- Changelog
             local changeCard = create("Frame", {
                 Name = "Changelog", BackgroundColor3 = T.Panel,
-                Size = UDim2.new(1, -4, 0, 240), Position = UDim2.new(0, 0, 0, 220), Parent = page,
+                Size = UDim2.new(1, -4, 0, 240), Position = UDim2.new(0, 0, 0, 220),
+                ClipsDescendants = true, Parent = page,
             })
             corner(changeCard, 14)
             stroke(changeCard, T.Border, 1, 0.55)
@@ -1182,15 +1213,15 @@ function Library:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left, Parent = chHeader,
             })
             local entries = homeConfig.Changelog or {
-                { Version = "v2.0.0", Date = "2026-08-29", Text = "CYVUI Library v2 — dashboard layout, Lucide icons." },
+                { Version = "v1.0.0", Date = "2026-08-29", Text = "Initial CYVUI release — dashboard Home, Lucide icons, Settings themes." },
             }
             if entries[1] then
                 local latest = create("TextLabel", {
-                    BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 70, 0, 20),
-                    Position = UDim2.new(1, -70, 0, 1), Text = entries[1].Version or "latest",
+                    BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 56, 0, 20),
+                    Position = UDim2.new(1, -56, 0, 1), Text = entries[1].Version or "v1.0.0",
                     Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 11, Parent = chHeader,
                 })
-                corner(latest, 10)
+                corner(latest, 9)
                 bindTheme(latest, "TextColor3", "Accent2")
             end
 
@@ -1256,7 +1287,7 @@ function Library:CreateWindow(config)
                 corner(sw, 12)
                 sw.MouseButton1Click:Connect(function()
                     Library:SetTheme(p.Accent, p.Accent2)
-                    Library:Notify("Theme", p.Name .. " applied", 2, "success")
+                    Library:Notify("Theme", p.Name, 1.8, "success")
                     if setConfig.OnTheme then pcall(setConfig.OnTheme, p) end
                 end)
             end
