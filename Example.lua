@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0 — Example
+    CYVUI Library v1.0.1 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0",
+    Version  = "v1.0.1",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -31,6 +31,11 @@ Home:CreateHomeLayout({
     },
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
+        {
+            Version = "v1.0.1",
+            Date = "2026-08-29",
+            Text = "Notification redesign (success / warning / error toasts), badge overflow fix, banner update.",
+        },
         {
             Version = "v1.0.0",
             Date = "2026-08-29",

@@ -1,4 +1,4 @@
-# CYVUI Library v1.0 — Documentation
+# CYVUI Library v1.0.1 — Documentation
 
 Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
 **Home** and **Settings** share the same layout on every game — only content/text changes.
@@ -26,7 +26,7 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0",
+    Version  = "v1.0.1",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -43,7 +43,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.0", Date = "2026-08-29", Text = "Initial release." },
+        { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
     },
 })
 
@@ -64,7 +64,7 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Left title segment |
 | GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v1.0"` | Right segment |
+| Version | string | `"v1.0.1"` | Right segment |
 | Size | UDim2 | `900×560` | Window size |
 
 **Returns:** Window  
@@ -383,7 +383,7 @@ Home:CreateHomeLayout({
     AboutText = "Demo hub using CYVUI.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     Changelog = {
-        { Version = "v1.0.0", Date = "2026-08-29", Text = "First release." },
+        { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign." },
     },
 })
 

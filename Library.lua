@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0
+    CYVUI Library v1.0.1
     Dark modern Roblox UI — dashboard mockup style
     Home + Main widgets + Settings consistent across hubs
     Lucide icons via Footagesus Icons v2
@@ -16,7 +16,7 @@ local TextService      = game:GetService("TextService")
 local LocalPlayer = Players.LocalPlayer
 
 local Library = {
-    Version     = "1.0.0",
+    Version     = "1.0.1",
     Name        = "CYVUI",
     Windows     = {},
     Flags       = {},
@@ -271,85 +271,198 @@ end
 -- NOTIFY
 -- ═══════════════════════════════════════════
 function Library:Notify(title, message, duration, notifType)
-    duration = duration or 2.5
-    local color = T.Accent
-    if notifType == "success" then color = T.Success
-    elseif notifType == "warning" then color = T.Warning
-    elseif notifType == "error" then color = T.Error end
+    duration = duration or 3
+    notifType = (notifType or "info"):lower()
+
+    local styles = {
+        success = {
+            accent = Color3.fromRGB(34, 197, 94),
+            bg = Color3.fromRGB(12, 28, 18),
+            border = Color3.fromRGB(34, 197, 94),
+            title = "Success",
+            icon = "circle-check",
+        },
+        warning = {
+            accent = Color3.fromRGB(234, 179, 8),
+            bg = Color3.fromRGB(32, 26, 10),
+            border = Color3.fromRGB(234, 179, 8),
+            title = "Warning",
+            icon = "triangle-alert",
+        },
+        error = {
+            accent = Color3.fromRGB(239, 68, 68),
+            bg = Color3.fromRGB(32, 12, 14),
+            border = Color3.fromRGB(239, 68, 68),
+            title = "Error",
+            icon = "circle-x",
+        },
+        info = {
+            accent = T.Accent2,
+            bg = Color3.fromRGB(16, 20, 32),
+            border = T.Accent2,
+            title = "Info",
+            icon = "info",
+        },
+    }
+    local style = styles[notifType] or styles.info
+    local displayTitle = title or style.title
 
     if not self._NotifyHolder or not self._NotifyHolder.Parent then
-        local holder = create("ScreenGui", { Name = "CYVUI_Notifications", ResetOnSpawn = false, DisplayOrder = 999, ZIndexBehavior = Enum.ZIndexBehavior.Sibling })
+        local holder = create("ScreenGui", {
+            Name = "CYVUI_Notifications",
+            ResetOnSpawn = false,
+            DisplayOrder = 999,
+            ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        })
         protectGui(holder)
         self._NotifyHolder = holder
         local list = create("Frame", {
-            Name = "List", BackgroundTransparency = 1,
-            Size = UDim2.new(0, 300, 0, 400), Position = UDim2.new(1, -320, 0, 16), Parent = holder,
+            Name = "List",
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 340, 0, 420),
+            Position = UDim2.new(1, -360, 0, 18),
+            Parent = holder,
         })
-        local lay = listLayout(list, 8)
+        local lay = listLayout(list, 10)
         lay.VerticalAlignment = Enum.VerticalAlignment.Top
         lay.HorizontalAlignment = Enum.HorizontalAlignment.Right
         self._NotifyList = list
     end
 
     -- Cap stacked notifications
-    local kids = self._NotifyList:GetChildren()
     local count = 0
-    for _, c in ipairs(kids) do
+    for _, c in ipairs(self._NotifyList:GetChildren()) do
         if c:IsA("Frame") then count += 1 end
     end
     if count >= 4 then
-        for _, c in ipairs(kids) do
+        for _, c in ipairs(self._NotifyList:GetChildren()) do
             if c:IsA("Frame") then c:Destroy(); break end
         end
     end
 
     local card = create("Frame", {
-        BackgroundColor3 = T.Panel, Size = UDim2.new(0, 280, 0, 64),
-        ClipsDescendants = true, Parent = self._NotifyList,
+        BackgroundColor3 = style.bg,
+        Size = UDim2.new(0, 300, 0, 72),
+        ClipsDescendants = true,
+        Parent = self._NotifyList,
     })
-    corner(card, 12)
-    local cardStroke = stroke(card, color, 1.5, 0.25)
-    local bar = create("Frame", { BackgroundColor3 = color, Size = UDim2.new(0, 4, 1, 0), BorderSizePixel = 0, Parent = card })
+    corner(card, 14)
+    local cardStroke = stroke(card, style.border, 1.5, 0.15)
+
+    -- Left accent glow bar
+    local bar = create("Frame", {
+        BackgroundColor3 = style.accent,
+        Size = UDim2.new(0, 3, 1, 0),
+        BorderSizePixel = 0,
+        Parent = card,
+    })
     corner(bar, 2)
-    local titleLbl = create("TextLabel", {
-        BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 10), Size = UDim2.new(1, -28, 0, 18),
-        Font = Enum.Font.GothamBold, Text = title or "Notification", TextColor3 = T.Text, TextSize = 13,
-        TextXAlignment = Enum.TextXAlignment.Left, Parent = card,
+
+    -- Icon circle
+    local iconWrap = create("Frame", {
+        BackgroundColor3 = style.accent,
+        BackgroundTransparency = 0.85,
+        Size = UDim2.new(0, 28, 0, 28),
+        Position = UDim2.new(0, 14, 0.5, -14),
+        Parent = card,
     })
-    local msgLbl = create("TextLabel", {
-        BackgroundTransparency = 1, Position = UDim2.new(0, 16, 0, 30), Size = UDim2.new(1, -28, 0, 26),
-        Font = Enum.Font.Gotham, Text = message or "", TextColor3 = T.TextDim, TextSize = 12,
-        TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Parent = card,
+    corner(iconWrap, 14)
+    local iconStroke = stroke(iconWrap, style.accent, 1, 0.35)
+    local iconImg = create("ImageLabel", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0.5, -8, 0.5, -8),
+        Image = Library:GetIcon(style.icon),
+        ImageColor3 = style.accent,
+        ScaleType = Enum.ScaleType.Fit,
+        Parent = iconWrap,
     })
 
+    local titleLbl = create("TextLabel", {
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 52, 0, 12),
+        Size = UDim2.new(1, -88, 0, 18),
+        Font = Enum.Font.GothamBold,
+        Text = displayTitle,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = card,
+    })
+    local msgLbl = create("TextLabel", {
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 52, 0, 32),
+        Size = UDim2.new(1, -88, 0, 28),
+        Font = Enum.Font.Gotham,
+        Text = message or "",
+        TextColor3 = Color3.fromRGB(200, 200, 210),
+        TextSize = 12,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Top,
+        Parent = card,
+    })
+
+    -- Close button
+    local closeBtn = create("TextButton", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 22, 0, 22),
+        Position = UDim2.new(1, -28, 0, 8),
+        Text = "",
+        AutoButtonColor = false,
+        Parent = card,
+    })
+    local closeIcon = create("ImageLabel", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 12, 0, 12),
+        Position = UDim2.new(0.5, -6, 0.5, -6),
+        Image = Library:GetIcon("x"),
+        ImageColor3 = Color3.fromRGB(160, 160, 170),
+        ScaleType = Enum.ScaleType.Fit,
+        Parent = closeBtn,
+    })
+
+    local function dismiss()
+        if not card or not card.Parent then return end
+        tween(card, { BackgroundTransparency = 1 }, 0.18)
+        tween(titleLbl, { TextTransparency = 1 }, 0.18)
+        tween(msgLbl, { TextTransparency = 1 }, 0.18)
+        tween(cardStroke, { Transparency = 1 }, 0.18)
+        tween(iconImg, { ImageTransparency = 1 }, 0.18)
+        tween(closeIcon, { ImageTransparency = 1 }, 0.18)
+        task.delay(0.2, function()
+            if card and card.Parent then card:Destroy() end
+        end)
+    end
+    closeBtn.MouseButton1Click:Connect(dismiss)
+    closeBtn.MouseEnter:Connect(function()
+        closeIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+    closeBtn.MouseLeave:Connect(function()
+        closeIcon.ImageColor3 = Color3.fromRGB(160, 160, 170)
+    end)
+
+    -- Enter animation
     card.BackgroundTransparency = 1
     titleLbl.TextTransparency = 1
     msgLbl.TextTransparency = 1
     cardStroke.Transparency = 1
+    iconImg.ImageTransparency = 1
     tween(card, { BackgroundTransparency = 0 }, 0.2)
     tween(titleLbl, { TextTransparency = 0 }, 0.2)
     tween(msgLbl, { TextTransparency = 0 }, 0.2)
-    tween(cardStroke, { Transparency = 0.25 }, 0.2)
+    tween(cardStroke, { Transparency = 0.15 }, 0.2)
+    tween(iconImg, { ImageTransparency = 0 }, 0.2)
 
-    task.delay(duration, function()
-        if not card or not card.Parent then return end
-        tween(card, { BackgroundTransparency = 1 }, 0.22)
-        tween(titleLbl, { TextTransparency = 1 }, 0.22)
-        tween(msgLbl, { TextTransparency = 1 }, 0.22)
-        tween(cardStroke, { Transparency = 1 }, 0.22)
-        task.wait(0.25)
-        if card and card.Parent then card:Destroy() end
-    end)
+    task.delay(duration, dismiss)
 end
 
--- ═══════════════════════════════════════════
--- WINDOW
--- ═══════════════════════════════════════════
+
 function Library:CreateWindow(config)
     config = config or {}
     local title    = config.Title or "CYVHUB"
     local gameName = config.GameName or "game name"
-    local version  = config.Version or "v1.0"
+    local version  = config.Version or "v1.0.1"
     local size     = config.Size or UDim2.new(0, 900, 0, 560)
 
     for _, old in ipairs(self.Windows) do
@@ -1214,12 +1327,13 @@ function Library:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left, Parent = chHeader,
             })
             local entries = homeConfig.Changelog or {
+                { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign (success/warning/error), badge overflow fix, new banner." },
                 { Version = "v1.0.0", Date = "2026-08-29", Text = "Initial CYVUI release — dashboard Home, Lucide icons, Settings themes." },
             }
             if entries[1] then
                 local latest = create("TextLabel", {
                     BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 52, 0, 18),
-                    Position = UDim2.new(1, -52, 0, 2), Text = entries[1].Version or "v1.0.0",
+                    Position = UDim2.new(1, -52, 0, 2), Text = entries[1].Version or "v1.0.1",
                     Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 10, Parent = chHeader,
                 })
                 corner(latest, 8)
