@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v2 — Example
+    CYVUI Library v1.0 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "game name",
-    Version  = "v2.0",
+    Version  = "v1.0",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -32,14 +32,9 @@ Home:CreateHomeLayout({
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
         {
-            Version = "v2.0.0",
-            Date = "2026-08-29",
-            Text = "CYVUI v2 — dashboard Home layout, Lucide icons, Settings presets, custom changelogs.",
-        },
-        {
             Version = "v1.0.0",
-            Date = "2026-08-28",
-            Text = "Initial CYVUI release.",
+            Date = "2026-08-29",
+            Text = "Initial CYVUI release — dashboard Home, Lucide icons, Settings themes, custom changelogs.",
         },
     },
 })
@@ -91,4 +86,4 @@ Info:AddKeybind({ Text = "Toggle UI", Default = Enum.KeyCode.RightShift, Flag = 
 
 -- Settings tab is built-in (bottom sidebar) with Theme / Config / General
 
-Library:Notify("CYVUI", "Library v2 loaded.", 3, "success")
+Library:Notify("CYVUI", "Library loaded.", 3, "success")
