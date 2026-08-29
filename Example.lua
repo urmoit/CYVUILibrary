@@ -4,7 +4,7 @@
     + standard tabs with toggles, sliders, buttons, etc.
 ]]
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_REPO/CYVUI/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/refs/heads/main/Library.lua"))()
 -- Or require locally:
 -- local Library = require(path.to.Library)
 
