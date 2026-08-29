@@ -3,7 +3,7 @@
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/refs/heads/main/Library.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_REPO/CYVUI/main/Library.lua"))()
 -- Or: local Library = require(path.to.Library)
 
 local Window = Library:CreateWindow({

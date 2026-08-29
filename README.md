@@ -1,5 +1,8 @@
 # CYVUI
 
+![CYVUI Library](assets/banner.png)
+
+
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-8b5cf6)
