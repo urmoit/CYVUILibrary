@@ -1,4 +1,4 @@
-# CYVUI Library v2.0
+# CYVUI Library v1.0
 
 Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
 **Home** and **Settings** share the same layout on every game — only content/text changes.
@@ -19,7 +19,7 @@ local Library = loadstring(game:HttpGet("YOUR_RAW_URL/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v2.0",
+    Version  = "v1.0",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -57,7 +57,7 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Left title segment |
 | GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v2.0"` | Right segment |
+| Version | string | `"v1.0"` | Right segment |
 | Size | UDim2 | `900×560` | Window size |
 
 **Returns:** Window  
