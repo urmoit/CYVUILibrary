@@ -1,47 +1,51 @@
-# CYVUI Library Documentation
+# CYVUI Library v2.0
 
-**Version:** 1.0.0  
-**Style:** Dark modern UI matching CYVHUB home layout
+Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
+**Home** and **Settings** share the same layout on every game — only content/text changes.
 
 ---
 
-## Installation
+## Install
 
 ```lua
 local Library = loadstring(game:HttpGet("YOUR_RAW_URL/Library.lua"))()
 ```
 
-Or place `Library.lua` in your project and require it.
-
 ---
 
-## Quick Start
+## Quick start
 
 ```lua
-local Library = loadstring(...)()
-
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0",
-    Size     = UDim2.new(0, 720, 0, 500),
+    Version  = "v2.0",
+    Size     = UDim2.new(0, 900, 0, 560),
 })
 
-local Home = Window:CreateTab({ Name = "Home", Icon = "⌂", Home = true })
+local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
 Home:CreateHomeLayout({
     Username    = game.Players.LocalPlayer.DisplayName,
     Welcome     = "welcome back",
-    AboutText   = "Your hub description here.",
-    DiscordLink = "https://discord.gg/invite",
-    Changelog   = {
-        { Version = "v1.0", Text = "Release." },
+    AboutText   = "Your hub description.",
+    DiscordLink = "https://discord.gg/vTe3sNTsDM",
+    ServerStats = {
+        { Num = "12", Label = "PLAYERS" },
+        { Num = "99%", Label = "UPTIME" },
+        { Num = "20ms", Label = "PING" },
+    },
+    ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
+    Changelog = {
+        { Version = "v1.0.0", Date = "2026-08-29", Text = "Initial release." },
     },
 })
 
-local Main = Window:CreateTab({ Name = "Main", Icon = "⚡" })
-local Sec = Main:CreateSection("Features")
-Sec:AddToggle({ Text = "Enabled", Flag = "Enabled", Callback = function(v) end })
+local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
+local Sec = Main:CreateSection("Player", { Icon = "user" })
+Sec:AddToggle({ Text = "Speed", Flag = "Speed", Callback = function(v) end })
 ```
+
+Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 
 ---
 
@@ -49,21 +53,16 @@ Sec:AddToggle({ Text = "Enabled", Flag = "Enabled", Callback = function(v) end }
 
 ### `Library:CreateWindow(config)`
 
-| Key        | Type   | Default      | Description                    |
-|------------|--------|--------------|--------------------------------|
-| Title      | string | `"CYVHUB"`   | Left part of title bar         |
-| GameName   | string | `"game name"`| Middle part of title bar       |
-| Version    | string | `"v1.0"`     | Right part of title bar        |
-| Size       | UDim2  | `720x480`    | Window size                    |
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| Title | string | `"CYVHUB"` | Left title segment |
+| GameName | string | `"game name"` | Middle segment |
+| Version | string | `"v2.0"` | Right segment |
+| Size | UDim2 | `900×560` | Window size |
 
-**Returns:** Window object
+**Returns:** Window  
 
-### Window methods
-
-| Method | Description |
-|--------|-------------|
-| `:SetTitle(title, game, version)` | Update title bar text |
-| `:CreateTab(config)` | Create a sidebar tab |
+Methods: `:SetTitle(title, game, version)`, `:CreateTab(config)`
 
 ---
 
@@ -71,213 +70,138 @@ Sec:AddToggle({ Text = "Enabled", Flag = "Enabled", Callback = function(v) end }
 
 ### `Window:CreateTab(config)`
 
-| Key  | Type    | Default | Description                          |
-|------|---------|---------|--------------------------------------|
-| Name | string  | `"Tab"` | Sidebar label                        |
-| Icon | string  | `"•"`   | Sidebar icon (emoji or text)         |
-| Home | boolean | `false` | Marks as default selected home tab   |
-
-**Returns:** Tab object
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| Name | string | `"Tab"` | Sidebar label |
+| Icon | string | `"house"` | **Lucide** icon name |
+| Home | boolean | `false` | Default selected Home tab |
+| Settings | boolean | `false` | Binds to bottom Settings button |
 
 ### Tab methods
 
 | Method | Description |
 |--------|-------------|
-| `:CreateSection(name)` | Creates a card section with header |
-| `:CreateHomeLayout(config)` | Builds the special Home dashboard |
+| `:CreateSection(name, { Icon = "..." })` | Widget card with header + Lucide icon |
+| `:CreateHomeLayout(config)` | Fixed Home dashboard (profile, about, discord, server, executor, changelog) |
+| `:CreateSettingsLayout(config)` | Standard Settings (Theme / Config / General) |
 
 ---
 
-## Home Layout
+## Home layout
 
-Matches the reference image exactly:
+Same structure every UI:
 
 ```
-┌─────────────┬──────────────────────────┐
-│  Avatar     │  About                   │
-│  username   │  (description text)      │
-│  welcome    │                          │
-├──────┬──────┴───────────┬──────────────┤
-│Discord│  Server Info    │  Executor    │
-│[Copy] │  players / job  │  name        │
-├──────┴──────────────────┴──────────────┤
-│  Changelog                             │
-│  [entries...]                          │
-└────────────────────────────────────────┘
+[ Profile (avatar + @user + welcome) ] [ ABOUT text ]
+[ Discord Copy Link ] [ Server stats ] [ Executor badge ]
+[ Changelog list (custom entries) ]
 ```
 
 ### `Tab:CreateHomeLayout(config)`
 
-| Key          | Type   | Description                                      |
-|--------------|--------|--------------------------------------------------|
-| Username     | string | Display name under avatar                        |
-| Welcome      | string | Subtitle (default: `"welcome back"`)             |
-| AboutTitle   | string | About card header (default: `"About"`)           |
-| AboutText    | string | About body text                                  |
-| DiscordLink  | string | Link copied by the Copy Link button              |
-| ServerInfo   | string | Multi-line server info text                      |
-| ExecutorName | string | Executor display name                            |
-| Changelog    | table  | Array of `{ Version = "v1.0", Text = "..." }`    |
-
-**Returns:** table with setters (`SetUsername`, `SetAbout`, `SetServerInfo`, `SetExecutor`)
+| Key | Type | Description |
+|-----|------|-------------|
+| Username | string | Display name (prefixed with @) |
+| Welcome | string | Status line under name |
+| AboutTitle | string | Default `"ABOUT"` |
+| AboutText | string | Body |
+| DiscordLink | string | Copied by Copy Link |
+| ServerStats | table | `{ { Num, Label }, ... }` — up to 3 |
+| ExecutorName | string | Executor label |
+| Changelog | table | `{ Version, Date, Text }` entries |
 
 ---
 
-## Sections
+## Settings layout
 
-### `Tab:CreateSection(name)`
+Always available via sidebar **Settings**. Call `:CreateSettingsLayout` on a Settings tab to customize:
 
-Creates a rounded card with a bold header. All elements are added inside.
+| Key | Description |
+|-----|-------------|
+| Themes | Array of `{ Name, Accent, Accent2 }` presets |
+| Configs | Dropdown config names |
+| OnSave / OnLoad | Callbacks |
+| OnTheme | Fired when preset clicked |
 
----
-
-## Elements
-
-### Toggle
-
-```lua
-section:AddToggle({
-    Text     = "Aimbot",
-    Default  = false,
-    Flag     = "Aimbot",       -- stored in Library.Flags
-    Callback = function(value) end,
-})
-```
-
-Returns object with `:Set(bool)` and `:Get()`.
-
-### Slider
-
-```lua
-section:AddSlider({
-    Text     = "FOV",
-    Min      = 50,
-    Max      = 400,
-    Default  = 120,
-    Decimals = 0,
-    Flag     = "FOV",
-    Callback = function(value) end,
-})
-```
-
-### Button
-
-```lua
-section:AddButton({
-    Text     = "Click Me",
-    Callback = function() end,
-})
-```
-
-### Dropdown
-
-```lua
-section:AddDropdown({
-    Text     = "Target",
-    Options  = { "Head", "Torso", "HRP" },
-    Default  = "Head",
-    Flag     = "Target",
-    Callback = function(selected) end,
-})
-```
-
-### Textbox
-
-```lua
-section:AddTextbox({
-    Text        = "Webhook",
-    Placeholder = "https://...",
-    Default     = "",
-    Flag        = "Webhook",
-    Callback    = function(text) end,
-})
-```
-
-### Keybind
-
-```lua
-section:AddKeybind({
-    Text     = "Fly Toggle",
-    Default  = Enum.KeyCode.F,
-    Flag     = "FlyKey",
-    Callback = function(keyCode) end,
-})
-```
-
-### Label / Paragraph
-
-```lua
-section:AddLabel("Short label text")
-section:AddParagraph("Longer multi-line description that wraps.")
-```
+Default Settings includes: accent presets, transparency slider, config dropdown, save/load, auto-load toggle, minimize keybind, watermark, notifications, destroy UI.
 
 ---
 
-## Flags
+## Elements (sections)
 
-All elements with a `Flag` string store their value in `Library.Flags`.
+| Method | Notes |
+|--------|--------|
+| `:AddToggle({ Text, Default, Flag, Callback })` | Returns `{ Set, Get }` |
+| `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | |
+| `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA |
+| `:AddDropdown({ Text, Options, Default, Flag, Callback })` | |
+| `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | |
+| `:AddKeybind({ Text, Default, Flag, Callback })` | |
+| `:AddColorPicker({ Text, Default, Flag, Callback })` | Swatch + hex display |
+| `:AddLabel` / `:AddParagraph` | Wrapped text |
+
+Flags live in `Library.Flags` — use `Library:GetFlag` / `:SetFlag`.
+
+---
+
+## Lucide icons
+
+Icons load from **Footagesus Icons v2** (Lucide pack). Fallback rbxassetids if CDN fails.
 
 ```lua
-local value = Library:GetFlag("Aimbot")
-Library:SetFlag("Aimbot", true)
+Library:GetIcon("house")  -- returns rbxassetid://...
 ```
+
+Pass Lucide names into tab/section `Icon` fields: `house`, `layout`, `settings`, `user`, `eye`, `clock`, `message-circle`, `server`, `terminal`, etc.  
+Browse names: [lucide.dev/icons](https://lucide.dev/icons)
 
 ---
 
 ## Notifications
 
 ```lua
-Library:Notify("Title", "Message body", 3, "success")
--- types: "success" | "warning" | "error" | nil (accent)
+Library:Notify("Title", "Body", 3, "success") -- success | warning | error | nil
 ```
-
-Notifications slide in from the top-right.
 
 ---
 
 ## Theme
 
-Accessible via `Library.Theme` table. Key colors:
+`Library.Theme` table (edit before `CreateWindow` or via Settings presets):
 
-| Key          | Default RGB          | Usage                |
-|--------------|----------------------|----------------------|
-| Background   | 12, 12, 14           | Main window          |
-| Sidebar      | 16, 16, 18           | Left sidebar         |
-| Card         | 28, 28, 34           | Cards / panels       |
-| Accent       | 82, 190, 255         | Highlights / toggles |
-| Text         | 235, 238, 245        | Primary text         |
-| TextDim      | 140, 145, 155        | Secondary text       |
-
-Change accent at runtime through the built-in Settings tab dropdown, or by editing `Library.Theme.Accent` before creating the window.
+| Key | Role |
+|-----|------|
+| Background / Sidebar / Panel | Surfaces |
+| Accent / Accent2 | Violet / cyan |
+| Text / TextDim / TextFaint | Typography |
 
 ---
 
 ## Controls
 
-| Input            | Action                |
-|------------------|-----------------------|
-| Right Control    | Toggle UI visibility  |
-| Title bar drag   | Move window           |
-| Yellow traffic   | Minimize / restore    |
-| Red traffic      | Destroy UI            |
+| Input | Action |
+|-------|--------|
+| Right Control | Toggle UI |
+| Title bar drag | Move window |
+| Yellow traffic | Minimize |
+| Red traffic | Destroy |
 
 ---
 
-## File Structure
+## File structure
 
 ```
 CYVUI Library/
-├── Library.lua    -- Core library
-├── Example.lua    -- Full usage example
-└── DOCS.md        -- This file
+├── Library.lua   -- Core
+├── Example.lua   -- Full demo
+└── DOCS.md       -- This file
 ```
 
 ---
 
 ## Notes
 
-- Compatible with most executors (protect_gui / gethui / CoreGui fallback).
-- Home layout is fixed-position cards to match the design reference.
-- Other tabs use vertical scrolling sections.
-- Settings tab is always available via the bottom sidebar button.
-- Destroy previous instances automatically when creating a new window.
+- Home + Settings structure is **shared** across all games; only strings/stats/changelog differ.
+- Main tabs are free-form sections (toggles, sliders, dropdowns, etc.).
+- Compatible with most executors (`protect_gui` / `gethui` / CoreGui).
+- Destroy previous windows when creating a new one.
