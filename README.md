@@ -2,7 +2,6 @@
 
 ![CYVUI Library banner — anime character with CYVHUB UI preview and feature list](assets/banner.png)
 
-updated image not made yet
 ![CYVUI Changelog — latest releases](assets/changelog.png)
 
 **Full history:** [CHANGELOG.md](./CHANGELOG.md)
