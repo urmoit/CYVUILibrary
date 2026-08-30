@@ -2,10 +2,14 @@
 
 ![CYVUI Library banner — anime character with CYVHUB UI preview and feature list](assets/banner.png)
 
+![CYVUI Changelog — latest releases](assets/changelog.png)
+
+**Full history:** [CHANGELOG.md](./CHANGELOG.md)
+
 
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
 
-![Version](https://img.shields.io/badge/version-1.0.1-8b5cf6)
+![Version](https://img.shields.io/badge/version-1.0.2-8b5cf6)
 ![Luau](https://img.shields.io/badge/luau-Roblox-00a2ff)
 ![License](https://img.shields.io/badge/license-MIT-22d3ee)
 
@@ -43,7 +47,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.1",
+    Version  = "v1.0.2",
 })
 
 local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
@@ -54,7 +58,7 @@ Home:CreateHomeLayout({
     DiscordLink  = "https://discord.gg/vTe3sNTsDM",
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog    = {
-        { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign." },
+        { Version = "v1.0.2", Date = "2026-08-29", Text = "Notification redesign." },
     },
 })
 
@@ -144,23 +148,8 @@ https://discord.gg/vTe3sNTsDM
 
 ## Changelog
 
-![CYVUI Changelog — v1.0.1 and v1.0.0 release notes](assets/changelog.png)
+See **[CHANGELOG.md](./CHANGELOG.md)** for every release. The image under the banner shows the two latest versions.
 
-
-### v1.0.1 — 2026-08-29
-- Notification toasts redesigned (Success / Warning / Error cards with icons + close)
-- Badge overflow fix on Executor Active and changelog version pills
-- Example title set to `CYVUI | Example | v1.0.1`
-- New README banner artwork
-
-### v1.0.0 — 2026-08-29
-- Initial release
-- Home dashboard (profile, about, Discord, server stats, executor, custom changelog)
-- Built-in Settings (theme presets, config hooks, keybinds)
-- Widgets: toggle, slider, dropdown, textbox, keybind, color picker, button, label
-- Lucide icons (Footagesus Icons v2 + fallbacks)
-- Live theme recolor via `Library:SetTheme`
-- Flags system + notifications
 
 ## License
 

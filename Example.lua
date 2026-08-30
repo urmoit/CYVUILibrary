@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.1 — Example
+    CYVUI Library v1.0.2 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0.1",
+    Version  = "v1.0.2",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -31,6 +31,11 @@ Home:CreateHomeLayout({
     },
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
+        {
+            Version = "v1.0.2",
+            Date = "2026-08-30",
+            Text = "Working color picker, multi-select dropdown + search/All, live server stats, Home changelog cards.",
+        },
         {
             Version = "v1.0.1",
             Date = "2026-08-29",
@@ -70,6 +75,13 @@ Visuals:AddDropdown({
     Options = { "Off", "Box", "Skeleton", "Tracer" },
     Default = "Skeleton",
     Flag = "ESPMode",
+})
+Visuals:AddDropdown({
+    Text = "ESP Targets",
+    Options = { "Players", "NPCs", "Bosses", "Items", "Vehicles" },
+    Default = { "Players", "Bosses" },
+    Multi = true,
+    Flag = "ESPTargets",
 })
 Visuals:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
 Visuals:AddTextbox({ Text = "Custom Tag", Placeholder = "Enter display tag...", Flag = "CustomTag" })

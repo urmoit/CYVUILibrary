@@ -1,4 +1,4 @@
-# CYVUI Library v1.0.1 — Documentation
+# CYVUI Library v1.0.2 — Documentation
 
 Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
 **Home** and **Settings** share the same layout on every game — only content/text changes.
@@ -26,7 +26,7 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.1",
+    Version  = "v1.0.2",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -43,7 +43,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
+        { Version = "v1.0.2", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
     },
 })
 
@@ -64,7 +64,7 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Left title segment |
 | GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v1.0.1"` | Right segment |
+| Version | string | `"v1.0.2"` | Right segment |
 | Size | UDim2 | `900×560` | Window size |
 
 **Returns:** Window  
@@ -146,7 +146,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.1", Date = "2026-08-29", Text = "Auto farm stability." },
+        { Version = "v1.0.2", Date = "2026-08-29", Text = "Auto farm stability." },
         { Version = "v1.0.0", Date = "2026-08-20", Text = "Initial game release." },
     },
 })
@@ -205,7 +205,8 @@ Default Settings (if you only use the built-in tab) includes: accent presets, tr
 | `:AddToggle({ Text, Default, Flag, Callback })` | Returns `{ Set, Get }` |
 | `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | |
 | `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA |
-| `:AddDropdown({ Text, Options, Default, Flag, Callback })` | |
+| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | `Multi = true` enables multi-select + **All** toggle; search is always shown when open |
+| `:AddColorPicker({ Text, Default, Flag, Callback })` | Working HSV picker (sat/val square + hue bar) |
 | `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | |
 | `:AddKeybind({ Text, Default, Flag, Callback })` | |
 | `:AddColorPicker({ Text, Default, Flag, Callback })` | Swatch + hex |
@@ -383,7 +384,7 @@ Home:CreateHomeLayout({
     AboutText = "Demo hub using CYVUI.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     Changelog = {
-        { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign." },
+        { Version = "v1.0.2", Date = "2026-08-29", Text = "Notification redesign." },
     },
 })
 
