@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.2 — Example
+    CYVUI Library v1.0.3 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0.2",
+    Version  = "v1.0.3",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -32,19 +32,19 @@ Home:CreateHomeLayout({
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
         {
-            Version = "v1.0.2",
+            Version = "v1.0.3",
             Date = "2026-08-30",
-            Text = "Working color picker, multi-select dropdown + search/All, live server stats, Home changelog cards.",
+            Text = "Popup color picker, CreateRow two-column layouts, improved Home changelog.",
         },
         {
-            Version = "v1.0.1",
-            Date = "2026-08-29",
-            Text = "Notification redesign (success / warning / error toasts), badge overflow fix, banner update.",
+            Version = "v1.0.2",
+            Date = "2026-08-30",
+            Text = "Multi-select dropdown + search/All, live server stats.",
         },
         {
             Version = "v1.0.0",
             Date = "2026-08-29",
-            Text = "Initial CYVUI release — dashboard Home, Lucide icons, Settings themes, custom changelogs.",
+            Text = "Initial CYVUI release.",
         },
     },
 })
@@ -54,7 +54,17 @@ Home:CreateHomeLayout({
 -- ═══════════════════════════════════════════
 local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
 
-local Player = Main:CreateSection("Player", { Icon = "user" })
+-- Two-column layout example
+local row = Main:CreateRow()
+local Left = row:Section("Player", { Icon = "user" })
+local Right = row:Section("Visuals", { Icon = "eye" })
+
+Left:AddToggle({ Text = "Infinite Jump", Flag = "InfJump" })
+Left:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
+Right:AddToggle({ Text = "ESP", Flag = "ESP" })
+Right:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
+
+local Player = Main:CreateSection("Player (full width)", { Icon = "user" })
 Player:AddToggle({ Text = "Infinite Jump", Default = false, Flag = "InfJump" })
 Player:AddToggle({ Text = "No Clip", Default = false, Flag = "NoClip" })
 Player:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })

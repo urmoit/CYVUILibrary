@@ -1,20 +1,10 @@
 # CYVUI Changelog
 
-Full release history. The README banner image only highlights the latest two versions.
+Full release history. The README image only highlights the latest two versions.
 
 ---
 
-## v1.0.2 — 2026-08-30
-
-- **Working color picker** — HSV saturation/value panel + hue bar, live hex, open from swatch
-- **Dropdown upgrade**
-  - Search field when open
-  - `Multi = true` for multi-select
-  - **All** toggle selects/deselects every option
-- **Live server stats** on Home — Players, session uptime, real server ping
-- **Home changelog cards** — version pills, Latest badge, per-entry cards
-- Settings save/load no longer error when callbacks are missing
-- UI transparency slider applies soft panel opacity
+## here is the new
 
 ## v1.0.1 — 2026-08-29
 

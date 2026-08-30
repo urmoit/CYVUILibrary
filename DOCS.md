@@ -1,4 +1,4 @@
-# CYVUI Library v1.0.2 — Documentation
+# CYVUI Library v1.0.3 — Documentation
 
 Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
 **Home** and **Settings** share the same layout on every game — only content/text changes.
@@ -26,7 +26,7 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.2",
+    Version  = "v1.0.3",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -43,7 +43,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.2", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
+        { Version = "v1.0.3", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
     },
 })
 
@@ -64,7 +64,7 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Left title segment |
 | GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v1.0.2"` | Right segment |
+| Version | string | `"v1.0.3"` | Right segment |
 | Size | UDim2 | `900×560` | Window size |
 
 **Returns:** Window  
@@ -94,7 +94,10 @@ Window:SetTitle("CYVHUB", "Rivals", "v1.2")
 
 | Method | Description |
 |--------|-------------|
-| `:CreateSection(name, { Icon = "..." })` | Widget card with header + Lucide icon |
+| `:CreateSection(name, { Icon = "..." })` | Full-width widget card |
+| `:CreateRow()` | Horizontal row for two-column layouts |
+| `row:Section(name, { Icon })` | Half-width section inside a row |
+| `:CreateGrid(columns?)` | Multi-column grid of sections |
 | `:CreateHomeLayout(config)` | Fixed Home dashboard |
 | `:CreateSettingsLayout(config)` | Standard Settings blocks |
 
@@ -146,7 +149,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.2", Date = "2026-08-29", Text = "Auto farm stability." },
+        { Version = "v1.0.3", Date = "2026-08-29", Text = "Auto farm stability." },
         { Version = "v1.0.0", Date = "2026-08-20", Text = "Initial game release." },
     },
 })
@@ -384,7 +387,7 @@ Home:CreateHomeLayout({
     AboutText = "Demo hub using CYVUI.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     Changelog = {
-        { Version = "v1.0.2", Date = "2026-08-29", Text = "Notification redesign." },
+        { Version = "v1.0.3", Date = "2026-08-29", Text = "Notification redesign." },
     },
 })
 
@@ -421,3 +424,23 @@ CYVUI/
 - Compatible with most executors (`protect_gui` / `gethui` / CoreGui).
 - Creating a new window destroys the previous one.
 - Discord invite used in examples: `https://discord.gg/vTe3sNTsDM`
+
+
+---
+
+## Two-column layouts
+
+```lua
+local row = Main:CreateRow()
+local Left = row:Section("Auto Clean", { Icon = "trash" })
+local Right = row:Section("Visuals", { Icon = "eye" })
+
+Left:AddToggle({ Text = "Auto Collect", Flag = "AutoCollect" })
+Right:AddColorPicker({ Text = "Paper Color", Default = Color3.fromRGB(168, 85, 247), Flag = "PaperColor" })
+```
+
+Full-width sections still use:
+
+```lua
+local Full = Main:CreateSection("General", { Icon = "settings" })
+```

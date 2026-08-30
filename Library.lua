@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.2
+    CYVUI Library v1.0.3
     Dark modern Roblox UI — dashboard mockup style
     Home + Main widgets + Settings consistent across hubs
     Lucide icons via Footagesus Icons v2
@@ -16,7 +16,7 @@ local TextService      = game:GetService("TextService")
 local LocalPlayer = Players.LocalPlayer
 
 local Library = {
-    Version     = "1.0.2",
+    Version     = "1.0.3",
     Name        = "CYVUI",
     Windows     = {},
     Flags       = {},
@@ -462,7 +462,7 @@ function Library:CreateWindow(config)
     config = config or {}
     local title    = config.Title or "CYVHUB"
     local gameName = config.GameName or "game name"
-    local version  = config.Version or "v1.0.2"
+    local version  = config.Version or "v1.0.3"
     local size     = config.Size or UDim2.new(0, 900, 0, 560)
 
     for _, old in ipairs(self.Windows) do
@@ -699,13 +699,37 @@ function Library:CreateWindow(config)
         if isHome then window.CurrentTab = tab end
 
         -- ── Section (widget card) ──
+        -- Two-column row: Tab:CreateRow() then pass row as parent via opts.Parent or use row:Section
+        function tab:CreateRow()
+            local row = create("Frame", {
+                Name = "Row", BackgroundTransparency = 1,
+                Size = UDim2.new(1, -4, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
+                LayoutOrder = #tab.Sections + 1, Parent = page,
+            })
+            local rl = Instance.new("UIListLayout")
+            rl.FillDirection = Enum.FillDirection.Horizontal
+            rl.Padding = UDim.new(0, 12)
+            rl.SortOrder = Enum.SortOrder.LayoutOrder
+            rl.Parent = row
+            local rowObj = { Frame = row, _count = 0 }
+            function rowObj:Section(sectionName, opts)
+                opts = opts or {}
+                opts.Parent = row
+                opts.Side = true
+                return tab:CreateSection(sectionName, opts)
+            end
+            return rowObj
+        end
+
         function tab:CreateSection(sectionName, opts)
             opts = opts or {}
+            local parent = opts.Parent or page
+            local side = opts.Side == true
             local section = create("Frame", {
                 Name = sectionName or "Section", BackgroundColor3 = T.Panel,
-                Size = UDim2.new(opts.FullWidth and 1 or 1, opts.FullWidth and -4 or -4, 0, 0),
+                Size = side and UDim2.new(0.5, -8, 0, 0) or UDim2.new(1, -4, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y, BorderSizePixel = 0,
-                LayoutOrder = #tab.Sections + 1, Parent = page,
+                LayoutOrder = #tab.Sections + 1, Parent = parent,
             })
             corner(section, 14)
             stroke(section, T.Border, 1, 0.55)
@@ -1228,43 +1252,6 @@ function Library:CreateWindow(config)
                 if flag then Library.Flags[flag] = default end
                 local current = default
 
-                local wrap = create("Frame", {
-                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
-                    LayoutOrder = nextOrder(), Parent = section,
-                })
-                listLayout(wrap, 6)
-
-                local row = create("Frame", {
-                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28), LayoutOrder = 0, Parent = wrap,
-                })
-                create("TextLabel", {
-                    BackgroundTransparency = 1, Size = UDim2.new(1, -100, 1, 0),
-                    Font = Enum.Font.Gotham, Text = cfg.Text or "Color", TextColor3 = T.TextDim, TextSize = 12,
-                    TextXAlignment = Enum.TextXAlignment.Left, Parent = row,
-                })
-                local swatch = create("TextButton", {
-                    BackgroundColor3 = current, Size = UDim2.new(0, 22, 0, 22),
-                    Position = UDim2.new(1, -90, 0.5, -11), Text = "", AutoButtonColor = false, Parent = row,
-                })
-                corner(swatch, 6)
-                stroke(swatch, T.Border, 1, 0.3)
-                local hex = create("TextLabel", {
-                    BackgroundTransparency = 1, Size = UDim2.new(0, 64, 1, 0), Position = UDim2.new(1, -64, 0, 0),
-                    Font = Enum.Font.Code,
-                    Text = string.format("#%02X%02X%02X", math.floor(current.R * 255 + 0.5), math.floor(current.G * 255 + 0.5), math.floor(current.B * 255 + 0.5)),
-                    TextColor3 = T.TextDim, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left, Parent = row,
-                })
-
-                local panelOpen = false
-                local panel = create("Frame", {
-                    BackgroundColor3 = Color3.fromRGB(22, 22, 28), Size = UDim2.new(1, 0, 0, 0),
-                    Visible = false, ClipsDescendants = true, LayoutOrder = 1, Parent = wrap,
-                })
-                corner(panel, 10)
-                stroke(panel, T.Border, 1, 0.3)
-                padding(panel, 8, 8, 8, 8)
-                listLayout(panel, 8)
-
                 local function hsvToRgb(h, s, v)
                     local i = math.floor(h * 6)
                     local f = h * 6 - i
@@ -1281,11 +1268,9 @@ function Library:CreateWindow(config)
                     else r, g, b = v, p, q end
                     return Color3.new(r, g, b)
                 end
-
                 local function rgbToHsv(c)
                     local r, g, b = c.R, c.G, c.B
-                    local maxc = math.max(r, g, b)
-                    local minc = math.min(r, g, b)
+                    local maxc, minc = math.max(r, g, b), math.min(r, g, b)
                     local d = maxc - minc
                     local h = 0
                     if d ~= 0 then
@@ -1297,51 +1282,88 @@ function Library:CreateWindow(config)
                     local s = maxc == 0 and 0 or d / maxc
                     return h, s, maxc
                 end
+                local function toHex(c)
+                    return string.format("#%02X%02X%02X", math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5))
+                end
 
                 local h, s, v = rgbToHsv(current)
 
+                local row = create("Frame", {
+                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 28), LayoutOrder = nextOrder(), Parent = section,
+                })
+                create("TextLabel", {
+                    BackgroundTransparency = 1, Size = UDim2.new(1, -110, 1, 0),
+                    Font = Enum.Font.Gotham, Text = cfg.Text or "Color", TextColor3 = T.TextDim, TextSize = 12,
+                    TextXAlignment = Enum.TextXAlignment.Left, Parent = row,
+                })
+                local trigger = create("TextButton", {
+                    BackgroundColor3 = T.Input, Size = UDim2.new(0, 100, 0, 26),
+                    Position = UDim2.new(1, -100, 0.5, -13), Text = "", AutoButtonColor = false, Parent = row,
+                })
+                corner(trigger, 8)
+                stroke(trigger, T.Border, 1, 0.35)
+                local swatch = create("Frame", {
+                    BackgroundColor3 = current, Size = UDim2.new(0, 16, 0, 16),
+                    Position = UDim2.new(0, 8, 0.5, -8), Parent = trigger,
+                })
+                corner(swatch, 4)
+                local hexLbl = create("TextLabel", {
+                    BackgroundTransparency = 1, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 28, 0, 0),
+                    Font = Enum.Font.Code, Text = toHex(current), TextColor3 = T.Text, TextSize = 11,
+                    TextXAlignment = Enum.TextXAlignment.Left, Parent = trigger,
+                })
+                local chev = iconImage(trigger, "chevron-down", 12, T.TextFaint)
+                chev.Position = UDim2.new(1, -16, 0.5, -6)
+
+                -- Popup (parented to ScreenGui layer via window later; use section ancestor for z)
+                local popup = create("Frame", {
+                    BackgroundColor3 = Color3.fromRGB(20, 20, 28), Size = UDim2.new(0, 220, 0, 250),
+                    Visible = false, ZIndex = 100, Parent = section,
+                })
+                corner(popup, 12)
+                stroke(popup, T.Border, 1, 0.25)
+                padding(popup, 10, 10, 10, 10)
+
+                local function positionPopup()
+                    local abs = trigger.AbsolutePosition
+                    local size = trigger.AbsoluteSize
+                    local parentAbs = section.AbsolutePosition
+                    popup.Position = UDim2.new(0, math.clamp(abs.X - parentAbs.X + size.X - 220, 0, 400), 0, abs.Y - parentAbs.Y + size.Y + 6)
+                end
+
                 local satBox = create("Frame", {
-                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(1, 0, 0, 90), Parent = panel,
+                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(1, -22, 0, 140), Position = UDim2.new(0, 0, 0, 0), ZIndex = 101, Parent = popup,
                 })
                 corner(satBox, 8)
-                local satImg = create("Frame", {
-                    BackgroundColor3 = hsvToRgb(h, 1, 1), Size = UDim2.new(1, 0, 1, 0), BorderSizePixel = 0, Parent = satBox,
+                local satFill = create("Frame", {
+                    BackgroundColor3 = hsvToRgb(h, 1, 1), Size = UDim2.new(1, 0, 1, 0), BorderSizePixel = 0, ZIndex = 101, Parent = satBox,
                 })
-                corner(satImg, 8)
+                corner(satFill, 8)
                 local whiteGrad = Instance.new("UIGradient")
-                whiteGrad.Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-                    ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1)),
-                })
-                whiteGrad.Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 0),
-                    NumberSequenceKeypoint.new(1, 1),
-                })
-                whiteGrad.Parent = satImg
+                whiteGrad.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1) })
+                whiteGrad.Parent = satFill
                 local blackOverlay = create("Frame", {
-                    BackgroundColor3 = Color3.new(0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BorderSizePixel = 0, Parent = satBox,
+                    BackgroundColor3 = Color3.new(0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BorderSizePixel = 0, ZIndex = 102, Parent = satBox,
                 })
                 corner(blackOverlay, 8)
                 local blackGrad = Instance.new("UIGradient")
                 blackGrad.Rotation = 90
-                blackGrad.Transparency = NumberSequence.new({
-                    NumberSequenceKeypoint.new(0, 1),
-                    NumberSequenceKeypoint.new(1, 0),
-                })
+                blackGrad.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0) })
                 blackGrad.Parent = blackOverlay
-
                 local cursor = create("Frame", {
-                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 10, 0, 10),
-                    Position = UDim2.new(s, -5, 1 - v, -5), ZIndex = 5, Parent = satBox,
+                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 12, 0, 12),
+                    Position = UDim2.new(s, -6, 1 - v, -6), ZIndex = 103, Parent = satBox,
                 })
-                corner(cursor, 5)
+                corner(cursor, 6)
                 stroke(cursor, Color3.new(0, 0, 0), 1, 0)
 
                 local hueBar = create("Frame", {
-                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(1, 0, 0, 14), Parent = panel,
+                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 14, 0, 140),
+                    Position = UDim2.new(1, -14, 0, 0), ZIndex = 101, Parent = popup,
                 })
                 corner(hueBar, 6)
                 local hueGrad = Instance.new("UIGradient")
+                hueGrad.Rotation = 90
                 hueGrad.Color = ColorSequence.new({
                     ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
                     ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
@@ -1353,20 +1375,42 @@ function Library:CreateWindow(config)
                 })
                 hueGrad.Parent = hueBar
                 local hueCursor = create("Frame", {
-                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 4, 1, 4),
-                    Position = UDim2.new(h, -2, 0, -2), ZIndex = 5, Parent = hueBar,
+                    BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(1, 4, 0, 4),
+                    Position = UDim2.new(0, -2, h, -2), ZIndex = 103, Parent = hueBar,
                 })
                 corner(hueCursor, 2)
                 stroke(hueCursor, Color3.new(0, 0, 0), 1, 0)
 
+                local hsvLbl = create("TextLabel", {
+                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 0, 148),
+                    Font = Enum.Font.GothamBold, Text = "HSV", TextColor3 = T.TextFaint, TextSize = 11,
+                    TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101, Parent = popup,
+                })
+                local hsvVals = create("TextLabel", {
+                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 0, 166),
+                    Font = Enum.Font.Code, Text = "", TextColor3 = T.TextDim, TextSize = 11,
+                    TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101, Parent = popup,
+                })
+                local hexRow = create("TextBox", {
+                    BackgroundColor3 = T.Input, Size = UDim2.new(1, 0, 0, 28), Position = UDim2.new(0, 0, 0, 190),
+                    Text = toHex(current), Font = Enum.Font.Code, TextColor3 = T.Text, TextSize = 12,
+                    ClearTextOnFocus = false, ZIndex = 101, Parent = popup,
+                })
+                corner(hexRow, 8)
+                stroke(hexRow, T.Border, 1, 0.35)
+                padding(hexRow, 0, 0, 10, 10)
+
                 local function applyColor(fire)
                     current = hsvToRgb(h, s, v)
                     swatch.BackgroundColor3 = current
-                    satImg.BackgroundColor3 = hsvToRgb(h, 1, 1)
-                    hex.Text = string.format("#%02X%02X%02X", math.floor(current.R * 255 + 0.5), math.floor(current.G * 255 + 0.5), math.floor(current.B * 255 + 0.5))
+                    satFill.BackgroundColor3 = hsvToRgb(h, 1, 1)
+                    hexLbl.Text = toHex(current)
+                    hexRow.Text = toHex(current)
+                    hsvVals.Text = string.format("H %d  S %d  V %d", math.floor(h * 360 + 0.5), math.floor(s * 100 + 0.5), math.floor(v * 100 + 0.5))
                     if flag then Library.Flags[flag] = current end
                     if fire and cfg.Callback then pcall(cfg.Callback, current) end
                 end
+                applyColor(false)
 
                 local draggingSV, draggingH = false, false
                 satBox.InputBegan:Connect(function(input)
@@ -1376,10 +1420,7 @@ function Library:CreateWindow(config)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingH = true end
                 end)
                 UserInputService.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        draggingSV = false
-                        draggingH = false
-                    end
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingSV, draggingH = false, false end
                 end)
                 UserInputService.InputChanged:Connect(function(input)
                     if input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
@@ -1387,30 +1428,60 @@ function Library:CreateWindow(config)
                         local relX = math.clamp((input.Position.X - satBox.AbsolutePosition.X) / math.max(satBox.AbsoluteSize.X, 1), 0, 1)
                         local relY = math.clamp((input.Position.Y - satBox.AbsolutePosition.Y) / math.max(satBox.AbsoluteSize.Y, 1), 0, 1)
                         s, v = relX, 1 - relY
-                        cursor.Position = UDim2.new(s, -5, 1 - v, -5)
+                        cursor.Position = UDim2.new(s, -6, 1 - v, -6)
                         applyColor(true)
                     elseif draggingH then
-                        local relX = math.clamp((input.Position.X - hueBar.AbsolutePosition.X) / math.max(hueBar.AbsoluteSize.X, 1), 0, 1)
-                        h = relX
-                        hueCursor.Position = UDim2.new(h, -2, 0, -2)
+                        local relY = math.clamp((input.Position.Y - hueBar.AbsolutePosition.Y) / math.max(hueBar.AbsoluteSize.Y, 1), 0, 1)
+                        h = relY
+                        hueCursor.Position = UDim2.new(0, -2, h, -2)
                         applyColor(true)
                     end
                 end)
-
-                swatch.MouseButton1Click:Connect(function()
-                    panelOpen = not panelOpen
-                    panel.Visible = panelOpen
-                    panel.Size = panelOpen and UDim2.new(1, 0, 0, 130) or UDim2.new(1, 0, 0, 0)
+                hexRow.FocusLost:Connect(function()
+                    local hex = hexRow.Text:gsub("#", "")
+                    if #hex == 6 then
+                        local r = tonumber(hex:sub(1, 2), 16)
+                        local g = tonumber(hex:sub(3, 4), 16)
+                        local b = tonumber(hex:sub(5, 6), 16)
+                        if r and g and b then
+                            current = Color3.fromRGB(r, g, b)
+                            h, s, v = rgbToHsv(current)
+                            cursor.Position = UDim2.new(s, -6, 1 - v, -6)
+                            hueCursor.Position = UDim2.new(0, -2, h, -2)
+                            applyColor(true)
+                        end
+                    end
                 end)
 
-                table.insert(sec.Elements, wrap)
+                local open = false
+                trigger.MouseButton1Click:Connect(function()
+                    open = not open
+                    if open then positionPopup() end
+                    popup.Visible = open
+                end)
+                UserInputService.InputBegan:Connect(function(input)
+                    if not open then return end
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        local p = input.Position
+                        local pa, ps = popup.AbsolutePosition, popup.AbsoluteSize
+                        local ta, ts = trigger.AbsolutePosition, trigger.AbsoluteSize
+                        local inPopup = p.X >= pa.X and p.X <= pa.X + ps.X and p.Y >= pa.Y and p.Y <= pa.Y + ps.Y
+                        local inTrig = p.X >= ta.X and p.X <= ta.X + ts.X and p.Y >= ta.Y and p.Y <= ta.Y + ts.Y
+                        if not inPopup and not inTrig then
+                            open = false
+                            popup.Visible = false
+                        end
+                    end
+                end)
+
+                table.insert(sec.Elements, row)
                 return {
-                    Frame = wrap,
+                    Frame = row,
                     Set = function(_, c)
                         current = c
                         h, s, v = rgbToHsv(c)
-                        cursor.Position = UDim2.new(s, -5, 1 - v, -5)
-                        hueCursor.Position = UDim2.new(h, -2, 0, -2)
+                        cursor.Position = UDim2.new(s, -6, 1 - v, -6)
+                        hueCursor.Position = UDim2.new(0, -2, h, -2)
                         applyColor(true)
                     end,
                     Get = function() return current end,
@@ -1422,62 +1493,29 @@ function Library:CreateWindow(config)
         end
 
         -- Two-column grid helper for Main/Settings style
-        function tab:CreateGrid()
+        function tab:CreateGrid(columns)
+            columns = columns or 2
             local grid = create("Frame", {
                 BackgroundTransparency = 1, Size = UDim2.new(1, -4, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = #tab.Sections + 1, Parent = page,
             })
             local gl = Instance.new("UIGridLayout")
-            gl.CellSize = UDim2.new(0.5, -8, 0, 0)
-            gl.CellPadding = UDim2.new(0, 14, 0, 14)
+            gl.CellSize = UDim2.new(1 / columns, -10, 0, 200)
+            gl.CellPadding = UDim2.new(0, 12, 0, 12)
             gl.SortOrder = Enum.SortOrder.LayoutOrder
-            gl.FillDirectionMaxCells = 2
+            gl.FillDirectionMaxCells = columns
             gl.Parent = grid
-            -- Auto height cells via sections parented into grid frames
-            local gridObj = { Frame = grid, Columns = {} }
+            local gridObj = { Frame = grid }
 
-            function gridObj:AddColumn()
-                local col = create("Frame", {
-                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0),
-                    AutomaticSize = Enum.AutomaticSize.Y, Parent = grid,
-                })
-                listLayout(col, 14)
-                table.insert(gridObj.Columns, col)
-                return col
-            end
-
-            -- CreateSection that parents into a column frame
-            function gridObj:CreateSection(parentCol, sectionName, opts)
+            function gridObj:Section(sectionName, opts)
                 opts = opts or {}
-                local section = create("Frame", {
-                    Name = sectionName or "Section", BackgroundColor3 = T.Panel,
-                    Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
-                    BorderSizePixel = 0, Parent = parentCol,
-                })
-                corner(section, 14)
-                stroke(section, T.Border, 1, 0.55)
-                padding(section, 16, 16, 18, 18)
-                listLayout(section, 12)
-                local header = create("Frame", {
-                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), LayoutOrder = 0, Parent = section,
-                })
-                if opts.Icon then
-                    local hi = iconImage(header, opts.Icon, 15, T.Accent2)
-                    hi.Position = UDim2.new(0, 0, 0.5, -7)
-                end
-                create("TextLabel", {
-                    BackgroundTransparency = 1, Position = UDim2.new(0, opts.Icon and 22 or 0, 0, 0),
-                    Size = UDim2.new(1, opts.Icon and -22 or 0, 1, 0),
-                    Font = Enum.Font.GothamBold, Text = sectionName or "Section",
-                    TextColor3 = T.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Parent = header,
-                })
-                -- Reuse element methods by attaching a thin proxy to tab:CreateSection logic is heavy;
-                -- instead return a section-like with same API via metatable to tab.CreateSection internal
-                local fakeTab = { Sections = {}, Page = parentCol }
-                -- Simpler: call tab:CreateSection then reparent
-                return nil
+                opts.Parent = grid
+                opts.Side = true
+                opts.Grid = true
+                local sec = tab:CreateSection(sectionName, opts)
+                -- stretch cell height with content: approximate via AbsoluteSize listener
+                return sec
             end
-
             return gridObj
         end
 
@@ -1696,7 +1734,7 @@ function Library:CreateWindow(config)
             -- Changelog
             local changeCard = create("Frame", {
                 Name = "Changelog", BackgroundColor3 = T.Panel,
-                Size = UDim2.new(1, -8, 0, 240), Position = UDim2.new(0, 0, 0, 220),
+                Size = UDim2.new(1, -8, 0, 250), Position = UDim2.new(0, 0, 0, 220),
                 ClipsDescendants = true, Parent = page,
             })
             corner(changeCard, 14)
@@ -1713,14 +1751,15 @@ function Library:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left, Parent = chHeader,
             })
             local entries = homeConfig.Changelog or {
-                { Version = "v1.0.2", Date = "2026-08-30", Text = "Working color picker, multi-select dropdown + search/All, live server stats, Home changelog cards." },
-                { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign (success/warning/error), badge overflow fix, new banner." },
+                { Version = "v1.0.3", Date = "2026-08-30", Text = "Popup color picker, CreateRow two-column layouts, improved Home changelog cards." },
+                { Version = "v1.0.2", Date = "2026-08-30", Text = "Working color picker, multi-select dropdown + search/All, live server stats." },
+                { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign, badge overflow fix, new banner." },
                 { Version = "v1.0.0", Date = "2026-08-29", Text = "Initial CYVUI release — dashboard Home, Lucide icons, Settings themes." },
             }
             if entries[1] then
                 local latest = create("TextLabel", {
                     BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 52, 0, 18),
-                    Position = UDim2.new(1, -52, 0, 2), Text = entries[1].Version or "v1.0.2",
+                    Position = UDim2.new(1, -52, 0, 2), Text = entries[1].Version or "v1.0.3",
                     Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 10, Parent = chHeader,
                 })
                 corner(latest, 8)
