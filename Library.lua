@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.4
+    CYVUI Library v1.0.5
     Dark modern Roblox UI — dashboard mockup style
     Home + Main widgets + Settings consistent across hubs
     Lucide icons via Footagesus Icons v2
@@ -16,7 +16,7 @@ local TextService      = game:GetService("TextService")
 local LocalPlayer = Players.LocalPlayer
 
 local Library = {
-    Version     = "1.0.4",
+    Version     = "1.0.5",
     Name        = "CYVUI",
     Windows     = {},
     Flags       = {},
@@ -215,15 +215,25 @@ local function makeDraggable(frame, handle)
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
         end
     end)
-    handle.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+    -- Track outside the handle so fast mouse movement never interrupts the drag.
+    -- RenderStepped samples the cursor directly instead of relying only on MouseMovement events.
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.Touch then
             local d = input.Position - dragStart
             frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+        end
+    end)
+    RunService.RenderStepped:Connect(function()
+        if not dragging then return end
+        local mouse = UserInputService:GetMouseLocation()
+        local d = mouse - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
         end
     end)
 end
@@ -250,6 +260,20 @@ local function animateButton(button, defaultBg, hoverBg)
     button.MouseButton1Up:Connect(function()
         tween(scale, { Scale = 1.03 }, 0.12)
     end)
+end
+
+-- Click binding that works for mouse and touch without double firing
+-- (MouseButton1Click and Activated can both fire for a single touch)
+local function bindClick(button, fn)
+    local last = 0
+    local function fire()
+        local now = os.clock()
+        if now - last < 0.1 then return end
+        last = now
+        fn()
+    end
+    button.MouseButton1Click:Connect(fire)
+    button.Activated:Connect(fire)
 end
 
 local function iconImage(parent, name, size, color, themeKey)
@@ -305,6 +329,9 @@ function Library:Notify(title, message, duration, notifType)
         },
     }
     local style = styles[notifType] or styles.info
+    -- Theme-aware: derive the tinted background from the (possibly re-themed) accent color
+    local accent = style.accent
+    style.bg = Color3.new(0.05 + accent.R * 0.10, 0.05 + accent.G * 0.10, 0.06 + accent.B * 0.10)
     local displayTitle = title or style.title
 
     if not self._NotifyHolder or not self._NotifyHolder.Parent then
@@ -319,8 +346,8 @@ function Library:Notify(title, message, duration, notifType)
         local list = create("Frame", {
             Name = "List",
             BackgroundTransparency = 1,
-            Size = UDim2.new(0, 340, 0, 420),
-            Position = UDim2.new(1, -360, 0, 18),
+            Size = UDim2.new(0, 348, 0, 420),
+            Position = UDim2.new(1, -364, 0, 18),
             Parent = holder,
         })
         local lay = listLayout(list, 10)
@@ -342,60 +369,68 @@ function Library:Notify(title, message, duration, notifType)
 
     local card = create("Frame", {
         BackgroundColor3 = style.bg,
-        Size = UDim2.new(0, 300, 0, 72),
+        Size = UDim2.new(0, 320, 0, 0),
+        AutomaticSize = Enum.AutomaticSize.Y,
         ClipsDescendants = true,
         Parent = self._NotifyList,
     })
     corner(card, 14)
     local cardStroke = stroke(card, style.border, 1.5, 0.15)
+    local cardScale = Instance.new("UIScale")
+    cardScale.Parent = card
+    padding(card, 0, 12, 0, 0)
 
-    -- Left accent glow bar
+    -- Left accent strip
     local bar = create("Frame", {
         BackgroundColor3 = style.accent,
-        Size = UDim2.new(0, 3, 1, 0),
+        Size = UDim2.new(0, 4, 1, 0),
         BorderSizePixel = 0,
+        ZIndex = 2,
         Parent = card,
     })
     corner(bar, 2)
 
-    -- Icon circle
+    -- Circular status icon
     local iconWrap = create("Frame", {
         BackgroundColor3 = style.accent,
         BackgroundTransparency = 0.85,
-        Size = UDim2.new(0, 28, 0, 28),
-        Position = UDim2.new(0, 14, 0.5, -14),
+        Size = UDim2.new(0, 32, 0, 32),
+        Position = UDim2.new(0, 14, 0, 14),
         Parent = card,
     })
-    corner(iconWrap, 14)
+    corner(iconWrap, 16)
     local iconStroke = stroke(iconWrap, style.accent, 1, 0.35)
     local iconImg = create("ImageLabel", {
         BackgroundTransparency = 1,
-        Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(0.5, -8, 0.5, -8),
+        Size = UDim2.new(0, 18, 0, 18),
+        Position = UDim2.new(0.5, -9, 0.5, -9),
         Image = Library:GetIcon(style.icon),
         ImageColor3 = style.accent,
         ScaleType = Enum.ScaleType.Fit,
+        ZIndex = 2,
         Parent = iconWrap,
     })
 
     local titleLbl = create("TextLabel", {
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 52, 0, 12),
-        Size = UDim2.new(1, -88, 0, 18),
+        Position = UDim2.new(0, 56, 0, 12),
+        Size = UDim2.new(1, -118, 0, 18),
         Font = Enum.Font.GothamBold,
         Text = displayTitle,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd,
         Parent = card,
     })
     local msgLbl = create("TextLabel", {
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 52, 0, 32),
-        Size = UDim2.new(1, -88, 0, 28),
+        Position = UDim2.new(0, 56, 0, 32),
+        Size = UDim2.new(1, -118, 0, 0),
+        AutomaticSize = Enum.AutomaticSize.Y,
         Font = Enum.Font.Gotham,
         Text = message or "",
-        TextColor3 = Color3.fromRGB(200, 200, 210),
+        TextColor3 = Color3.fromRGB(205, 205, 214),
         TextSize = 12,
         TextWrapped = true,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -407,7 +442,7 @@ function Library:Notify(title, message, duration, notifType)
     local closeBtn = create("TextButton", {
         BackgroundTransparency = 1,
         Size = UDim2.new(0, 22, 0, 22),
-        Position = UDim2.new(1, -28, 0, 8),
+        Position = UDim2.new(1, -30, 0, 10),
         Text = "",
         AutoButtonColor = false,
         Parent = card,
@@ -422,19 +457,24 @@ function Library:Notify(title, message, duration, notifType)
         Parent = closeBtn,
     })
 
+    local dismissing = false
     local function dismiss()
-        if not card or not card.Parent then return end
+        if dismissing or not card or not card.Parent then return end
+        dismissing = true
+        tween(cardScale, { Scale = 0.92 }, 0.18)
         tween(card, { BackgroundTransparency = 1 }, 0.18)
         tween(titleLbl, { TextTransparency = 1 }, 0.18)
         tween(msgLbl, { TextTransparency = 1 }, 0.18)
         tween(cardStroke, { Transparency = 1 }, 0.18)
+        tween(iconWrap, { BackgroundTransparency = 1 }, 0.18)
+        tween(iconStroke, { Transparency = 1 }, 0.18)
         tween(iconImg, { ImageTransparency = 1 }, 0.18)
         tween(closeIcon, { ImageTransparency = 1 }, 0.18)
         task.delay(0.2, function()
             if card and card.Parent then card:Destroy() end
         end)
     end
-    closeBtn.MouseButton1Click:Connect(dismiss)
+    bindClick(closeBtn, dismiss)
     closeBtn.MouseEnter:Connect(function()
         closeIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
     end)
@@ -442,16 +482,22 @@ function Library:Notify(title, message, duration, notifType)
         closeIcon.ImageColor3 = Color3.fromRGB(160, 160, 170)
     end)
 
-    -- Enter animation
+    -- Enter animation: fade + smooth pop
     card.BackgroundTransparency = 1
     titleLbl.TextTransparency = 1
     msgLbl.TextTransparency = 1
     cardStroke.Transparency = 1
+    iconWrap.BackgroundTransparency = 1
+    iconStroke.Transparency = 1
     iconImg.ImageTransparency = 1
+    cardScale.Scale = 0.92
+    tween(cardScale, { Scale = 1 }, 0.22, Enum.EasingStyle.Back)
     tween(card, { BackgroundTransparency = 0 }, 0.2)
     tween(titleLbl, { TextTransparency = 0 }, 0.2)
     tween(msgLbl, { TextTransparency = 0 }, 0.2)
     tween(cardStroke, { Transparency = 0.15 }, 0.2)
+    tween(iconWrap, { BackgroundTransparency = 0.85 }, 0.2)
+    tween(iconStroke, { Transparency = 0.35 }, 0.2)
     tween(iconImg, { ImageTransparency = 0 }, 0.2)
 
     task.delay(duration, dismiss)
@@ -462,7 +508,7 @@ function Library:CreateWindow(config)
     config = config or {}
     local title    = config.Title or "CYVHUB"
     local gameName = config.GameName or "game name"
-    local version  = config.Version or "v1.0.4"
+    local version  = config.Version or "v1.0.5"
     local size     = config.Size or UDim2.new(0, 900, 0, 560)
 
     for _, old in ipairs(self.Windows) do
@@ -687,7 +733,7 @@ function Library:CreateWindow(config)
             window.CurrentTab = tab
         end
 
-        tabBtn.MouseButton1Click:Connect(selectTab)
+        bindClick(tabBtn, selectTab)
         if not isSettings then
             tabBtn.MouseEnter:Connect(function()
                 if window.CurrentTab ~= tab then tween(tabBtn, { BackgroundTransparency = 0.7 }, 0.12) end
@@ -832,7 +878,8 @@ function Library:CreateWindow(config)
                         return state and T.ToggleOn or T.ToggleOff
                     end,
                 })
-                create("TextButton", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Text = "", Parent = row }).MouseButton1Click:Connect(function()
+                local toggleHit = create("TextButton", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), Text = "", Parent = row })
+                bindClick(toggleHit, function()
                     setState(not state, true)
                 end)
                 table.insert(sec.Elements, row)
@@ -890,13 +937,15 @@ function Library:CreateWindow(config)
                     if cfg.Callback then pcall(cfg.Callback, val) end
                 end
                 barBg.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then sliding = true; update(input.Position) end
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        sliding = true; update(input.Position)
+                    end
                 end)
                 UserInputService.InputChanged:Connect(function(input)
-                    if sliding and input.UserInputType == Enum.UserInputType.MouseMovement then update(input.Position) end
+                    if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then update(input.Position) end
                 end)
                 UserInputService.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then sliding = false end
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then sliding = false end
                 end)
                 table.insert(sec.Elements, row)
                 return row
@@ -1126,7 +1175,7 @@ function Library:CreateWindow(config)
                     end
                 end
 
-                box.MouseButton1Click:Connect(function()
+                bindClick(box, function()
                     setOpen(not open)
                 end)
 
@@ -1490,8 +1539,8 @@ function Library:CreateWindow(config)
                     if open then positionPopup() end
                     popup.Visible = open
                 end
-                trigger.MouseButton1Click:Connect(function() setOpen(not open) end)
-                closeBtn.MouseButton1Click:Connect(function() setOpen(false) end)
+                bindClick(trigger, function() setOpen(not open) end)
+                bindClick(closeBtn, function() setOpen(false) end)
                 UserInputService.InputBegan:Connect(function(input)
                     if not open then return end
                     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -1769,32 +1818,34 @@ function Library:CreateWindow(config)
             })
             corner(changeCard, 14)
             stroke(changeCard, T.Border, 1, 0.55)
-            padding(changeCard, 14, 14, 16, 16)
+            padding(changeCard, 12, 12, 14, 14)
 
+            -- Compact header: cyan icon + title, version pill on the right
             local chHeader = create("Frame", {
-                BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 22), Parent = changeCard,
+                BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 24), Parent = changeCard,
             })
-            iconImage(chHeader, "scroll-text", 14, T.Accent2, "Accent2").Position = UDim2.new(0, 0, 0.5, -7)
+            local chIcon = iconImage(chHeader, "scroll-text", 15, T.Accent2, "Accent2")
+            chIcon.Position = UDim2.new(0, 0, 0.5, -7)
             create("TextLabel", {
-                BackgroundTransparency = 1, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(0.5, 0, 1, 0),
+                BackgroundTransparency = 1, Position = UDim2.new(0, 22, 0, 0), Size = UDim2.new(0.5, 0, 1, 0),
                 Font = Enum.Font.GothamBold, Text = "Changelog", TextColor3 = T.Text, TextSize = 14,
                 TextXAlignment = Enum.TextXAlignment.Left, Parent = chHeader,
             })
             local entries = homeConfig.Changelog or {
-                { Version = "v1.0.4", Date = "2026-08-31", Text = "Mobile toggle button, floating color popup, Settings spacing/theme highlight fixes." },
+                { Version = "v1.0.5", Date = "2026-08-31", Text = "Redesigned changelog, improved notifications, touch-first mobile support, and polished controls." },
                 { Version = "v1.0.3", Date = "2026-08-30", Text = "Popup color picker, CreateRow two-column layouts, improved Home changelog cards." },
                 { Version = "v1.0.2", Date = "2026-08-30", Text = "Working color picker, multi-select dropdown + search/All, live server stats." },
                 { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign, badge overflow fix, new banner." },
                 { Version = "v1.0.0", Date = "2026-08-29", Text = "Initial CYVUI release — dashboard Home, Lucide icons, Settings themes." },
             }
             if entries[1] then
-                local latest = create("TextLabel", {
-                    BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 52, 0, 18),
-                    Position = UDim2.new(1, -52, 0, 2), Text = entries[1].Version or "v1.0.4",
+                local pill = create("TextLabel", {
+                    BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 56, 0, 20),
+                    Position = UDim2.new(1, -56, 0.5, -10), Text = entries[1].Version or "v1.0.5",
                     Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 10, Parent = chHeader,
                 })
-                corner(latest, 8)
-                bindTheme(latest, "TextColor3", "Accent2")
+                corner(pill, 10)
+                bindTheme(pill, "TextColor3", "Accent2")
             end
 
             local changeScroll = create("ScrollingFrame", {
@@ -1803,6 +1854,13 @@ function Library:CreateWindow(config)
                 ScrollBarThickness = 3, ScrollBarImageColor3 = T.ScrollBar, BorderSizePixel = 0, Parent = changeCard,
             })
             listLayout(changeScroll, 8)
+
+            local statusStyles = {
+                added   = { color = T.Success, label = "Added" },
+                fixed   = { color = T.Accent2, label = "Fixed" },
+                changed = { color = T.Warning, label = "Changed" },
+                removed = { color = T.Error,   label = "Removed" },
+            }
 
             for i, entry in ipairs(entries) do
                 local card = create("Frame", {
@@ -1814,6 +1872,7 @@ function Library:CreateWindow(config)
                 padding(card, 10, 10, 12, 12)
                 listLayout(card, 6)
 
+                -- Version badge + date + Latest badge on the first entry
                 local head = create("Frame", {
                     BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Parent = card,
                 })
@@ -1825,7 +1884,7 @@ function Library:CreateWindow(config)
                 corner(ver, 7)
                 if i == 1 then bindTheme(ver, "TextColor3", "Accent2") end
                 create("TextLabel", {
-                    BackgroundTransparency = 1, Position = UDim2.new(0, 62, 0, 0), Size = UDim2.new(0.5, 0, 1, 0),
+                    BackgroundTransparency = 1, Position = UDim2.new(0, 62, 0, 0), Size = UDim2.new(0.4, 0, 1, 0),
                     Font = Enum.Font.Gotham, Text = entry.Date or "", TextColor3 = T.TextFaint, TextSize = 11,
                     TextXAlignment = Enum.TextXAlignment.Left, Parent = head,
                 })
@@ -1839,16 +1898,55 @@ function Library:CreateWindow(config)
                     bindTheme(latest, "TextColor3", "Accent2")
                 end
 
-                local bodyText = entry.Text or ""
-                -- Support bullet lists via \n or table entry.Items
-                if entry.Items and type(entry.Items) == "table" then
-                    bodyText = "• " .. table.concat(entry.Items, "\n• ")
-                end
-                create("TextLabel", {
-                    BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
-                    Font = Enum.Font.Gotham, Text = bodyText, TextColor3 = T.TextDim, TextSize = 12,
-                    TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = card,
+                -- Separator under the entry header
+                create("Frame", {
+                    BackgroundColor3 = T.Border, BackgroundTransparency = 0.5,
+                    Size = UDim2.new(1, 0, 0, 1), BorderSizePixel = 0, LayoutOrder = 1, Parent = card,
                 })
+
+                -- Item rows: structured { Text, Type } entries get colored status badges,
+                -- plain strings render as bullets; falls back to entry.Text
+                local itemOrder = 2
+                local function addItem(text, status)
+                    local row = create("Frame", {
+                        BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0),
+                        AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = itemOrder, Parent = card,
+                    })
+                    itemOrder += 1
+                    if status then
+                        local badge = create("TextLabel", {
+                            BackgroundColor3 = status.color, BackgroundTransparency = 0.85,
+                            Size = UDim2.new(0, 58, 0, 16), Text = status.label,
+                            Font = Enum.Font.GothamBold, TextColor3 = status.color, TextSize = 10, Parent = row,
+                        })
+                        corner(badge, 5)
+                    end
+                    create("TextLabel", {
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, status and 66 or 0, 0, 0),
+                        Size = UDim2.new(1, status and -66 or 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
+                        Font = Enum.Font.Gotham,
+                        Text = status and tostring(text or "") or ("• " .. tostring(text or "")),
+                        TextColor3 = T.TextDim, TextSize = 12, TextWrapped = true,
+                        TextXAlignment = Enum.TextXAlignment.Left, Parent = row,
+                    })
+                end
+
+                if type(entry.Items) == "table" and #entry.Items > 0 then
+                    for _, item in ipairs(entry.Items) do
+                        if type(item) == "table" then
+                            addItem(item.Text or item.Label or "", statusStyles[string.lower(tostring(item.Type or ""))])
+                        else
+                            addItem(tostring(item), nil)
+                        end
+                    end
+                elseif type(entry.Text) == "table" then
+                    for _, item in ipairs(entry.Text) do
+                        addItem(tostring(item), nil)
+                    end
+                elseif entry.Text then
+                    addItem(entry.Text, nil)
+                end
             end
 
             return {
@@ -1990,20 +2088,34 @@ function Library:CreateWindow(config)
         end
     end)
 
-    -- Mobile: on-screen toggle button
-    local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-    pcall(function()
-        if UserInputService.TouchEnabled then
-            -- Prefer touch-first devices; still show if TouchEnabled
-            isMobile = true
-            if UserInputService.KeyboardEnabled and UserInputService.MouseEnabled and not UserInputService.GyroscopeEnabled then
-                -- likely desktop with touch screen — keep button only if TouchEnabled and no mouse preferred
-                isMobile = UserInputService.TouchEnabled and not UserInputService.MouseEnabled
+    -- Mobile / touch support
+    local isMobile = UserInputService.TouchEnabled
+
+    -- Responsive: scale/reposition the window for narrow touch viewports
+    local function fitToViewport()
+        pcall(function()
+            if minimized then return end
+            local cam = workspace.CurrentCamera
+            if not cam then return end
+            local vp = cam.ViewportSize
+            if vp.X < 700 then
+                local w = math.clamp(size.X.Offset, 320, math.max(vp.X - 16, 320))
+                local h = math.clamp(size.Y.Offset, 240, math.max(vp.Y - 90, 240))
+                main.Size = UDim2.new(0, w, 0, h)
+                main.Position = UDim2.new(0.5, -w / 2, 0.5, -h / 2)
+            else
+                main.Size = size
+                main.Position = UDim2.new(0.5, -size.X.Offset / 2, 0.5, -size.Y.Offset / 2)
             end
+        end)
+    end
+    fitToViewport()
+    pcall(function()
+        local cam = workspace.CurrentCamera
+        if cam then
+            cam:GetPropertyChangedSignal("ViewportSize"):Connect(fitToViewport)
         end
     end)
-    -- Simpler reliable check
-    isMobile = UserInputService.TouchEnabled
 
     if isMobile or config.MobileToggle == true then
         local mobileBtn = create("TextButton", {
@@ -2028,26 +2140,53 @@ function Library:CreateWindow(config)
             Parent = mobileBtn,
         })
         bindTheme(mobileBtn, "BackgroundColor3", "Accent")
-        -- drag mobile button
-        makeDraggable(mobileBtn, mobileBtn)
-        mobileBtn.MouseButton1Click:Connect(function()
+
+        -- Draggable floating button with tap detection: dragging never toggles
+        local dragging, moved = false, false
+        local dragStart, startPos
+        mobileBtn.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging, moved = true, false
+                dragStart = input.Position
+                startPos = mobileBtn.Position
+            end
+        end)
+        UserInputService.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                local d = input.Position - dragStart
+                if math.abs(d.X) > 6 or math.abs(d.Y) > 6 then moved = true end
+                mobileBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+            end
+        end)
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = false
+            end
+        end)
+
+        -- Single toggle path: Activated fires once for mouse, touch and gamepad (no double toggle)
+        mobileBtn.Activated:Connect(function()
+            if moved then return end
             toggleUI()
         end)
-        -- Also support Activated for touch
-        mobileBtn.Activated:Connect(function()
-            -- debounce with Visible flip already handled; Activated may double with click
+
+        -- Keep the floating button inside safe-area-ish viewport bounds
+        local function clampToggle()
+            pcall(function()
+                local cam = workspace.CurrentCamera
+                if not cam then return end
+                local vp = cam.ViewportSize
+                local abs, as = mobileBtn.AbsolutePosition, mobileBtn.AbsoluteSize
+                local x = math.clamp(abs.X, 8, math.max(vp.X - as.X - 8, 8))
+                local y = math.clamp(abs.Y, 8, math.max(vp.Y - as.Y - 8, 8))
+                mobileBtn.Position = UDim2.new(0, x, 0, y)
+            end)
+        end
+        mobileBtn:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+            if not dragging then clampToggle() end
         end)
         window.MobileToggle = mobileBtn
     end
-
-    -- Responsive-ish: shrink window on small viewports
-    pcall(function()
-        local cam = workspace.CurrentCamera
-        if cam and cam.ViewportSize.X < 700 then
-            main.Size = UDim2.new(0, math.min(size.X.Offset, cam.ViewportSize.X - 24), 0, math.min(size.Y.Offset, cam.ViewportSize.Y - 48))
-            main.Position = UDim2.new(0.5, -main.Size.X.Offset / 2, 0.5, -main.Size.Y.Offset / 2)
-        end
-    end)
 
     table.insert(self.Windows, window)
     return window

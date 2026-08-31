@@ -1,4 +1,4 @@
-# CYVUI Library v1.0.4 — Documentation
+# CYVUI Library v1.0.5 — Documentation
 
 Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
 **Home** and **Settings** share the same layout on every game — only content/text changes.
@@ -26,7 +26,7 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.4",
+    Version  = "v1.0.5",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -36,14 +36,9 @@ Home:CreateHomeLayout({
     Welcome     = "welcome back",
     AboutText   = "Your hub description.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
-    ServerStats = {
-        { Num = "12", Label = "PLAYERS" },
-        { Num = "99%", Label = "UPTIME" },
-        { Num = "20ms", Label = "PING" },
-    },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
+        { Version = "v1.0.5", Date = "2026-08-31", Text = "Redesigned changelog, improved notifications, and better mobile support." },
     },
 })
 
@@ -64,7 +59,7 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Left title segment |
 | GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v1.0.4"` | Right segment |
+| Version | string | `"v1.0.5"` | Right segment |
 | Size | UDim2 | `900×560` | Window size |
 
 **Returns:** Window  
@@ -97,7 +92,7 @@ Window:SetTitle("CYVHUB", "Rivals", "v1.2")
 | `:CreateSection(name, { Icon = "..." })` | Full-width widget card |
 | `:CreateRow()` | Horizontal row for two-column layouts |
 | `row:Section(name, { Icon })` | Half-width section inside a row |
-| `:CreateGrid(columns?)` | Multi-column grid of sections |
+| `:CreateGrid(columns?)` | Multi-column grid of sections; use `grid:Section(name, { Icon })` to add cells (default 2 columns) |
 | `:CreateHomeLayout(config)` | Fixed Home dashboard |
 | `:CreateSettingsLayout(config)` | Standard Settings blocks |
 
@@ -130,11 +125,14 @@ Same structure every UI:
 | AboutTitle | string | Default `"ABOUT"` |
 | AboutText | string | Body |
 | DiscordLink | string | Copied by Copy Link |
-| ServerStats | table | `{ { Num, Label }, ... }` — up to 3 |
 | ExecutorName | string | Executor label |
-| Changelog | table | `{ Version, Date, Text }` entries |
+| Changelog | table | `{ Version, Date, Text, Items? }` entries; `Items` may contain strings or `{ Text, Type = "added"|"fixed"|"changed"|"removed" }` rows |
 
-### Example — live server stats
+The Server Info card always shows **live** stats (player count, session uptime, real server ping, refreshed every second) — there is no `ServerStats` option.
+
+**Returns:** `{ ProfileCard, AboutCard, DiscordCard, ServerCard, ExecutorCard, ChangelogCard, SetUsername(name), SetAbout(text), SetExecutor(name) }`
+
+### Example — Home layout with live server stats
 
 ```lua
 Home:CreateHomeLayout({
@@ -142,14 +140,9 @@ Home:CreateHomeLayout({
     Welcome = "welcome back",
     AboutText = "Farm hub for Grow a Garden 2.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
-    ServerStats = {
-        { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
-        { Num = "99.8%", Label = "UPTIME" },
-        { Num = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000) .. "ms", Label = "PING" },
-    },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Auto farm stability." },
+        { Version = "v1.0.5", Date = "2026-08-31", Text = "Redesigned changelog, improved notifications, and better mobile support." },
         { Version = "v1.0.0", Date = "2026-08-20", Text = "Initial game release." },
     },
 })
@@ -203,17 +196,16 @@ Default Settings (if you only use the built-in tab) includes: accent presets, tr
 
 `opts.Icon` — Lucide name for the section header.
 
-| Method | Notes |
-|--------|--------|
-| `:AddToggle({ Text, Default, Flag, Callback })` | Returns `{ Set, Get }` |
-| `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | |
-| `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA |
-| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | `Multi = true` enables multi-select + **All** toggle; search is always shown when open |
-| `:AddColorPicker({ Text, Default, Flag, Callback })` | Working HSV picker (sat/val square + hue bar) |
-| `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | |
-| `:AddKeybind({ Text, Default, Flag, Callback })` | |
-| `:AddColorPicker({ Text, Default, Flag, Callback })` | Swatch + hex |
-| `:AddLabel` / `:AddParagraph` | Wrapped text |
+| Method | Notes | Returns |
+|--------|--------|---------|
+| `:AddToggle({ Text, Default, Flag, Callback })` | | `{ Set, Get, Frame }` |
+| `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | Defaults: `Min = 0`, `Max = 100`, `Default = Min`; integer unless `Decimals` set | Slider row `Frame` |
+| `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA | Button instance |
+| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | `Multi = true` enables multi-select + **All** toggle; search is always shown when open | `{ Frame, Set, Get }` (`Get` returns a list when `Multi`) |
+| `:AddColorPicker({ Text, Default, Flag, Callback })` | Working HSV picker (sat/val square + hue bar) in a floating popup with hex input | `{ Frame, Set, Get }` |
+| `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | Fires on focus lost | TextBox instance |
+| `:AddKeybind({ Text, Default, Flag, Callback })` | Click, then press a key (Esc clears) | Key button instance |
+| `:AddLabel(text)` / `:AddParagraph(text)` | Wrapped text | TextLabel instance |
 
 ### Example — full widget section
 
@@ -263,7 +255,8 @@ Combat:AddButton({
 ### Example — toggle API
 
 ```lua
-local tog = Player:AddToggle({ Text = "Speed", Flag = "Speed" })
+local Sec = Player:CreateSection("Player")
+local tog = Sec:AddToggle({ Text = "Speed", Flag = "Speed" })
 tog:Set(true)
 print(tog:Get()) -- true
 ```
@@ -339,16 +332,12 @@ Full list: [lucide.dev/icons](https://lucide.dev/icons)
 
 ## Notifications
 
-```lua
-Library:Notify("Title", "Body", 3, "success") -- success | warning | error | nil
-```
+### `Library:Notify(title, message, duration, notifType)`
 
-### Example
+Notifications use responsive rounded cards with status icons, accent strips, theme-aware tinted backgrounds, smooth enter/exit animations, automatic message height, and touch-safe close controls. Supported types are `success`, `warning`, `error`, and `info` (default). `duration` defaults to 3 seconds.
 
 ```lua
 Library:Notify("Farm", "Auto farm enabled", 2, "success")
-Library:Notify("Warning", "Key expires soon", 4, "warning")
-Library:Notify("Error", "Remote failed", 3, "error")
 ```
 
 Max 4 stacked; auto fade-out.
@@ -387,7 +376,7 @@ Home:CreateHomeLayout({
     AboutText = "Demo hub using CYVUI.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     Changelog = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign." },
+        { Version = "v1.0.5", Date = "2026-08-31", Text = "Redesigned changelog, improved notifications, and better mobile support." },
     },
 })
 
@@ -450,7 +439,7 @@ local Full = Main:CreateSection("General", { Icon = "settings" })
 
 ## Mobile
 
-When `UserInputService.TouchEnabled` is true (or `CreateWindow({ MobileToggle = true })`), a floating accent button appears on the right. Tap it to show/hide the UI. The button is draggable.
+When `UserInputService.TouchEnabled` is true (or `CreateWindow({ MobileToggle = true })`), the library fits the window to narrow viewports (under 700px wide, clamped to screen bounds) and keeps it centered when the viewport changes, and shows a draggable floating toggle (also exposed as `window.MobileToggle`). Window dragging samples the cursor globally every frame, so fast mouse movement never loses the drag. Touch dragging uses tap-versus-drag detection, the toggle stays within screen bounds, and tabs, sliders, toggles, buttons, dropdowns, color picker controls, and notification close buttons support touch activation without double-firing.
 
 ```lua
 Library:CreateWindow({
