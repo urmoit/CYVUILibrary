@@ -2,14 +2,14 @@
 
 ![CYVUI Library banner — anime character with CYVHUB UI preview and feature list](assets/banner.png)
 
-![CYVUI Changelog — v1.0.3 and v1.0.2 release notes](assets/changelog.png)
+![CYVUI Changelog — v1.0.4 and v1.0.3 release notes](assets/changelog.png)
 
 **Full history:** [CHANGELOG.md](./CHANGELOG.md)
 
 
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
 
-![Version](https://img.shields.io/badge/version-1.0.3-8b5cf6)
+![Version](https://img.shields.io/badge/version-1.0.4-8b5cf6)
 ![Luau](https://img.shields.io/badge/luau-Roblox-00a2ff)
 ![License](https://img.shields.io/badge/license-MIT-22d3ee)
 
@@ -47,7 +47,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.3",
+    Version  = "v1.0.4",
 })
 
 local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
@@ -58,7 +58,7 @@ Home:CreateHomeLayout({
     DiscordLink  = "https://discord.gg/vTe3sNTsDM",
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog    = {
-        { Version = "v1.0.3", Date = "2026-08-29", Text = "Notification redesign." },
+        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign." },
     },
 })
 

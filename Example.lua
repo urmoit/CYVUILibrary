@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.3 — Example
+    CYVUI Library v1.0.4 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0.3",
+    Version  = "v1.0.4",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -32,14 +32,14 @@ Home:CreateHomeLayout({
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
         {
-            Version = "v1.0.3",
-            Date = "2026-08-30",
-            Text = "Popup color picker, CreateRow two-column layouts, improved Home changelog.",
+            Version = "v1.0.4",
+            Date = "2026-08-31",
+            Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes.",
         },
         {
-            Version = "v1.0.2",
+            Version = "v1.0.3",
             Date = "2026-08-30",
-            Text = "Multi-select dropdown + search/All, live server stats.",
+            Text = "CreateRow layouts, improved Home changelog.",
         },
         {
             Version = "v1.0.0",
