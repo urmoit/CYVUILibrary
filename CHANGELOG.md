@@ -4,6 +4,12 @@ Full release history. The README image highlights the latest UI releases.
 
 ---
 
+## v1.0.6 — 2026-08-31
+
+- **Fixed UI dragging** — title-bar dragging now remains reliable when the mouse moves quickly or leaves the header area
+
+---
+
 ## v1.0.5 — 2026-08-31
 
 - **Changelog redesign** — compact header, version pill, release cards, separators, Latest badge, and structured status rows

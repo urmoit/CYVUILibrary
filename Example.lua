@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.5 — Example
+    CYVUI Library v1.0.6 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0.5",
+    Version  = "v1.0.6",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -27,13 +27,11 @@ Home:CreateHomeLayout({
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
         {
-            Version = "v1.0.5",
+            Version = "v1.0.6",
             Date = "2026-08-31",
-            Text = "Redesigned changelog, improved notifications, touch-first mobile support, and polished controls.",
+            Text = "Fixed UI dragging when moving the mouse quickly or outside the header area.",
             Items = {
-                { Text = "Release cards with status rows, separators, and Latest badge.", Type = "changed" },
-                { Text = "Responsive touch layout and draggable mobile toggle.", Type = "added" },
-                { Text = "Wider animated notifications with touch-safe dismissal.", Type = "changed" },
+                { Text = "Title-bar dragging now remains reliable during fast mouse movement.", Type = "fixed" },
             },
         },
         {

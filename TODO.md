@@ -1,6 +1,6 @@
 # CYVUI Library TODO
 
-This file tracks confirmed validation gaps, known risks, and planned improvements for CYVUI Library v1.0.5.
+This file tracks confirmed validation gaps, known risks, and planned improvements for CYVUI Library v1.0.6.
 
 ## Priority legend
 
@@ -53,7 +53,7 @@ This file tracks confirmed validation gaps, known risks, and planned improvement
 - [ ] **P2 — Add optional localization support** for built-in labels, settings text, notifications, and status badges.
 - [ ] **P2 — Add theme export/import** alongside config save/load.
 
-## Completed in v1.0.5
+## Completed in v1.0.6
 
 - Redesigned changelog cards with version/date metadata, Latest badge, separators, and structured status rows.
 - Improved notifications with tinted status cards, accent strips, circular icons, responsive height, animations, and touch-safe dismissal.

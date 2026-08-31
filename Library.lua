@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.5
+    CYVUI Library v1.0.6
     Dark modern Roblox UI — dashboard mockup style
     Home + Main widgets + Settings consistent across hubs
     Lucide icons via Footagesus Icons v2
@@ -16,7 +16,7 @@ local TextService      = game:GetService("TextService")
 local LocalPlayer = Players.LocalPlayer
 
 local Library = {
-    Version     = "1.0.5",
+    Version     = "1.0.6",
     Name        = "CYVUI",
     Windows     = {},
     Flags       = {},
@@ -208,34 +208,62 @@ local function protectGui(gui)
 end
 
 local function makeDraggable(frame, handle)
-    local dragging, dragStart, startPos
+    local dragging = false
+    local dragStart
+    local startPos
+    local dragInput
     handle = handle or frame
+
+    local function positionFromInput(input)
+        return Vector2.new(input.Position.X, input.Position.Y)
+    end
+
+    local function update(input)
+        if not dragging or not dragStart then return end
+        local current = positionFromInput(input)
+        local delta = current - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+
     handle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
-            dragStart = input.Position
+            dragStart = positionFromInput(input)
             startPos = frame.Position
+            dragInput = input.UserInputType == Enum.UserInputType.Touch and input or nil
         end
     end)
-    -- Track outside the handle so fast mouse movement never interrupts the drag.
-    -- RenderStepped samples the cursor directly instead of relying only on MouseMovement events.
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.Touch then
-            local d = input.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
         end
     end)
-    RunService.RenderStepped:Connect(function()
-        if not dragging then return end
-        local mouse = UserInputService:GetMouseLocation()
-        local d = mouse - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+
+    -- Listen on UIS so movement continues after the cursor leaves the title bar.
+    local inputChanged = UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input == dragInput or input.UserInputType == Enum.UserInputType.MouseMovement) then
+            update(input)
+        end
     end)
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+
+    local inputEnded = UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
+            dragInput = nil
         end
     end)
+
+    return function()
+        inputChanged:Disconnect()
+        inputEnded:Disconnect()
+    end
 end
 
 local function animateButton(button, defaultBg, hoverBg)
@@ -508,7 +536,7 @@ function Library:CreateWindow(config)
     config = config or {}
     local title    = config.Title or "CYVHUB"
     local gameName = config.GameName or "game name"
-    local version  = config.Version or "v1.0.5"
+    local version  = config.Version or "v1.0.6"
     local size     = config.Size or UDim2.new(0, 900, 0, 560)
 
     for _, old in ipairs(self.Windows) do
@@ -1832,7 +1860,7 @@ function Library:CreateWindow(config)
                 TextXAlignment = Enum.TextXAlignment.Left, Parent = chHeader,
             })
             local entries = homeConfig.Changelog or {
-                { Version = "v1.0.5", Date = "2026-08-31", Text = "Redesigned changelog, improved notifications, touch-first mobile support, and polished controls." },
+                { Version = "v1.0.6", Date = "2026-08-31", Text = "Fixed UI dragging when moving the mouse quickly or outside the header area.", Items = { { Text = "Title-bar dragging now remains reliable during fast mouse movement.", Type = "fixed" } } },
                 { Version = "v1.0.3", Date = "2026-08-30", Text = "Popup color picker, CreateRow two-column layouts, improved Home changelog cards." },
                 { Version = "v1.0.2", Date = "2026-08-30", Text = "Working color picker, multi-select dropdown + search/All, live server stats." },
                 { Version = "v1.0.1", Date = "2026-08-29", Text = "Notification redesign, badge overflow fix, new banner." },
@@ -1841,7 +1869,7 @@ function Library:CreateWindow(config)
             if entries[1] then
                 local pill = create("TextLabel", {
                     BackgroundColor3 = Color3.fromRGB(20, 50, 55), Size = UDim2.new(0, 56, 0, 20),
-                    Position = UDim2.new(1, -56, 0.5, -10), Text = entries[1].Version or "v1.0.5",
+                    Position = UDim2.new(1, -56, 0.5, -10), Text = entries[1].Version or "v1.0.6",
                     Font = Enum.Font.GothamBold, TextColor3 = T.Accent2, TextSize = 10, Parent = chHeader,
                 })
                 corner(pill, 10)
