@@ -1,5 +1,5 @@
 --[[
-    CYVUI Library v1.0.6 — Example
+    CYVUI Library v1.0.4 — Example
     Home + Main (widgets) + Settings match dashboard mockup
 ]]
 
@@ -9,7 +9,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0.6",
+    Version  = "v1.0.4",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -24,15 +24,17 @@ Home:CreateHomeLayout({
     AboutTitle = "ABOUT",
     AboutText  = "CYVUI example — dashboard Home, widgets, Settings themes, Lucide icons. Clean, fast, modular.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
+    ServerStats = {
+        { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
+        { Num = "99.8%", Label = "UPTIME" },
+        { Num = "12ms", Label = "PING" },
+    },
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
         {
-            Version = "v1.0.6",
+            Version = "v1.0.4",
             Date = "2026-08-31",
-            Text = "Fixed UI dragging when moving the mouse quickly or outside the header area.",
-            Items = {
-                { Text = "Title-bar dragging now remains reliable during fast mouse movement.", Type = "fixed" },
-            },
+            Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes.",
         },
         {
             Version = "v1.0.3",
@@ -63,7 +65,9 @@ Right:AddToggle({ Text = "ESP", Flag = "ESP" })
 Right:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
 
 local Player = Main:CreateSection("Player (full width)", { Icon = "user" })
+Player:AddToggle({ Text = "Infinite Jump", Default = false, Flag = "InfJump" })
 Player:AddToggle({ Text = "No Clip", Default = false, Flag = "NoClip" })
+Player:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
 Player:AddSlider({ Text = "Jump Power", Min = 50, Max = 200, Default = 50, Flag = "JumpPower" })
 Player:AddButton({
     Text = "Reset Character",
@@ -74,6 +78,7 @@ Player:AddButton({
 })
 
 local Visuals = Main:CreateSection("Visuals", { Icon = "eye" })
+Visuals:AddToggle({ Text = "ESP", Default = false, Flag = "ESP" })
 Visuals:AddToggle({ Text = "Chams", Default = false, Flag = "Chams" })
 Visuals:AddDropdown({
     Text = "ESP Mode",
@@ -88,6 +93,7 @@ Visuals:AddDropdown({
     Multi = true,
     Flag = "ESPTargets",
 })
+Visuals:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
 Visuals:AddTextbox({ Text = "Custom Tag", Placeholder = "Enter display tag...", Flag = "CustomTag" })
 
 local Auto = Main:CreateSection("Automation", { Icon = "clock" })

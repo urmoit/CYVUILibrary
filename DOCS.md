@@ -1,4 +1,4 @@
-# CYVUI Library v1.0.6 — Documentation
+# CYVUI Library v1.0.4 — Documentation
 
 Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
 **Home** and **Settings** share the same layout on every game — only content/text changes.
@@ -26,7 +26,7 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.6",
+    Version  = "v1.0.4",
     Size     = UDim2.new(0, 900, 0, 560),
 })
 
@@ -36,9 +36,14 @@ Home:CreateHomeLayout({
     Welcome     = "welcome back",
     AboutText   = "Your hub description.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
+    ServerStats = {
+        { Num = "12", Label = "PLAYERS" },
+        { Num = "99%", Label = "UPTIME" },
+        { Num = "20ms", Label = "PING" },
+    },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.6", Date = "2026-08-31", Text = "Fixed UI dragging when moving the mouse quickly or outside the header area." },
+        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
     },
 })
 
@@ -59,7 +64,7 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Left title segment |
 | GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v1.0.6"` | Right segment |
+| Version | string | `"v1.0.4"` | Right segment |
 | Size | UDim2 | `900×560` | Window size |
 
 **Returns:** Window  
@@ -92,7 +97,7 @@ Window:SetTitle("CYVHUB", "Rivals", "v1.2")
 | `:CreateSection(name, { Icon = "..." })` | Full-width widget card |
 | `:CreateRow()` | Horizontal row for two-column layouts |
 | `row:Section(name, { Icon })` | Half-width section inside a row |
-| `:CreateGrid(columns?)` | Multi-column grid of sections; use `grid:Section(name, { Icon })` to add cells (default 2 columns) |
+| `:CreateGrid(columns?)` | Multi-column grid of sections |
 | `:CreateHomeLayout(config)` | Fixed Home dashboard |
 | `:CreateSettingsLayout(config)` | Standard Settings blocks |
 
@@ -125,14 +130,11 @@ Same structure every UI:
 | AboutTitle | string | Default `"ABOUT"` |
 | AboutText | string | Body |
 | DiscordLink | string | Copied by Copy Link |
+| ServerStats | table | `{ { Num, Label }, ... }` — up to 3 |
 | ExecutorName | string | Executor label |
-| Changelog | table | `{ Version, Date, Text, Items? }` entries; `Items` may contain strings or `{ Text, Type = "added"|"fixed"|"changed"|"removed" }` rows |
+| Changelog | table | `{ Version, Date, Text }` entries |
 
-The Server Info card always shows **live** stats (player count, session uptime, real server ping, refreshed every second) — there is no `ServerStats` option.
-
-**Returns:** `{ ProfileCard, AboutCard, DiscordCard, ServerCard, ExecutorCard, ChangelogCard, SetUsername(name), SetAbout(text), SetExecutor(name) }`
-
-### Example — Home layout with live server stats
+### Example — live server stats
 
 ```lua
 Home:CreateHomeLayout({
@@ -140,9 +142,14 @@ Home:CreateHomeLayout({
     Welcome = "welcome back",
     AboutText = "Farm hub for Grow a Garden 2.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
+    ServerStats = {
+        { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
+        { Num = "99.8%", Label = "UPTIME" },
+        { Num = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000) .. "ms", Label = "PING" },
+    },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.6", Date = "2026-08-31", Text = "Fixed UI dragging when moving the mouse quickly or outside the header area." },
+        { Version = "v1.0.4", Date = "2026-08-29", Text = "Auto farm stability." },
         { Version = "v1.0.0", Date = "2026-08-20", Text = "Initial game release." },
     },
 })
@@ -196,67 +203,143 @@ Default Settings (if you only use the built-in tab) includes: accent presets, tr
 
 `opts.Icon` — Lucide name for the section header.
 
-| Method | Notes | Returns |
-|--------|--------|---------|
-| `:AddToggle({ Text, Default, Flag, Callback })` | | `{ Set, Get, Frame }` |
-| `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | Defaults: `Min = 0`, `Max = 100`, `Default = Min`; integer unless `Decimals` set | Slider row `Frame` |
-| `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA | Button instance |
-| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | `Multi = true` enables multi-select + **All** toggle; search is always shown when open | `{ Frame, Set, Get }` (`Get` returns a list when `Multi`) |
-| `:AddColorPicker({ Text, Default, Flag, Callback })` | Working HSV picker (sat/val square + hue bar) in a floating popup with hex input | `{ Frame, Set, Get }` |
-| `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | Fires on focus lost | TextBox instance |
-| `:AddKeybind({ Text, Default, Flag, Callback })` | Click, then press a key (Esc clears) | Key button instance |
-| `:AddLabel(text)` / `:AddParagraph(text)` | Wrapped text | TextLabel instance |
+| Method | Notes |
+|--------|--------|
+| `:AddToggle({ Text, Default, Flag, Callback })` | Returns `{ Set, Get }` |
+| `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | |
+| `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA |
+| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | `Multi = true` enables multi-select + **All** toggle; search is always shown when open |
+| `:AddColorPicker({ Text, Default, Flag, Callback })` | Working HSV picker (sat/val square + hue bar) |
+| `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | |
+| `:AddKeybind({ Text, Default, Flag, Callback })` | |
+| `:AddColorPicker({ Text, Default, Flag, Callback })` | Swatch + hex |
+| `:AddLabel` / `:AddParagraph` | Wrapped text |
 
 ### Example — full widget section
 
 ```lua
-local Combat = Main:CreateSection("Combat", { Icon = "crosshair" })
+--[[
+    CYVUI Library v1.0.4 — Example
+    Home + Main (widgets) + Settings match dashboard mockup
+]]
 
-Combat:AddToggle({
-    Text = "Aimbot",
-    Default = false,
-    Flag = "Aimbot",
-    Callback = function(on)
-        -- enable / disable
-    end,
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
+-- Or: local Library = require(path.to.Library)
+
+local Window = Library:CreateWindow({
+    Title    = "CYVUI",
+    GameName = "Example",
+    Version  = "v1.0.4",
+    Size     = UDim2.new(0, 900, 0, 560),
 })
 
-Combat:AddSlider({
-    Text = "FOV",
-    Min = 50,
-    Max = 400,
-    Default = 120,
-    Flag = "FOV",
-    Callback = function(v) end,
+-- ═══════════════════════════════════════════
+-- HOME (same layout every game — only content changes)
+-- ═══════════════════════════════════════════
+local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
+
+Home:CreateHomeLayout({
+    Username   = game.Players.LocalPlayer.DisplayName,
+    Welcome    = "welcome back",
+    AboutTitle = "ABOUT",
+    AboutText  = "CYVUI example — dashboard Home, widgets, Settings themes, Lucide icons. Clean, fast, modular.",
+    DiscordLink = "https://discord.gg/vTe3sNTsDM",
+    ServerStats = {
+        { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
+        { Num = "99.8%", Label = "UPTIME" },
+        { Num = "12ms", Label = "PING" },
+    },
+    ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
+    Changelog = {
+        {
+            Version = "v1.0.4",
+            Date = "2026-08-31",
+            Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes.",
+        },
+        {
+            Version = "v1.0.3",
+            Date = "2026-08-30",
+            Text = "CreateRow layouts, improved Home changelog.",
+        },
+        {
+            Version = "v1.0.0",
+            Date = "2026-08-29",
+            Text = "Initial CYVUI release.",
+        },
+    },
 })
 
-Combat:AddDropdown({
-    Text = "Target Part",
-    Options = { "Head", "Torso", "HumanoidRootPart" },
-    Default = "Head",
-    Flag = "TargetPart",
-})
+-- ═══════════════════════════════════════════
+-- MAIN (feature widgets — 2-column style sections)
+-- ═══════════════════════════════════════════
+local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
 
-Combat:AddKeybind({
-    Text = "Aim Key",
-    Default = Enum.KeyCode.Q,
-    Flag = "AimKey",
-})
+-- Two-column layout example
+local row = Main:CreateRow()
+local Left = row:Section("Player", { Icon = "user" })
+local Right = row:Section("Visuals", { Icon = "eye" })
 
-Combat:AddButton({
-    Text = "Force Update",
-    Accent = true,
+Left:AddToggle({ Text = "Infinite Jump", Flag = "InfJump" })
+Left:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
+Right:AddToggle({ Text = "ESP", Flag = "ESP" })
+Right:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
+
+local Player = Main:CreateSection("Player (full width)", { Icon = "user" })
+Player:AddToggle({ Text = "Infinite Jump", Default = false, Flag = "InfJump" })
+Player:AddToggle({ Text = "No Clip", Default = false, Flag = "NoClip" })
+Player:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
+Player:AddSlider({ Text = "Jump Power", Min = 50, Max = 200, Default = 50, Flag = "JumpPower" })
+Player:AddButton({
+    Text = "Reset Character",
     Callback = function()
-        Library:Notify("Combat", "Updated", 2, "success")
+        local c = game.Players.LocalPlayer.Character
+        if c then c:BreakJoints() end
     end,
 })
+
+local Visuals = Main:CreateSection("Visuals", { Icon = "eye" })
+Visuals:AddToggle({ Text = "ESP", Default = false, Flag = "ESP" })
+Visuals:AddToggle({ Text = "Chams", Default = false, Flag = "Chams" })
+Visuals:AddDropdown({
+    Text = "ESP Mode",
+    Options = { "Off", "Box", "Skeleton", "Tracer" },
+    Default = "Skeleton",
+    Flag = "ESPMode",
+})
+Visuals:AddDropdown({
+    Text = "ESP Targets",
+    Options = { "Players", "NPCs", "Bosses", "Items", "Vehicles" },
+    Default = { "Players", "Bosses" },
+    Multi = true,
+    Flag = "ESPTargets",
+})
+Visuals:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
+Visuals:AddTextbox({ Text = "Custom Tag", Placeholder = "Enter display tag...", Flag = "CustomTag" })
+
+local Auto = Main:CreateSection("Automation", { Icon = "clock" })
+Auto:AddToggle({ Text = "Auto Farm", Default = true, Flag = "AutoFarm" })
+Auto:AddToggle({ Text = "Auto Sell", Default = false, Flag = "AutoSell" })
+Auto:AddDropdown({
+    Text = "Seed Priority",
+    Options = { "Highest Value", "Fastest Growth", "Rarest First" },
+    Default = "Highest Value",
+    Flag = "SeedPriority",
+})
+Auto:AddSlider({ Text = "Sell Threshold", Min = 0, Max = 5000, Default = 500, Flag = "SellThreshold" })
+
+local Info = Main:CreateSection("Info", { Icon = "info" })
+Info:AddParagraph("This tab controls player movement, visual overlays and farm automation. Toggles apply instantly. Save from Settings.")
+Info:AddKeybind({ Text = "Toggle UI", Default = Enum.KeyCode.RightShift, Flag = "ToggleUI" })
+
+-- Settings tab is built-in (bottom sidebar) with Theme / Config / General
+
+Library:Notify("CYVUI", "Library loaded.", 3, "success")
 ```
 
 ### Example — toggle API
 
 ```lua
-local Sec = Player:CreateSection("Player")
-local tog = Sec:AddToggle({ Text = "Speed", Flag = "Speed" })
+local tog = Player:AddToggle({ Text = "Speed", Flag = "Speed" })
 tog:Set(true)
 print(tog:Get()) -- true
 ```
@@ -332,12 +415,16 @@ Full list: [lucide.dev/icons](https://lucide.dev/icons)
 
 ## Notifications
 
-### `Library:Notify(title, message, duration, notifType)`
+```lua
+Library:Notify("Title", "Body", 3, "success") -- success | warning | error | nil
+```
 
-Notifications use responsive rounded cards with status icons, accent strips, theme-aware tinted backgrounds, smooth enter/exit animations, automatic message height, and touch-safe close controls. Supported types are `success`, `warning`, `error`, and `info` (default). `duration` defaults to 3 seconds.
+### Example
 
 ```lua
 Library:Notify("Farm", "Auto farm enabled", 2, "success")
+Library:Notify("Warning", "Key expires soon", 4, "warning")
+Library:Notify("Error", "Remote failed", 3, "error")
 ```
 
 Max 4 stacked; auto fade-out.
@@ -376,7 +463,7 @@ Home:CreateHomeLayout({
     AboutText = "Demo hub using CYVUI.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     Changelog = {
-        { Version = "v1.0.6", Date = "2026-08-31", Text = "Fixed UI dragging when moving the mouse quickly or outside the header area." },
+        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign." },
     },
 })
 
@@ -439,7 +526,7 @@ local Full = Main:CreateSection("General", { Icon = "settings" })
 
 ## Mobile
 
-When `UserInputService.TouchEnabled` is true (or `CreateWindow({ MobileToggle = true })`), the library fits the window to narrow viewports (under 700px wide, clamped to screen bounds) and keeps it centered when the viewport changes, and shows a draggable floating toggle (also exposed as `window.MobileToggle`). Window dragging samples the cursor globally every frame, so fast mouse movement never loses the drag. Touch dragging uses tap-versus-drag detection, the toggle stays within screen bounds, and tabs, sliders, toggles, buttons, dropdowns, color picker controls, and notification close buttons support touch activation without double-firing.
+When `UserInputService.TouchEnabled` is true (or `CreateWindow({ MobileToggle = true })`), a floating accent button appears on the right. Tap it to show/hide the UI. The button is draggable.
 
 ```lua
 Library:CreateWindow({

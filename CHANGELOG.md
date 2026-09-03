@@ -1,25 +1,6 @@
 # CYVUI Changelog
 
-Full release history. The README image highlights the latest UI releases.
-
----
-
-## v1.0.6 — 2026-08-31
-
-- **Fixed UI dragging** — title-bar dragging now remains reliable when the mouse moves quickly or leaves the header area
-
----
-
-## v1.0.5 — 2026-08-31
-
-- **Changelog redesign** — compact header, version pill, release cards, separators, Latest badge, and structured status rows
-- **Improved notifications** — wider tinted cards, circular status icons, accent strips, responsive message height, smoother animations, and touch-safe dismissal
-- **Better mobile support** — responsive viewport fitting, reliable touch dragging, draggable floating toggle with tap-versus-drag detection, and screen-bound positioning
-- **Window dragging fix** — title-bar dragging now samples the cursor globally every frame, so fast mouse movement no longer loses the drag when the pointer leaves the header
-- **Touch dragging preserved** — touch movement continues to follow global input while mouse dragging uses frame-sampled cursor positions
-- **Touch-safe controls** — shared click binding fires once for mouse and touch across tabs, toggles, sliders, buttons, dropdowns, color picker triggers, and notification close buttons (no double-firing)
-- **Theme-aware notifications** — tinted card backgrounds derive from the active accent color; `info` is the default notification type and duration defaults to 3 seconds
-- Existing changelog configuration remains compatible with `Text`, plain `Items`, and structured `{ Text, Type }` items
+Full release history. The README image only highlights the latest two versions.
 
 ---
 
