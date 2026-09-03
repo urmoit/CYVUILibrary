@@ -9,95 +9,109 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
   
 <style>
-    :root {
-      /* Muted Dark Palette */
-      --theme-color: #8b5cf6;
-      --base-background: #0a0a0d;
-      --sidebar-background: #0d0d11;
-      --sidebar-width: 280px;
-      
-      /* Typography */
-      --base-font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      --heading-color: #ffffff;
-      --text-color-base: #94a3b8;
-    }
+  :root {
+    /* Muted Slate & Dashboard Palette */
+    --theme-color: #8b5cf6;
+    --base-background: #0a0a0d;
+    --sidebar-background: #0f0f13;
+    --sidebar-width: 290px;
+    
+    /* Content styling */
+    --content-max-width: 900px;
+    --base-font-family: 'Inter', -apple-system, sans-serif;
+    --code-theme-background: #13131a;
+    --heading-color: #ffffff;
+    --text-color-base: #94a3b8;
+  }
 
-    /* Remove the violet box/glow from the cover page */
-    section.cover {
-      background-color: #0a0a0d !important;
-    }
+  /* 1. Make Coverpage Non-Scrollable */
+  section.cover {
+    height: 100vh;
+    overflow: hidden; /* Prevents scrolling on the landing */
+    background-color: var(--base-background) !important;
+  }
 
-    section.cover .cover-main {
-      color: #f8fafc;
-    }
+  /* 2. Unify Backgrounds (Sidebar + Content) */
+  body, .app-nav, article#main {
+    background-color: var(--base-background) !important;
+  }
 
-    /* Clean Title Styling */
-    section.cover h1 {
-      font-weight: 800;
-      letter-spacing: -2px;
-      color: #ffffff;
-      margin-bottom: 0;
-    }
+  .sidebar {
+    background-color: var(--sidebar-background) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
 
-    section.cover h1 span {
-      color: var(--theme-color);
-    }
+  /* 3. Muted Typography & Headers */
+  .markdown-section h1, .markdown-section h2, .markdown-section h3 {
+    color: #ffffff;
+    font-weight: 700;
+  }
 
-    /* Minimalist Buttons - No Glow */
-    section.cover p a {
-      border-radius: 6px !important;
-      padding: 10px 24px !important;
-      font-weight: 600 !important;
-      transition: all 0.2s ease;
-      border: 1px solid #1e293b !important;
-      background: transparent !important;
-      color: #f1f5f9 !important;
-      margin: 0 5px !important;
-    }
+  .markdown-section p, .markdown-section li {
+    color: #94a3b8;
+    line-height: 1.7;
+  }
 
-    section.cover p a:first-of-type {
-      background: #ffffff !important;
-      color: #000000 !important;
-      border: 1px solid #ffffff !important;
-    }
+  /* 4. Muted Coverpage Elements (No Glow) */
+  section.cover h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
 
-    section.cover p a:hover {
-      border-color: var(--theme-color) !important;
-      color: var(--theme-color) !important;
-      background: transparent !important;
-    }
+  section.cover h1 span {
+    color: var(--theme-color);
+  }
 
-    /* Sidebar - Muted */
-    .sidebar {
-      border-right: 1px solid #1e293b;
-      background-color: var(--sidebar-background) !important;
-    }
+  /* Matching Dashboard Buttons */
+  section.cover p a {
+    border-radius: 8px !important;
+    padding: 12px 28px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease;
+    background: #16161e !important;
+    border: 1px solid #26262e !important;
+    color: #ffffff !important;
+  }
 
-    .sidebar-nav li > a {
-      color: #64748b !important;
-    }
+  section.cover p a:first-of-type {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #ffffff !important;
+  }
 
-    .sidebar-nav li.active > a {
-      color: #ffffff !important;
-      border-left: 2px solid var(--theme-color);
-      background: rgba(255,255,255,0.03);
-    }
+  section.cover p a:hover {
+    border-color: var(--theme-color) !important;
+    color: var(--theme-color) !important;
+    background: transparent !important;
+  }
 
-    /* Modern Text blocks */
-    blockquote {
-      background: #111116 !important;
-      border-left: 3px solid #334155 !important;
-      color: #94a3b8 !important;
-    }
+  /* 5. Sidebar Integration */
+  .sidebar-nav li > a {
+    font-size: 14px;
+    color: #64748b !important;
+    transition: 0.2s;
+  }
 
-    /* Hide the violet block seen in your screenshot */
-    section.cover blockquote {
-        background: transparent !important;
-        border: none !important;
-        font-size: 1.5rem;
-        color: #94a3b8 !important;
-    }
-  </style>
+  .sidebar-nav li.active > a {
+    color: #ffffff !important;
+    font-weight: 600;
+    border-left: 2px solid var(--theme-color);
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+  }
+
+  /* 6. Muted Code Blocks & Images */
+  pre[class*="language-"] {
+    background: #111116 !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    border-radius: 10px !important;
+  }
+
+  .markdown-section img {
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+</style>
 </head>
 <body>
   <div id="app">Loading Dashboard...</div>

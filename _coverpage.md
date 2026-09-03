@@ -2,12 +2,9 @@
 
 Dark, modern, and high-performance Roblox UI library.
 
-- Dashboard-style aesthetic
-- 20+ Modern widgets
-- Built-in Settings & Home layout
-- Lucide Icon support
+- 🛠️ 20+ Modern widgets
+- 🏠 Built-in Settings & Home layout
+- 🎨 Live Theme Engine
 
 [Get Started](#installation)
 [GitHub](https://github.com/urmoit/CYVUILibrary)
-
-![banner](assets/banner.png)
