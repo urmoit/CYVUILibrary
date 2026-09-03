@@ -2,10 +2,6 @@
 
 ![CYVUI Library banner — anime character with CYVHUB UI preview and feature list](assets/banner.png)
 
-![CYVUI Changelog — v1.0.4 and v1.0.3 release notes](assets/changelog.png)
-
-**Full history:** [CHANGELOG.md](./CHANGELOG.md)
-
 
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
 

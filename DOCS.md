@@ -368,10 +368,6 @@ Max 4 stacked; auto fade-out.
 
 ## Full example script
 
-See [Example.lua](./Example.lua) for a complete Home + Main (Player / Visuals / Automation / Info) + built-in Settings demo.
-
-Minimal copy-paste:
-
 ```lua
 --[[
     CYVUI Library v1.0.4 — Example
