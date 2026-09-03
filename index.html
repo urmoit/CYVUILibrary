@@ -2,47 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CYVUI Documentation</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Modern Dark Roblox UI Library">
+  <title>CYVUI | Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   
-  <!-- Modern Dark Theme -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
+  <!-- Themeable Plugin CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
   
   <style>
     :root {
-      --base-font-size: 16px;
-      --theme-color: #8b5cf6; /* CYVUI Violet */
-      --sidebar-width: 280px;
+      /* CYVUI Color Palette */
+      --theme-color: #8b5cf6;
+      --base-background: #0a0a0d;
+      --sidebar-background: #0f0f13;
+      --sidebar-width: 290px;
+      
+      /* Content styling */
+      --content-max-width: 900px;
+      --code-theme-background: #16161e;
+      --mono-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      --heading-color: #ffffff;
+      --text-color-base: #a1a1aa;
     }
-    nav.app-nav li ul { min-width: 100px; }
-    .markdown-section code { border-radius: 4px; }
+
+    /* Sidebar Styling to match CYVUI Sidebar */
+    .sidebar {
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+
+    .sidebar-nav li > a {
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        margin: 4px 0;
+        font-size: 15px;
+    }
+
+    .sidebar-nav li.active > a {
+        border-left-color: var(--theme-color);
+        background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0) 100%);
+        color: #fff !important;
+        font-weight: 600;
+    }
+
+    /* Modern Scrollbars */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--base-background); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--theme-color); }
+
+    /* Code Block Styling */
+    pre[class*="language-"] {
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    /* Markdown Image Styling */
+    .markdown-section img {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Landing Coverpage Button Glow */
+    section.cover .cover-main .anchor {
+        background: var(--theme-color);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        border-radius: 8px;
+        padding: 12px 25px;
+    }
+
+    blockquote {
+    border-left: 4px solid var(--theme-color) !important;
+    background: rgba(139, 92, 246, 0.05);
+    padding: 15px !important;
+    border-radius: 0 8px 8px 0;
+    color: #efeff1 !important;
+    }
   </style>
 </head>
 <body>
-  <div id="app">Loading CYVUI Docs...</div>
+  <div id="app">Loading Dashboard...</div>
   <script>
     window.$docsify = {
       name: 'CYVUI',
-      repo: 'https://github.com/urmoit/CYVUILibrary', // Change to your repo
+      repo: 'https://github.com/urmoit/CYVUILibrary',
       loadSidebar: true,
       loadNavbar: true,
-      subMaxLevel: 2,
+      coverpage: true, // Enabling the cover page!
+      executeScript: true,
+      subMaxLevel: 3,
       auto2top: true,
+      search: {
+        maxAge: 86400000,
+        placeholder: 'Search documentation...',
+        noData: 'No results found',
+        depth: 6
+      },
       copyCode: {
         buttonText : 'Copy',
-        errorText  : 'Error',
         successText: 'Copied'
-      },
-      search: {
-        placeholder: 'Search documentation...',
-        noData: 'No results!',
-        depth: 6
       }
     }
   </script>
-  <!-- Docsify v4 -->
+  
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
