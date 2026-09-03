@@ -3,19 +3,16 @@
   - [Installation](DOCS.md#install)
   - [Quick Start](DOCS.md#quick-start)
 
-- **UI Components**
-  - [Window](DOCS.md#window)
-  - [Tabs](DOCS.md#tabs)
+- **API Documentation**
+  - [Window & Tabs](DOCS.md#window)
   - [Home Layout](DOCS.md#home-layout)
   - [Settings Layout](DOCS.md#settings-layout)
   - [Sections & Elements](DOCS.md#sections--elements)
 
-- **Features**
+- **Advanced**
   - [Flags System](DOCS.md#flags)
   - [Themes](DOCS.md#theme)
   - [Notifications](DOCS.md#notifications)
-  - [Lucide Icons](DOCS.md#lucide-icons)
 
-- **Misc**
+- **History**
   - [Changelog](CHANGELOG.md)
-  - [Mobile Support](DOCS.md#mobile)
