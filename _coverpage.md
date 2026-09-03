@@ -1,8 +1,6 @@
-![logo](https://img.shields.io/badge/CYVUI-v1.0.5-8b5cf6?style=for-the-badge)
+# CYVUI <span>Library</span>
 
-# CYVUI <small>v1.0.5</small>
-
-> A dark, modern, and high-performance Roblox UI library.
+Dark, modern, and high-performance Roblox UI library.
 
 - Dashboard-style aesthetic
 - 20+ Modern widgets
@@ -12,4 +10,4 @@
 [Get Started](#installation)
 [GitHub](https://github.com/urmoit/CYVUILibrary)
 
-<img src="assets/banner.png" width="600" style="margin-top: 50px;">
+![banner](assets/banner.png)

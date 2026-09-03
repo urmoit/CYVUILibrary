@@ -8,76 +8,94 @@
   <!-- Themeable Plugin CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
   
-  <style>
+<style>
     :root {
-      /* CYVUI Color Palette */
+      /* Muted Dark Palette */
       --theme-color: #8b5cf6;
       --base-background: #0a0a0d;
-      --sidebar-background: #0f0f13;
-      --sidebar-width: 290px;
+      --sidebar-background: #0d0d11;
+      --sidebar-width: 280px;
       
-      /* Content styling */
-      --content-max-width: 900px;
-      --code-theme-background: #16161e;
-      --mono-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      /* Typography */
+      --base-font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       --heading-color: #ffffff;
-      --text-color-base: #a1a1aa;
+      --text-color-base: #94a3b8;
     }
 
-    /* Sidebar Styling to match CYVUI Sidebar */
+    /* Remove the violet box/glow from the cover page */
+    section.cover {
+      background-color: #0a0a0d !important;
+    }
+
+    section.cover .cover-main {
+      color: #f8fafc;
+    }
+
+    /* Clean Title Styling */
+    section.cover h1 {
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: #ffffff;
+      margin-bottom: 0;
+    }
+
+    section.cover h1 span {
+      color: var(--theme-color);
+    }
+
+    /* Minimalist Buttons - No Glow */
+    section.cover p a {
+      border-radius: 6px !important;
+      padding: 10px 24px !important;
+      font-weight: 600 !important;
+      transition: all 0.2s ease;
+      border: 1px solid #1e293b !important;
+      background: transparent !important;
+      color: #f1f5f9 !important;
+      margin: 0 5px !important;
+    }
+
+    section.cover p a:first-of-type {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #ffffff !important;
+    }
+
+    section.cover p a:hover {
+      border-color: var(--theme-color) !important;
+      color: var(--theme-color) !important;
+      background: transparent !important;
+    }
+
+    /* Sidebar - Muted */
     .sidebar {
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+      border-right: 1px solid #1e293b;
+      background-color: var(--sidebar-background) !important;
     }
 
     .sidebar-nav li > a {
-        border-left: 3px solid transparent;
-        transition: all 0.2s ease;
-        margin: 4px 0;
-        font-size: 15px;
+      color: #64748b !important;
     }
 
     .sidebar-nav li.active > a {
-        border-left-color: var(--theme-color);
-        background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0) 100%);
-        color: #fff !important;
-        font-weight: 600;
+      color: #ffffff !important;
+      border-left: 2px solid var(--theme-color);
+      background: rgba(255,255,255,0.03);
     }
 
-    /* Modern Scrollbars */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--base-background); }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--theme-color); }
-
-    /* Code Block Styling */
-    pre[class*="language-"] {
-        border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 12px !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    /* Markdown Image Styling */
-    .markdown-section img {
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.1);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-
-    /* Landing Coverpage Button Glow */
-    section.cover .cover-main .anchor {
-        background: var(--theme-color);
-        box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-        border-radius: 8px;
-        padding: 12px 25px;
-    }
-
+    /* Modern Text blocks */
     blockquote {
-    border-left: 4px solid var(--theme-color) !important;
-    background: rgba(139, 92, 246, 0.05);
-    padding: 15px !important;
-    border-radius: 0 8px 8px 0;
-    color: #efeff1 !important;
+      background: #111116 !important;
+      border-left: 3px solid #334155 !important;
+      color: #94a3b8 !important;
+    }
+
+    /* Hide the violet block seen in your screenshot */
+    section.cover blockquote {
+        background: transparent !important;
+        border: none !important;
+        font-size: 1.5rem;
+        color: #94a3b8 !important;
     }
   </style>
 </head>
@@ -102,7 +120,11 @@
       copyCode: {
         buttonText : 'Copy',
         successText: 'Copied'
-      }
+      },
+        themeable: {
+      readyTransition : true,
+      responsiveTables: true
+  }
     }
   </script>
   
