@@ -218,6 +218,161 @@ Default Settings (if you only use the built-in tab) includes: accent presets, tr
 ### Example — full widget section
 
 ```lua
+local Combat = Main:CreateSection("Combat", { Icon = "crosshair" })
+
+Combat:AddToggle({
+    Text = "Aimbot",
+    Default = false,
+    Flag = "Aimbot",
+    Callback = function(on)
+        -- enable / disable
+    end,
+})
+
+Combat:AddSlider({
+    Text = "FOV",
+    Min = 50,
+    Max = 400,
+    Default = 120,
+    Flag = "FOV",
+    Callback = function(v) end,
+})
+
+Combat:AddDropdown({
+    Text = "Target Part",
+    Options = { "Head", "Torso", "HumanoidRootPart" },
+    Default = "Head",
+    Flag = "TargetPart",
+})
+
+Combat:AddKeybind({
+    Text = "Aim Key",
+    Default = Enum.KeyCode.Q,
+    Flag = "AimKey",
+})
+
+Combat:AddButton({
+    Text = "Force Update",
+    Accent = true,
+    Callback = function()
+        Library:Notify("Combat", "Updated", 2, "success")
+    end,
+})
+```
+
+### Example — toggle API
+
+```lua
+local tog = Player:AddToggle({ Text = "Speed", Flag = "Speed" })
+tog:Set(true)
+print(tog:Get()) -- true
+```
+
+---
+
+## Flags
+
+Elements with a `Flag` string store values on `Library.Flags`.
+
+```lua
+local enabled = Library:GetFlag("Aimbot")
+Library:SetFlag("Aimbot", false)
+```
+
+### Example — save / load flags
+
+```lua
+local HttpService = game:GetService("HttpService")
+local PATH = "cyvui_flags.json"
+
+local function saveFlags()
+    if writefile then
+        writefile(PATH, HttpService:JSONEncode(Library.Flags))
+    end
+end
+
+local function loadFlags()
+    if isfile and isfile(PATH) then
+        local data = HttpService:JSONDecode(readfile(PATH))
+        for k, v in pairs(data) do
+            Library:SetFlag(k, v)
+        end
+    end
+end
+```
+
+---
+
+## Theme
+
+`Library.Theme` keys (edit before `CreateWindow`, or use `:SetTheme`):
+
+| Key | Role |
+|-----|------|
+| Background / Sidebar / Panel | Surfaces |
+| Accent / Accent2 | Violet / cyan |
+| Text / TextDim / TextFaint | Typography |
+| Success / Warning / Error | Notify colors |
+
+```lua
+Library:SetTheme(
+    Color3.fromRGB(52, 211, 153),
+    Color3.fromRGB(163, 230, 53)
+)
+```
+
+Bound controls (toggles on, slider fills, accent buttons, icons, badges) update live.
+
+---
+
+## Lucide icons
+
+```lua
+Library:GetIcon("house") -- rbxassetid://...
+```
+
+Pass names into `Icon` fields. Common: `house`, `layout`, `settings`, `user`, `eye`, `clock`, `message-circle`, `server`, `terminal`, `swords`, `crosshair`.
+
+Full list: [lucide.dev/icons](https://lucide.dev/icons)
+
+---
+
+## Notifications
+
+```lua
+Library:Notify("Title", "Body", 3, "success") -- success | warning | error | nil
+```
+
+### Example
+
+```lua
+Library:Notify("Farm", "Auto farm enabled", 2, "success")
+Library:Notify("Warning", "Key expires soon", 4, "warning")
+Library:Notify("Error", "Remote failed", 3, "error")
+```
+
+Max 4 stacked; auto fade-out.
+
+---
+
+## Controls
+
+| Input | Action |
+|-------|--------|
+| Right Control | Toggle UI |
+| Title bar drag | Move window |
+| Yellow traffic | Minimize |
+| Red traffic | Destroy |
+
+---
+
+## Full example script
+
+See [Example.lua](./Example.lua) for a complete Home + Main (Player / Visuals / Automation / Info) + built-in Settings demo.
+
+Minimal copy-paste:
+
+```lua
 --[[
     CYVUI Library v1.0.4 — Example
     Home + Main (widgets) + Settings match dashboard mockup
@@ -334,150 +489,6 @@ Info:AddKeybind({ Text = "Toggle UI", Default = Enum.KeyCode.RightShift, Flag = 
 -- Settings tab is built-in (bottom sidebar) with Theme / Config / General
 
 Library:Notify("CYVUI", "Library loaded.", 3, "success")
-```
-
-### Example — toggle API
-
-```lua
-local tog = Player:AddToggle({ Text = "Speed", Flag = "Speed" })
-tog:Set(true)
-print(tog:Get()) -- true
-```
-
----
-
-## Flags
-
-Elements with a `Flag` string store values on `Library.Flags`.
-
-```lua
-local enabled = Library:GetFlag("Aimbot")
-Library:SetFlag("Aimbot", false)
-```
-
-### Example — save / load flags
-
-```lua
-local HttpService = game:GetService("HttpService")
-local PATH = "cyvui_flags.json"
-
-local function saveFlags()
-    if writefile then
-        writefile(PATH, HttpService:JSONEncode(Library.Flags))
-    end
-end
-
-local function loadFlags()
-    if isfile and isfile(PATH) then
-        local data = HttpService:JSONDecode(readfile(PATH))
-        for k, v in pairs(data) do
-            Library:SetFlag(k, v)
-        end
-    end
-end
-```
-
----
-
-## Theme
-
-`Library.Theme` keys (edit before `CreateWindow`, or use `:SetTheme`):
-
-| Key | Role |
-|-----|------|
-| Background / Sidebar / Panel | Surfaces |
-| Accent / Accent2 | Violet / cyan |
-| Text / TextDim / TextFaint | Typography |
-| Success / Warning / Error | Notify colors |
-
-```lua
-Library:SetTheme(
-    Color3.fromRGB(52, 211, 153),
-    Color3.fromRGB(163, 230, 53)
-)
-```
-
-Bound controls (toggles on, slider fills, accent buttons, icons, badges) update live.
-
----
-
-## Lucide icons
-
-```lua
-Library:GetIcon("house") -- rbxassetid://...
-```
-
-Pass names into `Icon` fields. Common: `house`, `layout`, `settings`, `user`, `eye`, `clock`, `message-circle`, `server`, `terminal`, `swords`, `crosshair`.
-
-Full list: [lucide.dev/icons](https://lucide.dev/icons)
-
----
-
-## Notifications
-
-```lua
-Library:Notify("Title", "Body", 3, "success") -- success | warning | error | nil
-```
-
-### Example
-
-```lua
-Library:Notify("Farm", "Auto farm enabled", 2, "success")
-Library:Notify("Warning", "Key expires soon", 4, "warning")
-Library:Notify("Error", "Remote failed", 3, "error")
-```
-
-Max 4 stacked; auto fade-out.
-
----
-
-## Controls
-
-| Input | Action |
-|-------|--------|
-| Right Control | Toggle UI |
-| Title bar drag | Move window |
-| Yellow traffic | Minimize |
-| Red traffic | Destroy |
-
----
-
-## Full example script
-
-See [Example.lua](./Example.lua) for a complete Home + Main (Player / Visuals / Automation / Info) + built-in Settings demo.
-
-Minimal copy-paste:
-
-```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
-
-local Window = Library:CreateWindow({
-    Title = "CYVHUB",
-    GameName = "Demo",
-    Version = "v1.0",
-})
-
-local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
-Home:CreateHomeLayout({
-    Username = game.Players.LocalPlayer.DisplayName,
-    AboutText = "Demo hub using CYVUI.",
-    DiscordLink = "https://discord.gg/vTe3sNTsDM",
-    Changelog = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign." },
-    },
-})
-
-local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
-local Sec = Main:CreateSection("General", { Icon = "settings" })
-Sec:AddToggle({ Text = "Enabled", Flag = "Enabled", Default = true })
-Sec:AddSlider({ Text = "Value", Min = 0, Max = 100, Default = 50, Flag = "Value" })
-Sec:AddButton({
-    Text = "Notify",
-    Accent = true,
-    Callback = function()
-        Library:Notify("Demo", "Button pressed", 2, "success")
-    end,
-})
 ```
 
 ---
