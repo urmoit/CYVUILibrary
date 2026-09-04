@@ -1,7 +1,9 @@
-# CYVUI Library v1.0.4 — Documentation
+# CYVUI Library v1.1.0 — Documentation
 
-Dark modern Roblox UI library matching the CYVHUB dashboard mockup.  
-**Home** and **Settings** share the same layout on every game — only content/text changes.
+Dark modern Roblox UI library, **Ironite-inspired** layout (header + 75px sidebar + subtab row + two-column page).  
+**Home** and **Settings** share the same dashboard structure across games — only content varies.
+
+> 📜 [CHANGELOG.md](./CHANGELOG.md) — v1.1.0 redesign highlights every change since v1.0.4.
 
 ---
 
@@ -26,8 +28,8 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.4",
-    Size     = UDim2.new(0, 900, 0, 560),
+    Version  = "v1.1.0",
+    Size     = UDim2.fromOffset(695, 489),
 })
 
 local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
@@ -62,10 +64,10 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| Title | string | `"CYVHUB"` | Left title segment |
-| GameName | string | `"game name"` | Middle segment |
-| Version | string | `"v1.0.4"` | Right segment |
-| Size | UDim2 | `900×560` | Window size |
+| Title | string | `"CYVHUB"` | Header library name |
+| GameName | string | `""` | Dimmed tag shown after the name (rich-text colored) |
+| Version | string | `"v1.1.0"` | Shown in "Updated Last ..." on the right |
+| Size | UDim2 | `695×489` | Window size |
 
 **Returns:** Window  
 
@@ -94,12 +96,25 @@ Window:SetTitle("CYVHUB", "Rivals", "v1.2")
 
 | Method | Description |
 |--------|-------------|
-| `:CreateSection(name, { Icon = "..." })` | Full-width widget card |
-| `:CreateRow()` | Horizontal row for two-column layouts |
-| `row:Section(name, { Icon })` | Half-width section inside a row |
-| `:CreateGrid(columns?)` | Multi-column grid of sections |
+| `:AddSubtab(name)` | Adds a horizontal subtab to the subtab row. Returns `Subtab` |
+| `:CreateSection(name, { Icon, Toggle })` | Section (auto-routes to the first subtab; creates one if none). `Toggle` adds a master switch in the header. |
 | `:CreateHomeLayout(config)` | Fixed Home dashboard |
 | `:CreateSettingsLayout(config)` | Standard Settings blocks |
+
+### Subtabs
+
+```lua
+local Player = Window:CreateTab({ Name = "Main", Icon = "layout" })
+
+local PlayerSub = Player:AddSubtab("Player")
+local VisualsSub = Player:AddSubtab("Visuals")
+
+PlayerSub:CreateSection("Movement", { Icon = "user" })
+    :AddToggle({ Text = "Speed", Flag = "Speed" })
+
+VisualsSub:CreateSection("ESP", { Icon = "eye" })
+    :AddToggle({ Text = "ESP", Flag = "ESP" })
+```
 
 ### Example — multiple feature tabs
 
@@ -370,8 +385,8 @@ Max 4 stacked; auto fade-out.
 
 ```lua
 --[[
-    CYVUI Library v1.0.4 — Example
-    Home + Main (widgets) + Settings match dashboard mockup
+    CYVUI Library v1.1.0 — Example
+    Redesigned Ironite-inspired layout: sidebar + subtab row + two-column page
 ]]
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
@@ -380,8 +395,8 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVUI",
     GameName = "Example",
-    Version  = "v1.0.4",
-    Size     = UDim2.new(0, 900, 0, 560),
+    Version  = "v1.1.0",
+    Size     = UDim2.fromOffset(695, 489),
 })
 
 -- ═══════════════════════════════════════════
@@ -513,20 +528,20 @@ CYVUI/
 
 ## Two-column layouts
 
+The page automatically pairs sections into two columns. Use subtabs to group sections:
+
 ```lua
-local row = Main:CreateRow()
-local Left = row:Section("Auto Clean", { Icon = "trash" })
-local Right = row:Section("Visuals", { Icon = "eye" })
+local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
+
+local PlayerSub = Main:AddSubtab("Player")
+local Left  = PlayerSub:CreateSection("Auto Clean",  { Icon = "trash" })
+local Right = PlayerSub:CreateSection("Visuals",     { Icon = "eye" })
 
 Left:AddToggle({ Text = "Auto Collect", Flag = "AutoCollect" })
 Right:AddColorPicker({ Text = "Paper Color", Default = Color3.fromRGB(168, 85, 247), Flag = "PaperColor" })
 ```
 
-Full-width sections still use:
-
-```lua
-local Full = Main:CreateSection("General", { Icon = "settings" })
-```
+`Main:CreateSection("General", { Icon = "settings" })` still works — it routes to the first subtab (creating one if needed).
 
 
 ---

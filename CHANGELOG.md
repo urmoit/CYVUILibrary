@@ -2,7 +2,22 @@
 
 Full release history. The README image only highlights the latest two versions.
 
+👉 See **[README.md → Changelog](README.md#-changelog)** in the repo root for the highlighted visual.
+
 ---
+
+## v1.1.0 — 2026-09-04 — **Redesign**
+
+- **New layout** (Ironite-inspired):
+  - Header strip: library icon + name + last-updated date, 37 px tall
+  - Sidebar: 75 px wide, vertical tab list with icon + label + active pill
+  - Subtab row: horizontal subtab strip appears above the page when a tab has subtabs
+  - Page: two-column section layout (281 px sections), automatic pairing
+- **New API**: `Tab:AddSubtab(name)` → `Subtab:CreateSection(...)`. `Tab:CreateSection` still works (auto-routes to a default subtab).
+- **Redesigned widgets**: square toggles, slim sliders with white-to-gray gradient + 14 px design halo, dropdowns with chevron pills, keybind chips with icon, custom-color buttons
+- **Section master toggle** — `CreateSection("Name", { Toggle = { Default, Flag, Callback } })` adds a single toggle to the section header
+- **New `Window:SetHeader(name, tag, updatedText)`** with rich-text coloring for the dimmed parts
+- Home and Settings tabs kept and restyled to fit the new layout
 
 ## v1.0.4 — 2026-08-31
 

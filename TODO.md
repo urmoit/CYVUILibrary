@@ -1,6 +1,10 @@
 # CYVUI Library TODO
 
-This file tracks confirmed validation gaps, known risks, and planned improvements for CYVUI Library v1.0.6.
+This file tracks confirmed validation gaps, known risks, and planned improvements for CYVUI Library v1.1.0.
+
+> Structural check: `.workbuddy-ai/validate.py` parses `Library.lua` and `Example.lua`
+> with `luaparser` and verifies block balance (288 block openers / 288 `end` as of
+> v1.1.0). Run it after any edit. It is **not** a substitute for running in Roblox.
 
 ## Priority legend
 
@@ -10,7 +14,7 @@ This file tracks confirmed validation gaps, known risks, and planned improvement
 
 ## Bugs and risks to validate
 
-- [ ] **P0 — Run Luau syntax validation.** No Lua/Luau interpreter is currently installed in the development environment. Validate `Library.lua` and `Example.lua` with a Luau-compatible parser before the next release.
+- [ ] **P0 — Run the library in Roblox/Studio at least once.** Static parsing now passes, but no Roblox runtime has executed this build. Confirm the window renders, tabs switch, subtabs switch, and every widget fires its callback.
 - [ ] **P0 — Test in Roblox/executor environments.** The library depends on Roblox services, CoreGui/gethui/protect-gui behavior, executor APIs, and Roblox input events; local static checks cannot confirm runtime compatibility.
 - [ ] **P1 — Verify fast mouse dragging at runtime.** Confirm that title-bar dragging continues when the cursor leaves the header rapidly and stops only after mouse release. Test across different frame rates and window positions.
 - [ ] **P1 — Verify touch dragging and mobile fitting.** Test narrow portrait and landscape viewports, viewport changes, touch drag cancellation, and window bounds. Confirm the floating toggle remains reachable and does not double-toggle.
@@ -53,10 +57,36 @@ This file tracks confirmed validation gaps, known risks, and planned improvement
 - [ ] **P2 — Add optional localization support** for built-in labels, settings text, notifications, and status badges.
 - [ ] **P2 — Add theme export/import** alongside config save/load.
 
-## Completed in v1.0.6
+## Regressions from the v1.1.0 rewrite
 
-- Redesigned changelog cards with version/date metadata, Latest badge, separators, and structured status rows.
-- Improved notifications with tinted status cards, accent strips, circular icons, responsive height, animations, and touch-safe dismissal.
-- Improved mobile behavior with responsive viewport fitting, global touch dragging, draggable floating toggle bounds, and tap-versus-drag detection.
-- Added touch-safe activation for tabs, toggles, dropdowns, color picker controls, buttons, notification close controls, and sliders.
-- Fixed fast mouse dragging by sampling cursor position globally each render frame while dragging.
+The Ironite redesign rewrote most of the UI layer. These v1.0.4-era behaviours were **not
+carried over** and are currently missing:
+
+- [ ] **P1 — Structured changelog items (`{ Text, Type }`) no longer render by type.**
+  `CreateHomeLayout` now only handles `entry.Text` (string) and `entry.Items` (plain
+  string list joined with bullets). The `added` / `fixed` / `changed` / `removed` status
+  rows are gone. Either reimplement or drop the item from the docs.
+- [ ] **P1 — Mobile viewport fitting was removed.** The old responsive viewport scaling and
+  toggle-bounds clamping are not in the new window constructor; only the floating
+  `MobileToggle` button survived. Re-test narrow portrait/landscape.
+- [ ] **P2 — Tap-versus-drag detection removed** from the mobile toggle (it can now
+  double-toggle when dragged).
+
+## Completed in v1.1.0
+
+- **Ironite-inspired redesign** — 37 px header strip, 75 px sidebar with active pill,
+  horizontal subtab row, two-column 281 px section page with automatic pairing.
+- **New Subtab API** — `Tab:AddSubtab(name)` → `Subtab:CreateSection(...)`. Legacy
+  `Tab:CreateSection` still works and auto-routes to a default subtab.
+- **Redesigned widgets** — square toggles with check glyph, slim 4 px sliders with a
+  14 px design halo, dropdowns with chevron pills, keybind chips with icon, buttons
+  with optional custom color, floating HSV color popup on the ScreenGui overlay.
+- **Section master toggle** — `CreateSection("Name", { Toggle = { Flag, Default, Callback } })`.
+- **`Window:SetHeader(name, tag, updatedText)`** with rich-text dimming of the tag/date.
+- Home and Settings tabs kept and restyled to the new layout.
+- **Fixed** duplicate flag registration in `Example.lua` (`InfJump`, `WalkSpeed`, `ESPColor`
+  were each registered twice).
+- **Fixed** fast mouse dragging — `makeDraggable` now samples `UserInputService.InputChanged`
+  globally while dragging instead of only on the handle.
+- **Static validation** — `.workbuddy-ai/validate.py` parses both Lua files and checks block
+  balance. Both pass.

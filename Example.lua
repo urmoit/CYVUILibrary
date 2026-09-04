@@ -1,20 +1,21 @@
 --[[
-    CYVUI Library v1.0.4 — Example
-    Home + Main (widgets) + Settings match dashboard mockup
+    CYVUI Library v1.1.0 — Example
+    Redesigned Ironite-inspired layout: sidebar + subtab row + two-column page
 ]]
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
 -- Or: local Library = require(path.to.Library)
 
 local Window = Library:CreateWindow({
-    Title    = "CYVUI",
-    GameName = "Example",
-    Version  = "v1.0.4",
-    Size     = UDim2.new(0, 900, 0, 560),
+    Title     = "CYVUI",
+    GameName  = "Example",
+    Version   = "v1.1.0",
+    Size      = UDim2.fromOffset(695, 489),
 })
+Window:SetHeader("CYVUI", "Example Hub", "v1.1.0")
 
 -- ═══════════════════════════════════════════
--- HOME (same layout every game — only content changes)
+-- HOME (dashboard layout, content varies per game)
 -- ═══════════════════════════════════════════
 local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
 
@@ -22,95 +23,88 @@ Home:CreateHomeLayout({
     Username   = game.Players.LocalPlayer.DisplayName,
     Welcome    = "welcome back",
     AboutTitle = "ABOUT",
-    AboutText  = "CYVUI example — dashboard Home, widgets, Settings themes, Lucide icons. Clean, fast, modular.",
+    AboutText  = "CYVUI example — redesigned Ironite-inspired layout. Sidebar tabs, subtab row, two-column page, redesigned widgets.",
     DiscordLink = "https://discord.gg/vTe3sNTsDM",
     ServerStats = {
         { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
-        { Num = "99.8%", Label = "UPTIME" },
-        { Num = "12ms", Label = "PING" },
+        { Num = "99.8%",                              Label = "UPTIME" },
+        { Num = "12ms",                               Label = "PING"    },
     },
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
-        {
-            Version = "v1.0.4",
-            Date = "2026-08-31",
-            Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes.",
-        },
-        {
-            Version = "v1.0.3",
-            Date = "2026-08-30",
-            Text = "CreateRow layouts, improved Home changelog.",
-        },
-        {
-            Version = "v1.0.0",
-            Date = "2026-08-29",
-            Text = "Initial CYVUI release.",
-        },
+        { Version = "v1.1.0", Date = "2026-09-04",
+          Text = "Ironite-inspired redesign: header + 75px sidebar + subtab row + two-column page. New Tab:AddSubtab API." },
+        { Version = "v1.0.4", Date = "2026-08-31",
+          Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes." },
+        { Version = "v1.0.3", Date = "2026-08-30",
+          Text = "Popup color picker, two-column CreateRow layouts, improved Home changelog cards." },
+        { Version = "v1.0.2", Date = "2026-08-30",
+          Text = "Working color picker, multi-select dropdown + search/All, live server stats." },
+        { Version = "v1.0.1", Date = "2026-08-29",
+          Text = "Notification redesign, badge overflow fix, new banner." },
+        { Version = "v1.0.0", Date = "2026-08-29",
+          Text = "Initial CYVUI release." },
     },
 })
 
 -- ═══════════════════════════════════════════
--- MAIN (feature widgets — 2-column style sections)
+-- MAIN — uses AddSubtab for grouped sections
 -- ═══════════════════════════════════════════
 local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
 
--- Two-column layout example
-local row = Main:CreateRow()
-local Left = row:Section("Player", { Icon = "user" })
-local Right = row:Section("Visuals", { Icon = "eye" })
+-- Subtab: Player
+local PlayerSub = Main:AddSubtab("Player")
+local PlayerSec = PlayerSub:CreateSection("Movement", { Icon = "user" })
+PlayerSec:AddToggle({ Text = "Infinite Jump", Flag = "InfJump", Default = false })
+PlayerSec:AddToggle({ Text = "No Clip",      Flag = "NoClip",  Default = false })
+PlayerSec:AddSlider({ Text = "Walk Speed",   Flag = "WalkSpeed", Min = 16, Max = 200, Default = 50 })
+PlayerSec:AddSlider({ Text = "Jump Power",   Flag = "JumpPower", Min = 50, Max = 200, Default = 50 })
+PlayerSec:AddKeybind({ Text = "Toggle UI", Flag = "ToggleUI", Default = Enum.KeyCode.RightShift })
 
-Left:AddToggle({ Text = "Infinite Jump", Flag = "InfJump" })
-Left:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
-Right:AddToggle({ Text = "ESP", Flag = "ESP" })
-Right:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
+local PlayerSec2 = PlayerSub:CreateSection("Quality of Life", { Icon = "settings" })
+PlayerSec2:AddDropdown({
+    Text = "Teleport Waypoint",
+    Options = { "Spawn", "Shop", "Arena", "Boss" },
+    Default = "Spawn",
+    Flag = "Waypoint",
+})
+PlayerSec2:AddTextbox({ Text = "Custom Tag", Placeholder = "Enter display tag...", Flag = "CustomTag" })
+PlayerSec2:AddButton({ Text = "Reset Character", Callback = function()
+    local c = game.Players.LocalPlayer.Character
+    if c then c:BreakJoints() end
+end })
 
-local Player = Main:CreateSection("Player (full width)", { Icon = "user" })
-Player:AddToggle({ Text = "Infinite Jump", Default = false, Flag = "InfJump" })
-Player:AddToggle({ Text = "No Clip", Default = false, Flag = "NoClip" })
-Player:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
-Player:AddSlider({ Text = "Jump Power", Min = 50, Max = 200, Default = 50, Flag = "JumpPower" })
-Player:AddButton({
-    Text = "Reset Character",
-    Callback = function()
-        local c = game.Players.LocalPlayer.Character
-        if c then c:BreakJoints() end
-    end,
+-- Subtab: Visuals
+local VisualsSub = Main:AddSubtab("Visuals")
+local VisSec = VisualsSub:CreateSection("ESP", { Icon = "eye" })
+VisSec:AddToggle({ Text = "ESP",    Flag = "ESP",    Default = false })
+VisSec:AddToggle({ Text = "Chams",  Flag = "Chams",  Default = false })
+VisSec:AddDropdown({
+    Text = "ESP Mode", Options = { "Off", "Box", "Skeleton", "Tracer" },
+    Default = "Skeleton", Flag = "ESPMode",
+})
+VisSec:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
+
+local VisSec2 = VisualsSub:CreateSection("Targets", { Icon = "user" })
+VisSec2:AddDropdown({
+    Text = "ESP Targets", Options = { "Players", "NPCs", "Bosses", "Items", "Vehicles" },
+    Default = { "Players", "Bosses" }, Multi = true, Flag = "ESPTargets",
 })
 
-local Visuals = Main:CreateSection("Visuals", { Icon = "eye" })
-Visuals:AddToggle({ Text = "ESP", Default = false, Flag = "ESP" })
-Visuals:AddToggle({ Text = "Chams", Default = false, Flag = "Chams" })
-Visuals:AddDropdown({
-    Text = "ESP Mode",
-    Options = { "Off", "Box", "Skeleton", "Tracer" },
-    Default = "Skeleton",
-    Flag = "ESPMode",
-})
-Visuals:AddDropdown({
-    Text = "ESP Targets",
-    Options = { "Players", "NPCs", "Bosses", "Items", "Vehicles" },
-    Default = { "Players", "Bosses" },
-    Multi = true,
-    Flag = "ESPTargets",
-})
-Visuals:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
-Visuals:AddTextbox({ Text = "Custom Tag", Placeholder = "Enter display tag...", Flag = "CustomTag" })
+-- Subtab: Automation
+local AutoSub = Main:AddSubtab("Automation")
+local AutoSec = AutoSub:CreateSection("Auto Farm", { Icon = "clock", Toggle = { Flag = "AutoFarmEnable", Default = true } })
+AutoSec:AddToggle({ Text = "Auto Farm", Flag = "AutoFarm", Default = true })
+AutoSec:AddToggle({ Text = "Auto Sell", Flag = "AutoSell", Default = false })
+AutoSec:AddSlider({ Text = "Sell Threshold", Flag = "SellThreshold", Min = 0, Max = 5000, Default = 500 })
 
-local Auto = Main:CreateSection("Automation", { Icon = "clock" })
-Auto:AddToggle({ Text = "Auto Farm", Default = true, Flag = "AutoFarm" })
-Auto:AddToggle({ Text = "Auto Sell", Default = false, Flag = "AutoSell" })
-Auto:AddDropdown({
+local AutoInfoSec = AutoSub:CreateSection("Priority", { Icon = "info" })
+AutoInfoSec:AddDropdown({
     Text = "Seed Priority",
     Options = { "Highest Value", "Fastest Growth", "Rarest First" },
     Default = "Highest Value",
     Flag = "SeedPriority",
 })
-Auto:AddSlider({ Text = "Sell Threshold", Min = 0, Max = 5000, Default = 500, Flag = "SellThreshold" })
-
-local Info = Main:CreateSection("Info", { Icon = "info" })
-Info:AddParagraph("This tab controls player movement, visual overlays and farm automation. Toggles apply instantly. Save from Settings.")
-Info:AddKeybind({ Text = "Toggle UI", Default = Enum.KeyCode.RightShift, Flag = "ToggleUI" })
-
--- Settings tab is built-in (bottom sidebar) with Theme / Config / General
+AutoInfoSec:AddParagraph("Auto Farm respects priority order when picking seeds. Save from Settings.")
 
 Library:Notify("CYVUI", "Library loaded.", 3, "success")

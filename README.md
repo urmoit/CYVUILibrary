@@ -5,9 +5,12 @@
 
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
 
-![Version](https://img.shields.io/badge/version-1.0.4-8b5cf6)
+![Version](https://img.shields.io/badge/version-1.1.0-8b5cf6)
 ![Luau](https://img.shields.io/badge/luau-Roblox-00a2ff)
 ![License](https://img.shields.io/badge/license-MIT-22d3ee)
+[![Changelog](https://img.shields.io/badge/changelog-v1.1.0-22d3ee)](./CHANGELOG.md)
+
+📜 **[Latest release → CHANGELOG.md](./CHANGELOG.md)** · v1.1.0 — Ironite-inspired redesign (header, sidebar, subtab row, two-column page).
 
 ---
 
