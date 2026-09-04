@@ -458,24 +458,13 @@ function Library:CreateWindow(config)
         Parent = header,
     })
 
-    local libIcon = make("ImageLabel", {
-        Name = "LibraryIcon",
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://108488788823423",
-        Position = UDim2.new(0, 12, 0.5, 0),
-        ScaleType = Enum.ScaleType.Fit,
-        Size = UDim2.fromOffset(20, 20),
-        Parent = header,
-    })
-
     local libName = make("TextLabel", {
         Name = "LibraryName",
         AnchorPoint = Vector2.new(0, 0.5),
         AutomaticSize = Enum.AutomaticSize.XY,
         BackgroundTransparency = 1,
         FontFace = Font.new(FONT_FACE, Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-        Position = UDim2.new(0, 38, 0.5, 0),
+        Position = UDim2.new(0, 12, 0.5, 0),
         RichText = true,
         Size = UDim2.fromOffset(1, 1),
         Text = title,
@@ -497,16 +486,6 @@ function Library:CreateWindow(config)
         TextColor3 = Color3.new(1, 1, 1),
         TextSize = 12,
         Parent = header,
-    })
-
-    local clockIcon = make("ImageLabel", {
-        Name = "ClockIcon",
-        AnchorPoint = Vector2.new(0, 0.5),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://84304363968016",
-        Position = UDim2.new(0, -22, 0.5, 0),
-        Size = UDim2.fromOffset(15, 15),
-        Parent = lastUpdated,
     })
 
     -- ═══ SIDEBAR ═══
@@ -625,11 +604,17 @@ function Library:CreateWindow(config)
     -- TAB + SUBTAB CREATION
     -- ═══════════════════════════════════════════
 
+    -- Layout builders are defined below CreateTab, but every created tab receives
+    -- the methods before it is returned. Forward declarations keep them in scope.
+    local createHomeLayout
+    local createSettingsLayout
+
     local function rebuildSubtabBar(tab)
-        -- Clear bar, re-add subtabs of current tab
-        for _, c in ipairs(subtabBar:GetChildren()) do
-            if not c:IsA("UIPadding") and not c:IsA("UIListLayout") then
-                c:Destroy()
+        -- Subtab buttons are persistent instances. Never destroy them here: each
+        -- Subtab object keeps a reference to its button for later tab switches.
+        for _, existingTab in ipairs(window.Tabs) do
+            for _, sub in ipairs(existingTab.Subtabs) do
+                sub.Button.Parent = (existingTab == tab) and subtabBar or nil
             end
         end
         if not tab or #tab.Subtabs == 0 then
@@ -637,10 +622,6 @@ function Library:CreateWindow(config)
             return
         end
         subtabBar.Visible = true
-        for i, sub in ipairs(tab.Subtabs) do
-            local entry = sub.Button
-            entry.Parent = subtabBar
-        end
     end
 
     local function activateSubtab(subtab)
@@ -705,7 +686,7 @@ function Library:CreateWindow(config)
             Text = tabName,
             TextColor3 = T.Inactive,
             TextSize = 12,
-            Parent = tabIconImg,
+            Parent = tabBtn,
         })
 
         -- Active-state pill (white-to-gray gradient)
@@ -2050,13 +2031,15 @@ function Library:CreateWindow(config)
         if isSettings then
             tab.AllowEmptyPage = true
         end
+        tab.CreateHomeLayout = createHomeLayout
+        tab.CreateSettingsLayout = createSettingsLayout
         return tab
     end
 
     -- ═══════════════════════════════════════════
     -- HOME LAYOUT
     -- ═══════════════════════════════════════════
-    function tab:CreateHomeLayout(homeConfig)
+    createHomeLayout = function(self, homeConfig)
         homeConfig = homeConfig or {}
 
         -- Use a special home subtab
@@ -2445,7 +2428,7 @@ function Library:CreateWindow(config)
     -- ═══════════════════════════════════════════
     -- SETTINGS LAYOUT
     -- ═══════════════════════════════════════════
-    function tab:CreateSettingsLayout(setConfig)
+    createSettingsLayout = function(self, setConfig)
         setConfig = setConfig or {}
         if #self.Subtabs == 0 then
             self:AddSubtab("Settings")

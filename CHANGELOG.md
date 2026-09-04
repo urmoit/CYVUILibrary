@@ -9,7 +9,7 @@ Full release history. The README image only highlights the latest two versions.
 ## v1.1.0 — 2026-09-04 — **Redesign**
 
 - **New layout** (Ironite-inspired):
-  - Header strip: library icon + name + last-updated date, 37 px tall
+  - Header strip: library name + last-updated date, 37 px tall, text-only (no icons)
   - Sidebar: 75 px wide, vertical tab list with icon + label + active pill
   - Subtab row: horizontal subtab strip appears above the page when a tab has subtabs
   - Page: two-column section layout (281 px sections), automatic pairing
@@ -18,6 +18,9 @@ Full release history. The README image only highlights the latest two versions.
 - **Section master toggle** — `CreateSection("Name", { Toggle = { Default, Flag, Callback } })` adds a single toggle to the section header
 - **New `Window:SetHeader(name, tag, updatedText)`** with rich-text coloring for the dimmed parts
 - Home and Settings tabs kept and restyled to fit the new layout
+- **Fixed empty example UI** — Home/Settings layout methods are attached to each returned Tab, rather than a stale local Tab variable
+- **Fixed tab switching** — persistent subtab buttons are reparented instead of destroyed
+- Topbar is text-only; removed the library and clock ImageLabels
 
 ## v1.0.4 — 2026-08-31
 
