@@ -2374,7 +2374,7 @@ function Library:CreateWindow(config)
             TextXAlignment = Enum.TextXAlignment.Left, Parent = chHeader,
         })
         local entries = homeConfig.Changelog or {
-            { Version = "v1.1.0", Date = "2026-09-04", Text = "Ironite-inspired redesign: header, sidebar, subtab row, two-column page." },
+            { Version = "v1.1.0", Date = "2026-09-07", Text = "Ironite-inspired redesign: header, sidebar, subtab row, two-column page." },
             { Version = "v1.0.4", Date = "2026-08-31", Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes." },
             { Version = "v1.0.3", Date = "2026-08-30", Text = "Popup color picker, CreateRow two-column layouts, improved Home changelog cards." },
             { Version = "v1.0.2", Date = "2026-08-30", Text = "Working color picker, multi-select dropdown + search/All, live server stats." },

@@ -32,7 +32,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
     Changelog = {
-        { Version = "v1.1.0", Date = "2026-09-04",
+        { Version = "v1.1.0", Date = "2026-09-07",
           Text = "Ironite-inspired redesign: header + 75px sidebar + subtab row + two-column page. New Tab:AddSubtab API." },
         { Version = "v1.0.4", Date = "2026-08-31",
           Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes." },
