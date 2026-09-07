@@ -27,6 +27,10 @@ Full release history. The README image only highlights the latest two versions.
 - **Fixed Home overflow**: the middle row had three 281 px cards (883 px) in a 620 px page; cards are now 185 px so all three fit.
 - **Fixed dropdown clipping**: option lists opened inside `ClipsDescendants` sections and were cut off; they now open as a ScreenGui overlay like the color picker.
 - Changelog card uses a fixed height with an inner scroll (no parent/child sizing cycle).
+- **Fixed empty tabs (sections never rendered)**: `local row` was declared *inside* the `if` block in `CreateSection`, so it fell out of scope before `Parent = row` ran. `row` resolved to `nil`, every section was orphaned, and only the Home tab had content because it builds its own rows. `row` is now declared before the block.
+- **Fixed subtab bar showing the wrong tab's subtabs**: subtab buttons were parented at creation time using their own tab instead of the selected one, so Main's Player/Visuals/Automation chips appeared on Home. All visibility and parenting now flows through a single `renderActive()` driven by `window.CurrentTab`.
+- **Subtab bar auto-hides** when a tab has only one subtab (Home and Settings create one automatically); the page expands to use the freed 44 px instead of showing a lone chip.
+- **First real tab wins selection**: Home is selected when marked `Home = true`, otherwise the first non-Settings tab takes over from the built-in Settings tab instead of relying on tab index.
 
 ## v1.0.4 — 2026-08-31
 

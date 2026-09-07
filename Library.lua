@@ -621,11 +621,43 @@ function Library:CreateWindow(config)
                 sub.Button.Parent = (existingTab == tab) and subtabBar or nil
             end
         end
-        if not tab or #tab.Subtabs == 0 then
+        -- A single subtab has nothing to switch between (Home/Settings create
+        -- one automatically), so the bar stays hidden and the page gets the
+        -- extra 44px instead of showing a lone chip.
+        if not tab or #tab.Subtabs <= 1 then
             subtabBar.Visible = false
+            page.Position = UDim2.fromOffset(75, 37)
+            page.Size = UDim2.new(1, -75, 1, -37)
             return
         end
         subtabBar.Visible = true
+        page.Position = UDim2.fromOffset(75, 81)
+        page.Size = UDim2.new(1, -75, 1, -81)
+    end
+
+    -- Single source of truth for "what is visible right now?". Called by every
+    -- lifecycle point (tab switch, subtab switch, section creation, home layout)
+    -- so newly created rows get the right visibility and the subtab bar always
+    -- shows the current tab's subtabs (not whichever tab happened to add them).
+    local function renderActive()
+        local cur = window.CurrentTab
+        if cur then
+            for _, t in ipairs(window.Tabs) do
+                local showTab = (t == cur)
+                for _, row in ipairs(t.ContainerRows) do
+                    local sub = rowMeta[row] and rowMeta[row].Subtab
+                    row.Visible = showTab and (sub == cur.CurrentSubtab or (not sub and not cur.CurrentSubtab))
+                end
+            end
+        else
+            for _, t in ipairs(window.Tabs) do
+                for _, row in ipairs(t.ContainerRows) do
+                    row.Visible = false
+                end
+            end
+        end
+        container.Visible = true
+        rebuildSubtabBar(cur)
     end
 
     local function activateSubtab(subtab)
@@ -638,12 +670,8 @@ function Library:CreateWindow(config)
             s.Label.TextColor3 = active and Color3.new(1, 1, 1) or T.Inactive
             s.Label.TextTransparency = active and 0 or 0.15
         end
-        -- Only show this subtab's rows when the tab is actually selected.
-        for _, row in ipairs(tab.ContainerRows) do
-            local sub = rowMeta[row] and rowMeta[row].Subtab
-            row.Visible = (tab == window.CurrentTab) and (sub == subtab)
-        end
         if tab.OnSelectSubtab then pcall(tab.OnSelectSubtab, subtab) end
+        renderActive()
     end
 
     function window:CreateTab(tabConfig)
@@ -735,15 +763,7 @@ function Library:CreateWindow(config)
                 end
             end
             window.CurrentTab = tab
-            -- Show only the selected tab's rows; hide every other tab's rows.
-            for _, t in ipairs(window.Tabs) do
-                for _, row in ipairs(t.ContainerRows) do
-                    local sub = rowMeta[row] and rowMeta[row].Subtab
-                    row.Visible = (t == tab) and (sub == tab.CurrentSubtab or (not sub and not tab.CurrentSubtab))
-                end
-            end
-            container.Visible = true
-            rebuildSubtabBar(tab)
+            renderActive()
         end
         tabBtn.MouseButton1Click:Connect(selectTab)
 
@@ -757,7 +777,6 @@ function Library:CreateWindow(config)
                 AutomaticSize = Enum.AutomaticSize.X,
                 BackgroundTransparency = 1,
                 Size = UDim2.fromOffset(80, 49),
-                Parent = subtabBar,
             })
             local tabName = make("TextLabel", {
                 Name = "TabName",
@@ -811,7 +830,6 @@ function Library:CreateWindow(config)
 
             function subtab:Select()
                 activateSubtab(self)
-                rebuildSubtabBar(window.CurrentTab)
             end
 
             entry.InputBegan:Connect(function(input)
@@ -826,8 +844,12 @@ function Library:CreateWindow(config)
 
                 -- Find or create row (2-column pairing). Metadata is kept on the
                 -- Lua subtab table; the row Frame only stores a rowMeta entry.
-                if not subtab._currentRow or subtab._rowCount >= 2 then
-                    local row = make("Frame", {
+                -- NOTE: `row` MUST be declared before the `if`, otherwise it goes
+                -- out of scope and `Parent = row` below silently resolves to nil,
+                -- leaving every section orphaned and invisible.
+                local row = subtab._currentRow
+                if not row or subtab._rowCount >= 2 then
+                    row = make("Frame", {
                         Name = "Row",
                         BackgroundTransparency = 1,
                         Size = UDim2.new(1, 0, 0, 0),
@@ -1998,15 +2020,19 @@ function Library:CreateWindow(config)
                 end
 
                 table.insert(subtab.Sections, sec)
+                -- New row(s) just got parented to the shared container; refresh
+                -- visibility so rows created in an inactive tab start hidden.
+                renderActive()
                 return sec
             end
 
             table.insert(tab.Subtabs, subtab)
-            -- Auto-select first subtab
+            -- Auto-select the first subtab; for additional subtabs just refresh
+            -- the bar (must use the currently selected tab, not this subtab's).
             if #tab.Subtabs == 1 then
                 subtab:Select()
             else
-                rebuildSubtabBar(tab)
+                renderActive()
             end
             return subtab
         end
@@ -2029,8 +2055,11 @@ function Library:CreateWindow(config)
 
         if isHome then
             selectTab()
-        elseif (not isSettings) and #window.Tabs == 1 then
+        elseif (not isSettings) and ((not window.CurrentTab) or window.CurrentTab.IsSettings) then
+            -- First real tab wins, even though Settings was built first.
             selectTab()
+        else
+            renderActive()
         end
         tab.CreateHomeLayout = createHomeLayout
         tab.CreateSettingsLayout = createSettingsLayout
