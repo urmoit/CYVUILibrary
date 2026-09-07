@@ -495,27 +495,54 @@
       margin:52px 0 18px !important;
       padding-bottom:12px;
       font-size:1.5rem !important; font-weight:700; letter-spacing:-.025em;
-      color:#fff;
+      color:#fff !important;
       border-bottom:1px solid var(--line);
     }
     .markdown-section h3{
       margin:36px 0 14px !important;
       font-size:1.13rem !important; font-weight:650; letter-spacing:-.015em;
-      color:#fff;
+      color:#fff !important;
     }
     .markdown-section h4{
       margin:26px 0 12px !important;
-      font-size:1rem !important; font-weight:650; color:#fff;
+      font-size:1rem !important; font-weight:650;
+      color:#fff !important;
     }
-    .markdown-section h1 .anchor span,
-    .markdown-section h2 .anchor span,
-    .markdown-section h3 .anchor span{
-      color: var(--accent) !important; opacity:0;
-      transition:.2s;
+    /* Heading anchor link — in themeable, `.anchor` wraps the heading text
+       (the # glyph is not a separate element). Earlier we set
+       opacity:0 on `.anchor span` to hide the #, which instead hid the
+       heading text itself. Keep the text visible, force inherit so it
+       never picks up the cyan link color, and show a small "#" in the
+       left gutter on hover. */
+    .markdown-section :is(h1,h2,h3,h4){ position:relative; }
+    .markdown-section a.anchor{
+      color: inherit !important;
+      border-bottom: none !important;
+      text-decoration: none !important;
+      font-weight: inherit;
     }
-    .markdown-section h1:hover .anchor span,
-    .markdown-section h2:hover .anchor span,
-    .markdown-section h3:hover .anchor span{ opacity:1; }
+    .markdown-section a.anchor span{
+      color: inherit !important;
+      opacity: 1 !important;
+    }
+    .markdown-section a.anchor::before{
+      content: '#';
+      position: absolute;
+      left: -22px; top: 0;
+      color: var(--accent);
+      font-weight: 400;
+      opacity: 0;
+      transform: translateX(4px);
+      transition: .2s;
+      pointer-events: none;
+    }
+    .markdown-section :is(h1,h2,h3,h4):hover a.anchor::before{
+      opacity: 1;
+      transform: none;
+    }
+    @media (max-width:1100px){
+      .markdown-section a.anchor::before{ display:none; }
+    }
 
     /* links */
     .markdown-section a{
