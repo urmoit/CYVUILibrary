@@ -6,7 +6,7 @@ Full release history. The README image only highlights the latest two versions.
 
 ---
 
-## v1.1.0 — 2026-09-04 — **Redesign**
+## v1.1.0 — 2026-09-07 — **Redesign**
 
 - **New layout** (Ironite-inspired):
   - Header strip: library name + last-updated date, 37 px tall, text-only (no icons)
