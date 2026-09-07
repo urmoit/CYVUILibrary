@@ -519,13 +519,14 @@ function Library:CreateWindow(config)
     listLayout(sidebarHolder, 5, Enum.FillDirection.Vertical)
     padding(sidebarHolder, 10, 10, 9, 0)
 
-    -- ═══ CONTENT (right side: subtab row + page) ═══
+    -- ═══ CONTENT (right of sidebar: subtab row + page) ═══
+    -- Sidebar occupies x:0..75, header occupies y:0..37. Content fills the rest,
+    -- with the subtab bar (44px) above the page (remaining height).
     local subtabBar = make("Frame", {
         Name = "SubHeader",
-        AnchorPoint = Vector2.new(0.5, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.fromScale(0.5547, 0.128),
-        Size = UDim2.fromOffset(621, 51),
+        Position = UDim2.fromOffset(75, 37),
+        Size = UDim2.new(1, -75, 0, 44),
         Visible = false,
         ClipsDescendants = true,
         Parent = main,
@@ -535,23 +536,21 @@ function Library:CreateWindow(config)
 
     local page = make("Frame", {
         Name = "Page",
-        AnchorPoint = Vector2.new(1, 1),
         BackgroundColor3 = T.Page,
         ClipsDescendants = true,
-        Position = UDim2.fromScale(1, 1),
-        Size = UDim2.fromOffset(620, 401),
+        Position = UDim2.fromOffset(75, 81),
+        Size = UDim2.new(1, -75, 1, -81),
         Parent = main,
     })
     corner(page, 11)
 
-    -- Container holds section rows
+    -- Container holds the active tab's section rows
     local container = make("ScrollingFrame", {
         Name = "Container",
         Active = true,
         BackgroundTransparency = 1,
-        Position = UDim2.fromScale(0.5, 0.5),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.fromOffset(620, 401),
+        Position = UDim2.fromOffset(0, 0),
+        Size = UDim2.new(1, 0, 1, 0),
         ScrollBarImageColor3 = T.ScrollBar,
         ScrollBarThickness = 1,
         BorderSizePixel = 0,
@@ -609,6 +608,11 @@ function Library:CreateWindow(config)
     local createHomeLayout
     local createSettingsLayout
 
+    -- Roblox Instances cannot hold arbitrary Lua fields, so row -> owning-subtab
+    -- metadata lives here instead of on the Instance (writing `row.Subtab = ...`
+    -- or `row._count = ...` throws and halts the whole window build).
+    local rowMeta = {}
+
     local function rebuildSubtabBar(tab)
         -- Subtab buttons are persistent instances. Never destroy them here: each
         -- Subtab object keeps a reference to its button for later tab switches.
@@ -634,15 +638,10 @@ function Library:CreateWindow(config)
             s.Label.TextColor3 = active and Color3.new(1, 1, 1) or T.Inactive
             s.Label.TextTransparency = active and 0 or 0.15
         end
+        -- Only show this subtab's rows when the tab is actually selected.
         for _, row in ipairs(tab.ContainerRows) do
-            row.Visible = (row.Subtab == subtab)
-        end
-        if tab.Container then
-            local visibleRows = {}
-            for _, row in ipairs(tab.ContainerRows) do
-                if row.Visible then table.insert(visibleRows, row) end
-            end
-            tab.Container.Visible = #visibleRows > 0 or tab.AllowEmptyPage ~= false
+            local sub = rowMeta[row] and rowMeta[row].Subtab
+            row.Visible = (tab == window.CurrentTab) and (sub == subtab)
         end
         if tab.OnSelectSubtab then pcall(tab.OnSelectSubtab, subtab) end
     end
@@ -736,17 +735,15 @@ function Library:CreateWindow(config)
                 end
             end
             window.CurrentTab = tab
-            -- Show subtab bar if needed, hide rows from other tabs
+            -- Show only the selected tab's rows; hide every other tab's rows.
             for _, t in ipairs(window.Tabs) do
                 for _, row in ipairs(t.ContainerRows) do
-                    row.Visible = (t == tab) and (row.Subtab == tab.CurrentSubtab or (not row.Subtab and not tab.CurrentSubtab))
+                    local sub = rowMeta[row] and rowMeta[row].Subtab
+                    row.Visible = (t == tab) and (sub == tab.CurrentSubtab or (not sub and not tab.CurrentSubtab))
                 end
             end
+            container.Visible = true
             rebuildSubtabBar(tab)
-            if tab.AllowEmptyPage == nil then tab.AllowEmptyPage = false end
-            if tab.Container and tab ~= window.CurrentTab then
-                -- ensure visibility logic is correct
-            end
         end
         tabBtn.MouseButton1Click:Connect(selectTab)
 
@@ -808,11 +805,13 @@ function Library:CreateWindow(config)
                 Label = tabName,
                 Pill = pill,
                 Sections = {},
+                _rowCount = 0,
+                _currentRow = nil,
             }
 
             function subtab:Select()
                 activateSubtab(self)
-                rebuildSubtabBar(tab)
+                rebuildSubtabBar(window.CurrentTab)
             end
 
             entry.InputBegan:Connect(function(input)
@@ -821,16 +820,14 @@ function Library:CreateWindow(config)
                 end
             end)
 
-            -- Current row tracking for section pairing
-            local currentRow = nil
-
             function subtab:CreateSection(name, opts)
                 opts = opts or {}
                 local sectionName = name or "Section"
 
-                -- Find or create row (2-column pairing)
-                if not currentRow or currentRow._count >= 2 then
-                    currentRow = make("Frame", {
+                -- Find or create row (2-column pairing). Metadata is kept on the
+                -- Lua subtab table; the row Frame only stores a rowMeta entry.
+                if not subtab._currentRow or subtab._rowCount >= 2 then
+                    local row = make("Frame", {
                         Name = "Row",
                         BackgroundTransparency = 1,
                         Size = UDim2.new(1, 0, 0, 0),
@@ -841,12 +838,13 @@ function Library:CreateWindow(config)
                     rl.FillDirection = Enum.FillDirection.Horizontal
                     rl.Padding = UDim.new(0, 20)
                     rl.SortOrder = Enum.SortOrder.LayoutOrder
-                    rl.Parent = currentRow
-                    currentRow._count = 0
-                    currentRow.Subtab = subtab
-                    table.insert(subtab.Tab.ContainerRows, currentRow)
+                    rl.Parent = row
+                    subtab._currentRow = row
+                    subtab._rowCount = 0
+                    rowMeta[row] = { Subtab = subtab }
+                    table.insert(subtab.Tab.ContainerRows, row)
                 end
-                currentRow._count = currentRow._count + 1
+                subtab._rowCount = subtab._rowCount + 1
 
                 local section = make("Frame", {
                     Name = "Section",
@@ -854,7 +852,7 @@ function Library:CreateWindow(config)
                     BackgroundColor3 = T.Panel,
                     ClipsDescendants = true,
                     Size = UDim2.fromOffset(281, 60),
-                    Parent = currentRow,
+                    Parent = row,
                 })
                 corner(section, 6)
 
@@ -964,18 +962,17 @@ function Library:CreateWindow(config)
                     end)
                 end
 
-                -- Element list area (below header)
+                -- Element list area (directly below the 30px header)
                 local holder = make("Frame", {
                     Name = "Holder",
-                    AnchorPoint = Vector2.new(0.5, 0),
-                    AutomaticSize = Enum.AutomaticSize.XY,
                     BackgroundTransparency = 1,
-                    Position = UDim2.fromScale(0.5, 1),
-                    Size = UDim2.fromOffset(1, 1),
+                    Position = UDim2.fromOffset(0, 30),
+                    Size = UDim2.new(1, 0, 0, 0),
+                    AutomaticSize = Enum.AutomaticSize.Y,
                     Parent = section,
                 })
-                listLayout(holder, 4)
-                padding(holder, 45, 5, 0, 0)
+                listLayout(holder, 8)
+                padding(holder, 10, 10, 10, 10)
 
                 local sec = {
                     Frame = section,
@@ -1472,8 +1469,7 @@ function Library:CreateWindow(config)
                                     for _, o in ipairs(optButtons) do
                                         o.lbl.TextColor3 = (o.opt == default) and Color3.new(1,1,1) or T.TextDim
                                     end
-                                    listFrame.Visible = false
-                                    listFrame.Size = UDim2.fromOffset(264, 0)
+                                    setOpen(false)
                                 end
                                 fireChange()
                             end
@@ -1488,9 +1484,15 @@ function Library:CreateWindow(config)
                         listFrame.Visible = open
                         if open then
                             local h = math.min(#options * 24 + 8, 140)
+                            -- Open on the ScreenGui overlay so the section's
+                            -- ClipsDescendants cannot cut the option list off.
+                            listFrame.AnchorPoint = Vector2.new(0, 0)
+                            listFrame.Position = UDim2.fromOffset(box.AbsolutePosition.X, box.AbsolutePosition.Y + box.AbsoluteSize.Y + 2)
+                            listFrame.Parent = screenGui
                             listFrame.Size = UDim2.fromOffset(264, h)
                         else
                             listFrame.Size = UDim2.fromOffset(264, 0)
+                            listFrame.Parent = wrap
                         end
                     end
                     box.InputBegan:Connect(function(input)
@@ -2020,16 +2022,15 @@ function Library:CreateWindow(config)
             return defaultSub:CreateSection(name, opts)
         end
 
+        -- Settings is built-in and created first; push it to the end of the
+        -- sidebar and never let it auto-select ahead of the user's Home tab.
+        tabBtn.LayoutOrder = isSettings and 999 or #window.Tabs
         table.insert(window.Tabs, tab)
 
-        -- Auto-select first tab (or set Home/Settings)
         if isHome then
             selectTab()
-        elseif #window.Tabs == 1 then
+        elseif (not isSettings) and #window.Tabs == 1 then
             selectTab()
-        end
-        if isSettings then
-            tab.AllowEmptyPage = true
         end
         tab.CreateHomeLayout = createHomeLayout
         tab.CreateSettingsLayout = createSettingsLayout
@@ -2161,7 +2162,7 @@ function Library:CreateWindow(config)
         local discordCard = make("Frame", {
             BackgroundColor3 = T.Panel,
             AutomaticSize = Enum.AutomaticSize.Y,
-            Size = UDim2.fromOffset(281, 96),
+            Size = UDim2.fromOffset(185, 96),
             Parent = midRow,
         })
         corner(discordCard, 6)
@@ -2201,7 +2202,7 @@ function Library:CreateWindow(config)
         local serverCard = make("Frame", {
             BackgroundColor3 = T.Panel,
             AutomaticSize = Enum.AutomaticSize.Y,
-            Size = UDim2.fromOffset(281, 96),
+            Size = UDim2.fromOffset(185, 96),
             Parent = midRow,
         })
         corner(serverCard, 6)
@@ -2283,7 +2284,7 @@ function Library:CreateWindow(config)
         local execCard = make("Frame", {
             BackgroundColor3 = T.Panel,
             AutomaticSize = Enum.AutomaticSize.Y,
-            Size = UDim2.fromOffset(281, 96),
+            Size = UDim2.fromOffset(185, 96),
             Parent = midRow,
         })
         corner(execCard, 6)
@@ -2323,12 +2324,11 @@ function Library:CreateWindow(config)
         })
         corner(badge, 4)
 
-        -- Changelog row (single column)
+        -- Changelog row (single column, fixed height with inner scroll)
         local changeCard = make("Frame", {
             Name = "Changelog",
             BackgroundColor3 = T.Panel,
-            AutomaticSize = Enum.AutomaticSize.Y,
-            Size = UDim2.new(1, 0, 0, 200),
+            Size = UDim2.new(1, 0, 0, 220),
             LayoutOrder = 3,
             Parent = container,
         })
@@ -2419,9 +2419,9 @@ function Library:CreateWindow(config)
         table.insert(subtab.Tab.ContainerRows, topRow)
         table.insert(subtab.Tab.ContainerRows, midRow)
         table.insert(subtab.Tab.ContainerRows, changeCard)
-        topRow.Subtab  = subtab
-        midRow.Subtab  = subtab
-        changeCard.Subtab = subtab
+        rowMeta[topRow]  = { Subtab = subtab }
+        rowMeta[midRow]  = { Subtab = subtab }
+        rowMeta[changeCard] = { Subtab = subtab }
         subtab:Select()
     end
 
@@ -2560,8 +2560,9 @@ function Library:CreateWindow(config)
     pcall(function()
         local cam = workspace.CurrentCamera
         if cam and cam.ViewportSize.X < 700 then
+            -- AnchorPoint is (0.5, 0.5), so shrinking Size keeps it centered; do
+            -- not also re-offset Position or the frame drifts off-center.
             main.Size = UDim2.fromOffset(math.min(size.X.Offset, cam.ViewportSize.X - 24), math.min(size.Y.Offset, cam.ViewportSize.Y - 48))
-            main.Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(main.Size.X.Offset / 2, main.Size.Y.Offset / 2) + UDim2.fromOffset(0, 0)
         end
     end)
 

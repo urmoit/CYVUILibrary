@@ -18,9 +18,15 @@ Full release history. The README image only highlights the latest two versions.
 - **Section master toggle** — `CreateSection("Name", { Toggle = { Default, Flag, Callback } })` adds a single toggle to the section header
 - **New `Window:SetHeader(name, tag, updatedText)`** with rich-text coloring for the dimmed parts
 - Home and Settings tabs kept and restyled to fit the new layout
-- **Fixed empty example UI** — Home/Settings layout methods are attached to each returned Tab, rather than a stale local Tab variable
-- **Fixed tab switching** — persistent subtab buttons are reparented instead of destroyed
 - Topbar is text-only; removed the library and clock ImageLabels
+- **Fixed blank example UI (runtime crash)**: row pairing and per-row owning-tab metadata were stored on Roblox Instances (`row._count`, `row.Subtab`) — assigning arbitrary fields to an Instance throws and halted `CreateWindow` after the built-in Settings tab, so Home/Main never built. Metadata now lives in a Lua `rowMeta` table.
+- **Fixed content visibility**: inactive tabs/subtabs no longer leak rows into the selected page; rows show only for the selected tab + subtab.
+- **Fixed sidebar order**: Settings is built-in and created first, so it now gets `LayoutOrder = 999` and is never auto-selected over the user's Home tab.
+- **Fixed geometry**: subtab bar was positioned off-screen/overlapping the page; it now sits at `(75, 37)` with the page directly below it. Removed the doubled responsive-position offset.
+- **Fixed section sizing cycle**: element holder was anchored to the section's bottom with 45 px top padding, clipping content; it now sits directly under the 30 px header.
+- **Fixed Home overflow**: the middle row had three 281 px cards (883 px) in a 620 px page; cards are now 185 px so all three fit.
+- **Fixed dropdown clipping**: option lists opened inside `ClipsDescendants` sections and were cut off; they now open as a ScreenGui overlay like the color picker.
+- Changelog card uses a fixed height with an inner scroll (no parent/child sizing cycle).
 
 ## v1.0.4 — 2026-08-31
 
