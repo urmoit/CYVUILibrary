@@ -1,9 +1,9 @@
-# CYVUI Library v1.1.0 — Documentation
+# CYVUI Library v1.1.1 — Documentation
 
 Dark modern Roblox UI library, **Ironite-inspired** layout (header + 75px sidebar + subtab row + two-column page).  
 **Home** and **Settings** share the same dashboard structure across games — only content varies.
 
-> 📜 [CHANGELOG.md](./CHANGELOG.md) — v1.1.0 redesign highlights every change since v1.0.4.
+> 📜 [CHANGELOG.md](./CHANGELOG.md) — v1.1.1 stability (dropdown redesign, Settings/config/watermark, themed notifies, reload purge) on top of the v1.1.0 redesign.
 
 ---
 
@@ -20,6 +20,8 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 -- or require if you package as a ModuleScript
 ```
 
+**Reload behavior:** every `CreateWindow` call destroys any previous CYVUI UI (tracked windows, watermark, notification holder, and leftover `CYVUI*` ScreenGuis under CoreGui / PlayerGui / `gethui()`). Safe to re-execute the same script.
+
 ---
 
 ## Quick start
@@ -28,9 +30,10 @@ local Library = loadstring(readfile("CYVUI/Library.lua"))()
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.1.0",
+    Version  = "v1.1.1",
     Size     = UDim2.fromOffset(695, 489),
 })
+Window:SetHeader("CYVHUB", "My Game", "v1.1.1")
 
 local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
 Home:CreateHomeLayout({
@@ -45,7 +48,7 @@ Home:CreateHomeLayout({
     },
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign, badge fix." },
+        { Version = "v1.1.1", Date = "2026-09-20", Text = "Stability release." },
     },
 })
 
@@ -54,7 +57,9 @@ local Sec = Main:CreateSection("Player", { Icon = "user" })
 Sec:AddToggle({ Text = "Speed", Flag = "Speed", Callback = function(v) end })
 ```
 
-Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
+Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.  
+A **floating toggle** (rounded square) is always created — drag to move, click to show/hide UI.  
+A **watermark** (title · hub · version + fps/ping) is created top-left; toggle it in Settings → General.
 
 ---
 
@@ -65,18 +70,28 @@ Settings tab is **built-in** (bottom of sidebar) with Theme / Config / General.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | Title | string | `"CYVHUB"` | Header library name |
-| GameName | string | `""` | Dimmed tag shown after the name (rich-text colored) |
-| Version | string | `"v1.1.0"` | Shown in "Updated Last ..." on the right |
+| GameName | string | `""` | Dimmed tag after the name |
+| Version | string | `"v1.1.1"` | Version string (header / watermark) |
 | Size | UDim2 | `695×489` | Window size |
 
 **Returns:** Window  
 
-Methods: `:SetTitle(title, game, version)`, `:CreateTab(config)`
+Also destroys any previous CYVUI instance before building.
 
-### Example — rename window after load
+### Window methods
+
+| Method | Description |
+|--------|-------------|
+| `:SetHeader(name, tag, updatedText?)` | Header rich-text name + tag + right-side text |
+| `:SetTitle(...)` | Alias of `SetHeader` |
+| `:CreateTab(config)` | Sidebar tab |
+| `:SetWatermarkVisible(boolean)` | Show / hide watermark |
+| `:SetWatermarkText(string)` | Override watermark label text |
 
 ```lua
-Window:SetTitle("CYVHUB", "Rivals", "v1.2")
+Window:SetHeader("CYVHUB", "Rivals", "v1.2")
+Window:SetWatermarkText("CYVHUB  ·  Rivals  ·  v1.2")
+Window:SetWatermarkVisible(true)
 ```
 
 ---
@@ -88,26 +103,26 @@ Window:SetTitle("CYVHUB", "Rivals", "v1.2")
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | Name | string | `"Tab"` | Sidebar label |
-| Icon | string | `"house"` | **Lucide** icon name |
+| Icon | string | `"house"` | Lucide icon name |
 | Home | boolean | `false` | Default selected Home tab |
-| Settings | boolean | `false` | Binds to bottom Settings button |
+| Settings | boolean | `false` | Marks built-in Settings tab |
 
 ### Tab methods
 
 | Method | Description |
 |--------|-------------|
-| `:AddSubtab(name)` | Adds a horizontal subtab to the subtab row. Returns `Subtab` |
-| `:CreateSection(name, { Icon, Toggle })` | Section (auto-routes to the first subtab; creates one if none). `Toggle` adds a master switch in the header. |
+| `:AddSubtab(name)` | Horizontal subtab chip. Returns `Subtab` |
+| `:CreateSection(name, { Icon, Toggle })` | Section (auto-routes to first subtab). `Toggle` = section master switch |
 | `:CreateHomeLayout(config)` | Fixed Home dashboard |
-| `:CreateSettingsLayout(config)` | Standard Settings blocks |
+| `:CreateSettingsLayout(config?)` | Theme / Config / General blocks |
 
 ### Subtabs
 
 ```lua
-local Player = Window:CreateTab({ Name = "Main", Icon = "layout" })
+local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
 
-local PlayerSub = Player:AddSubtab("Player")
-local VisualsSub = Player:AddSubtab("Visuals")
+local PlayerSub = Main:AddSubtab("Player")
+local VisualsSub = Main:AddSubtab("Visuals")
 
 PlayerSub:CreateSection("Movement", { Icon = "user" })
     :AddToggle({ Text = "Speed", Flag = "Speed" })
@@ -116,24 +131,14 @@ VisualsSub:CreateSection("ESP", { Icon = "eye" })
     :AddToggle({ Text = "ESP", Flag = "ESP" })
 ```
 
-### Example — multiple feature tabs
-
-```lua
-local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
-local Player = Window:CreateTab({ Name = "Player", Icon = "user" })
-local Visuals = Window:CreateTab({ Name = "Visuals", Icon = "eye" })
-```
-
 ---
 
 ## Home layout
 
-Same structure every UI:
-
 ```
 [ Profile (avatar + @user + welcome) ] [ ABOUT text ]
 [ Discord Copy Link ] [ Server stats ] [ Executor badge ]
-[ Changelog list (custom entries) ]
+[ Changelog list ]
 ```
 
 ### `Tab:CreateHomeLayout(config)`
@@ -141,7 +146,7 @@ Same structure every UI:
 | Key | Type | Description |
 |-----|------|-------------|
 | Username | string | Display name (prefixed with @) |
-| Welcome | string | Status line under name |
+| Welcome | string | Status under name |
 | AboutTitle | string | Default `"ABOUT"` |
 | AboutText | string | Body |
 | DiscordLink | string | Copied by Copy Link |
@@ -149,88 +154,114 @@ Same structure every UI:
 | ExecutorName | string | Executor label |
 | Changelog | table | `{ Version, Date, Text }` entries |
 
-### Example — live server stats
-
-```lua
-Home:CreateHomeLayout({
-    Username = game.Players.LocalPlayer.DisplayName,
-    Welcome = "welcome back",
-    AboutText = "Farm hub for Grow a Garden 2.",
-    DiscordLink = "https://discord.gg/vTe3sNTsDM",
-    ServerStats = {
-        { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
-        { Num = "99.8%", Label = "UPTIME" },
-        { Num = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000) .. "ms", Label = "PING" },
-    },
-    ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
-    Changelog = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Auto farm stability." },
-        { Version = "v1.0.0", Date = "2026-08-20", Text = "Initial game release." },
-    },
-})
-```
-
 ---
 
 ## Settings layout
 
-Always available via sidebar **Settings**. Customize with:
+Always available via sidebar **Settings**. Optional customization:
 
 | Key | Description |
 |-----|-------------|
 | Themes | Array of `{ Name, Accent, Accent2 }` presets |
-| Configs | Dropdown config names |
-| OnSave / OnLoad | Callbacks |
-| OnTheme | Fired when preset clicked |
+| Configs | Names for the Active Config dropdown |
+| OnSave | `function(flags)` — overrides built-in save |
+| OnLoad | `function(configName)` — overrides built-in load |
+| OnTheme | Fired when a theme preset is clicked |
 
-### Example — custom settings
+### Built-in blocks
+
+**Theme**
+- Accent presets (clickable swatches)
+- UI Transparency slider (main frame + panels)
+
+**Config**
+- Active Config dropdown
+- Save Config → `OnSave` **or** `writefile("CYVUI_<name>.json")` when available
+- Load Config → `OnLoad` **or** `readfile` + JSON into `Library.Flags`
+- Auto Load On Join flag
+
+**General**
+- Minimize Keybind (`Library.Flags.MinimizeKey`)
+- Watermark toggle (`Window:SetWatermarkVisible`)
+- Notifications toggle (gates `Library:Notify`)
+- Destroy UI (main + watermark + notify holder)
+
+### Example — custom settings hooks
 
 ```lua
-local Settings = Window:CreateTab({ Name = "Settings", Icon = "settings", Settings = true })
-Settings:CreateSettingsLayout({
-    Themes = {
-        { Name = "Violet", Accent = Color3.fromRGB(139, 92, 246), Accent2 = Color3.fromRGB(34, 211, 238) },
-        { Name = "Crimson", Accent = Color3.fromRGB(248, 113, 113), Accent2 = Color3.fromRGB(251, 191, 36) },
-    },
-    Configs = { "default", "farming", "pvp" },
-    OnSave = function()
-        if writefile then
-            writefile("cyvui_config.json", game:GetService("HttpService"):JSONEncode(Library.Flags))
-        end
-        Library:Notify("Config", "Saved", 2, "success")
-    end,
-    OnLoad = function()
-        Library:Notify("Config", "Loaded", 2, "success")
-    end,
-    OnTheme = function(preset)
-        print("Theme:", preset.Name)
-    end,
-})
+-- Built-in Settings tab is created automatically.
+-- To customize it before/around your tabs, call CreateSettingsLayout on the Settings tab
+-- only if you create Settings yourself with Settings = true. Otherwise defaults apply.
+
+-- Prefer hooks via a second pass if you own the Settings tab:
+-- Settings:CreateSettingsLayout({
+--     Themes = {
+--         { Name = "Violet", Accent = Color3.fromRGB(139, 92, 246), Accent2 = Color3.fromRGB(34, 211, 238) },
+--     },
+--     Configs = { "default", "farming", "pvp" },
+--     OnSave = function(flags)
+--         -- custom persist
+--     end,
+--     OnLoad = function(name)
+--         -- custom restore
+--     end,
+--     OnTheme = function(preset)
+--         print("Theme:", preset.Name)
+--     end,
+-- })
 ```
 
-Default Settings (if you only use the built-in tab) includes: accent presets, transparency slider, config dropdown, save/load, auto-load, minimize keybind, watermark, notifications, destroy UI.
+Default file name pattern for built-in save/load: **`CYVUI_<ConfigName>.json`**.
 
 ---
 
 ## Sections & elements
 
-### `Tab:CreateSection(name, opts?)`
+### `Subtab:CreateSection(name, opts?)` / `Tab:CreateSection(...)`
 
-`opts.Icon` — Lucide name for the section header.
+`opts.Icon` — Lucide name.  
+`opts.Toggle` — `{ Flag, Default, Callback }` master switch in the section header.
 
 | Method | Notes |
 |--------|--------|
 | `:AddToggle({ Text, Default, Flag, Callback })` | Returns `{ Set, Get }` |
 | `:AddSlider({ Text, Min, Max, Default, Decimals, Flag, Callback })` | |
-| `:AddButton({ Text, Accent, Callback })` | `Accent = true` → violet CTA |
-| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | `Multi = true` enables multi-select + **All** toggle; search is always shown when open |
-| `:AddColorPicker({ Text, Default, Flag, Callback })` | Working HSV picker (sat/val square + hue bar) |
+| `:AddButton({ Text, Color?, Callback })` | Optional solid `Color` |
+| `:AddDropdown({ Text, Options, Default, Flag, Callback, Multi })` | See **Dropdown** below |
+| `:AddColorPicker({ Text, Default, Flag, Callback })` | Floating HSV popup |
 | `:AddTextbox({ Text, Placeholder, Default, Flag, Callback })` | |
 | `:AddKeybind({ Text, Default, Flag, Callback })` | |
-| `:AddColorPicker({ Text, Default, Flag, Callback })` | Swatch + hex |
 | `:AddLabel` / `:AddParagraph` | Wrapped text |
 
-### Example — full widget section
+### Dropdown (v1.1.1)
+
+When open:
+- **Search** field filters options
+- **Multi = true** → Select All / Deselect All + multi selection
+- Accent border while open
+- Outside click closes
+- List opens on the ScreenGui (not clipped by section)
+
+```lua
+Sec:AddDropdown({
+    Text = "ESP Targets",
+    Options = { "Players", "NPCs", "Bosses", "Items" },
+    Default = { "Players" },
+    Multi = true,
+    Flag = "ESPTargets",
+    Callback = function(list) end, -- array of strings when Multi
+})
+
+Sec:AddDropdown({
+    Text = "Mode",
+    Options = { "Off", "Box", "Skeleton" },
+    Default = "Box",
+    Flag = "Mode",
+    Callback = function(value) end, -- single string
+})
+```
+
+### Example — widgets
 
 ```lua
 local Combat = Main:CreateSection("Combat", { Icon = "crosshair" })
@@ -239,18 +270,13 @@ Combat:AddToggle({
     Text = "Aimbot",
     Default = false,
     Flag = "Aimbot",
-    Callback = function(on)
-        -- enable / disable
-    end,
+    Callback = function(on) end,
 })
 
 Combat:AddSlider({
     Text = "FOV",
-    Min = 50,
-    Max = 400,
-    Default = 120,
+    Min = 50, Max = 400, Default = 120,
     Flag = "FOV",
-    Callback = function(v) end,
 })
 
 Combat:AddDropdown({
@@ -268,53 +294,25 @@ Combat:AddKeybind({
 
 Combat:AddButton({
     Text = "Force Update",
-    Accent = true,
+    Color = Color3.fromRGB(34, 211, 238),
     Callback = function()
         Library:Notify("Combat", "Updated", 2, "success")
     end,
 })
 ```
 
-### Example — toggle API
-
-```lua
-local tog = Player:AddToggle({ Text = "Speed", Flag = "Speed" })
-tog:Set(true)
-print(tog:Get()) -- true
-```
-
 ---
 
 ## Flags
 
-Elements with a `Flag` string store values on `Library.Flags`.
+Elements with a `Flag` store values on `Library.Flags`.
 
 ```lua
 local enabled = Library:GetFlag("Aimbot")
 Library:SetFlag("Aimbot", false)
 ```
 
-### Example — save / load flags
-
-```lua
-local HttpService = game:GetService("HttpService")
-local PATH = "cyvui_flags.json"
-
-local function saveFlags()
-    if writefile then
-        writefile(PATH, HttpService:JSONEncode(Library.Flags))
-    end
-end
-
-local function loadFlags()
-    if isfile and isfile(PATH) then
-        local data = HttpService:JSONDecode(readfile(PATH))
-        for k, v in pairs(data) do
-            Library:SetFlag(k, v)
-        end
-    end
-end
-```
+Built-in Settings can persist the whole `Library.Flags` table to `CYVUI_<name>.json`.
 
 ---
 
@@ -324,10 +322,11 @@ end
 
 | Key | Role |
 |-----|------|
-| Background / Sidebar / Panel | Surfaces |
-| Accent / Accent2 | Violet / cyan |
-| Text / TextDim / TextFaint | Typography |
-| Success / Warning / Error | Notify colors |
+| Background / Sidebar / Panel / Input | Surfaces |
+| Accent / Accent2 | Primary / secondary accent |
+| Text / TextDim / TextFaint / Muted | Typography |
+| Success / Warning / Error | Status + notify accents |
+| Border / Liner | Separators |
 
 ```lua
 Library:SetTheme(
@@ -336,7 +335,51 @@ Library:SetTheme(
 )
 ```
 
-Bound controls (toggles on, slider fills, accent buttons, icons, badges) update live.
+`SetTheme` updates accent-bound surfaces and the floating toggle color.
+
+---
+
+## Notifications
+
+```lua
+Library:Notify("Title", "Body", 3, "success") -- success | warning | error | info
+```
+
+- Card uses **main UI theme** (panel / border / text)
+- Type color only on side bar + bottom progress line
+- Max 4 stacked; auto dismiss
+- Suppressed when Settings → Notifications is off (`Library.Flags.Notifications == false`)
+
+---
+
+## Watermark
+
+Created with every window:
+
+- Text: `Title · GameName · Version` (overridable)
+- Live **fps · ping**
+- Draggable, top-left
+- Default **on**
+
+```lua
+Window:SetWatermarkVisible(false)
+Window:SetWatermarkText("MyHub  ·  Build 42")
+```
+
+Toggle also available in Settings → General → Watermark.
+
+---
+
+## Floating toggle
+
+Always created (PC and mobile):
+
+- Rounded square, accent colored
+- Drag to reposition
+- Click / tap (small movement) toggles main UI visibility
+- No `MobileToggle` config flag required
+
+Also: **Right Control** or the Minimize keybind (Settings → General) toggles UI.
 
 ---
 
@@ -346,27 +389,9 @@ Bound controls (toggles on, slider fills, accent buttons, icons, badges) update 
 Library:GetIcon("house") -- rbxassetid://...
 ```
 
-Pass names into `Icon` fields. Common: `house`, `layout`, `settings`, `user`, `eye`, `clock`, `message-circle`, `server`, `terminal`, `swords`, `crosshair`.
+Pass names into `Icon` fields. Common: `house`, `layout`, `settings`, `user`, `eye`, `clock`, `message-circle`, `server`, `terminal`, `swords`, `crosshair`, `palette`, `bookmark`.
 
 Full list: [lucide.dev/icons](https://lucide.dev/icons)
-
----
-
-## Notifications
-
-```lua
-Library:Notify("Title", "Body", 3, "success") -- success | warning | error | nil
-```
-
-### Example
-
-```lua
-Library:Notify("Farm", "Auto farm enabled", 2, "success")
-Library:Notify("Warning", "Key expires soon", 4, "warning")
-Library:Notify("Error", "Remote failed", 3, "error")
-```
-
-Max 4 stacked; auto fade-out.
 
 ---
 
@@ -375,160 +400,16 @@ Max 4 stacked; auto fade-out.
 | Input | Action |
 |-------|--------|
 | Right Control | Toggle UI |
+| Minimize keybind (Settings) | Toggle UI |
+| Floating toggle click | Toggle UI |
 | Title bar drag | Move window |
-| Yellow traffic | Minimize |
-| Red traffic | Destroy |
-
----
-
-## Full example script
-
-```lua
---[[
-    CYVUI Library v1.1.0 — Example
-    Redesigned Ironite-inspired layout: sidebar + subtab row + two-column page
-]]
-
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
--- Or: local Library = require(path.to.Library)
-
-local Window = Library:CreateWindow({
-    Title    = "CYVUI",
-    GameName = "Example",
-    Version  = "v1.1.0",
-    Size     = UDim2.fromOffset(695, 489),
-})
-
--- ═══════════════════════════════════════════
--- HOME (same layout every game — only content changes)
--- ═══════════════════════════════════════════
-local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
-
-Home:CreateHomeLayout({
-    Username   = game.Players.LocalPlayer.DisplayName,
-    Welcome    = "welcome back",
-    AboutTitle = "ABOUT",
-    AboutText  = "CYVUI example — dashboard Home, widgets, Settings themes, Lucide icons. Clean, fast, modular.",
-    DiscordLink = "https://discord.gg/vTe3sNTsDM",
-    ServerStats = {
-        { Num = tostring(#game.Players:GetPlayers()), Label = "PLAYERS" },
-        { Num = "99.8%", Label = "UPTIME" },
-        { Num = "12ms", Label = "PING" },
-    },
-    ExecutorName = (identifyexecutor and identifyexecutor()) or "Unknown",
-    Changelog = {
-        {
-            Version = "v1.0.4",
-            Date = "2026-08-31",
-            Text = "Mobile toggle, floating color popup, Settings spacing/theme highlight fixes.",
-        },
-        {
-            Version = "v1.0.3",
-            Date = "2026-08-30",
-            Text = "CreateRow layouts, improved Home changelog.",
-        },
-        {
-            Version = "v1.0.0",
-            Date = "2026-08-29",
-            Text = "Initial CYVUI release.",
-        },
-    },
-})
-
--- ═══════════════════════════════════════════
--- MAIN (feature widgets — 2-column style sections)
--- ═══════════════════════════════════════════
-local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
-
--- Two-column layout example
-local row = Main:CreateRow()
-local Left = row:Section("Player", { Icon = "user" })
-local Right = row:Section("Visuals", { Icon = "eye" })
-
-Left:AddToggle({ Text = "Infinite Jump", Flag = "InfJump" })
-Left:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
-Right:AddToggle({ Text = "ESP", Flag = "ESP" })
-Right:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
-
-local Player = Main:CreateSection("Player (full width)", { Icon = "user" })
-Player:AddToggle({ Text = "Infinite Jump", Default = false, Flag = "InfJump" })
-Player:AddToggle({ Text = "No Clip", Default = false, Flag = "NoClip" })
-Player:AddSlider({ Text = "Walk Speed", Min = 16, Max = 200, Default = 50, Flag = "WalkSpeed" })
-Player:AddSlider({ Text = "Jump Power", Min = 50, Max = 200, Default = 50, Flag = "JumpPower" })
-Player:AddButton({
-    Text = "Reset Character",
-    Callback = function()
-        local c = game.Players.LocalPlayer.Character
-        if c then c:BreakJoints() end
-    end,
-})
-
-local Visuals = Main:CreateSection("Visuals", { Icon = "eye" })
-Visuals:AddToggle({ Text = "ESP", Default = false, Flag = "ESP" })
-Visuals:AddToggle({ Text = "Chams", Default = false, Flag = "Chams" })
-Visuals:AddDropdown({
-    Text = "ESP Mode",
-    Options = { "Off", "Box", "Skeleton", "Tracer" },
-    Default = "Skeleton",
-    Flag = "ESPMode",
-})
-Visuals:AddDropdown({
-    Text = "ESP Targets",
-    Options = { "Players", "NPCs", "Bosses", "Items", "Vehicles" },
-    Default = { "Players", "Bosses" },
-    Multi = true,
-    Flag = "ESPTargets",
-})
-Visuals:AddColorPicker({ Text = "ESP Color", Default = Color3.fromRGB(34, 211, 238), Flag = "ESPColor" })
-Visuals:AddTextbox({ Text = "Custom Tag", Placeholder = "Enter display tag...", Flag = "CustomTag" })
-
-local Auto = Main:CreateSection("Automation", { Icon = "clock" })
-Auto:AddToggle({ Text = "Auto Farm", Default = true, Flag = "AutoFarm" })
-Auto:AddToggle({ Text = "Auto Sell", Default = false, Flag = "AutoSell" })
-Auto:AddDropdown({
-    Text = "Seed Priority",
-    Options = { "Highest Value", "Fastest Growth", "Rarest First" },
-    Default = "Highest Value",
-    Flag = "SeedPriority",
-})
-Auto:AddSlider({ Text = "Sell Threshold", Min = 0, Max = 5000, Default = 500, Flag = "SellThreshold" })
-
-local Info = Main:CreateSection("Info", { Icon = "info" })
-Info:AddParagraph("This tab controls player movement, visual overlays and farm automation. Toggles apply instantly. Save from Settings.")
-Info:AddKeybind({ Text = "Toggle UI", Default = Enum.KeyCode.RightShift, Flag = "ToggleUI" })
-
--- Settings tab is built-in (bottom sidebar) with Theme / Config / General
-
-Library:Notify("CYVUI", "Library loaded.", 3, "success")
-```
-
----
-
-## File structure
-
-```
-CYVUI/
-├── Library.lua
-├── Example.lua
-├── DOCS.md
-└── README.md
-```
-
----
-
-## Notes
-
-- Home + Settings structure is **shared** across all games; only strings/stats/changelog differ.
-- Compatible with most executors (`protect_gui` / `gethui` / CoreGui).
-- Creating a new window destroys the previous one.
-- Discord invite used in examples: `https://discord.gg/vTe3sNTsDM`
-
+| Floating toggle / watermark drag | Reposition control |
 
 ---
 
 ## Two-column layouts
 
-The page automatically pairs sections into two columns. Use subtabs to group sections:
+Sections pair into two columns automatically. Use subtabs to group:
 
 ```lua
 local Main = Window:CreateTab({ Name = "Main", Icon = "layout" })
@@ -541,18 +422,35 @@ Left:AddToggle({ Text = "Auto Collect", Flag = "AutoCollect" })
 Right:AddColorPicker({ Text = "Paper Color", Default = Color3.fromRGB(168, 85, 247), Flag = "PaperColor" })
 ```
 
-`Main:CreateSection("General", { Icon = "settings" })` still works — it routes to the first subtab (creating one if needed).
-
+`Main:CreateSection("General", { Icon = "settings" })` still works — routes to the first subtab (creates one if needed).
 
 ---
 
-## Mobile
+## Full example
 
-When `UserInputService.TouchEnabled` is true (or `CreateWindow({ MobileToggle = true })`), a floating accent button appears on the right. Tap it to show/hide the UI. The button is draggable.
+See **[Example.lua](./Example.lua)** in the repo (kept in sync with this version).
 
-```lua
-Library:CreateWindow({
-    Title = "CYVUI",
-    MobileToggle = true, -- force show even on desktop
-})
+---
+
+## File structure
+
 ```
+CYVUI/
+├── Library.lua
+├── Example.lua
+├── DOCS.md
+├── CHANGELOG.md
+├── README.md
+├── TODO.md
+└── assets/
+```
+
+---
+
+## Notes
+
+- Home + Settings structure is **shared** across games; only strings / stats / changelog differ.
+- Compatible with most executors (`protect_gui` / `gethui` / CoreGui).
+- Re-running a CYVUI script **always** clears the previous CYVUI UI.
+- Config files: `CYVUI_<name>.json` when `writefile` / `readfile` exist.
+- Discord invite used in examples: `https://discord.gg/vTe3sNTsDM`

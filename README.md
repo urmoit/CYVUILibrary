@@ -1,28 +1,28 @@
 # CYVUI
 
-![CYVUI Library banner — anime character with CYVHUB UI preview and feature list](assets/banner.png)
-
-
 Dark modern Roblox UI library for script hubs. Dashboard-style **Home**, shared **Settings**, Lucide icons, live theme presets.
 
-![Version](https://img.shields.io/badge/version-1.1.0-8b5cf6)
+![Version](https://img.shields.io/badge/version-1.1.1-8b5cf6)
 ![Luau](https://img.shields.io/badge/luau-Roblox-00a2ff)
 ![License](https://img.shields.io/badge/license-MIT-22d3ee)
-[![Changelog](https://img.shields.io/badge/changelog-v1.1.0-22d3ee)](./CHANGELOG.md)
+[![Changelog](https://img.shields.io/badge/changelog-v1.1.1-22d3ee)](./CHANGELOG.md)
 
-📜 **[Latest release → CHANGELOG.md](./CHANGELOG.md)** · v1.1.0 — Ironite-inspired redesign (header, sidebar, subtab row, two-column page).
+📜 **[Latest release → CHANGELOG.md](./CHANGELOG.md)** · **v1.1.1** — dropdown redesign, Settings/config/watermark, themed notifies, always-on floating toggle, reload purge (on Ironite layout).
 
 ---
 
 ## Features
 
-- **Home dashboard** — profile, about, Discord, server stats, executor, custom changelog
-- **Consistent Settings** — theme presets, config hooks, keybinds (same chrome on every game)
-- **Widgets** — toggle, slider, dropdown, textbox, keybind, color picker, button, label
-- **Lucide icons** — Footagesus Icons v2 + offline fallbacks
-- **Live themes** — accent / accent-2 recolor bound UI elements
-- **Notifications** — stacked toasts with success / warning / error styles
-- **Flags** — `Library.Flags` for quick get/set
+- **Ironite layout** — header, 75px sidebar, subtab row, two-column sections
+- **Home dashboard** — profile, about, Discord, server stats, executor, changelog
+- **Settings** — theme presets, UI transparency, config save/load (`CYVUI_<name>.json`), minimize keybind, watermark toggle, notifications toggle, destroy UI
+- **Widgets** — toggle, slider, dropdown (search + Select All), textbox, keybind, color picker, button, label
+- **Watermark** — title · hub · version + live fps/ping (draggable)
+- **Floating toggle** — always on (PC + mobile), drag + click to show/hide UI
+- **Notifications** — themed to main UI; type color on accent bar only
+- **Reload-safe** — re-running a CYVUI script purges the previous UI
+- **Lucide icons** + offline fallbacks
+- **Flags** — `Library.Flags` for get/set
 
 Home and Settings stay the same layout across games — only text, stats, and changelog entries change.
 
@@ -46,7 +46,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoi
 local Window = Library:CreateWindow({
     Title    = "CYVHUB",
     GameName = "My Game",
-    Version  = "v1.0.4",
+    Version  = "v1.1.1",
 })
 
 local Home = Window:CreateTab({ Name = "Home", Icon = "house", Home = true })
@@ -57,7 +57,7 @@ Home:CreateHomeLayout({
     DiscordLink  = "https://discord.gg/vTe3sNTsDM",
     ExecutorName = identifyexecutor and identifyexecutor() or "Unknown",
     Changelog    = {
-        { Version = "v1.0.4", Date = "2026-08-29", Text = "Notification redesign." },
+        { Version = "v1.1.1", Date = "2026-09-20", Text = "Stability: dropdown, settings, watermark." },
     },
 })
 
@@ -144,11 +144,9 @@ https://discord.gg/vTe3sNTsDM
 
 ---
 
-
 ## Changelog
 
-See **[CHANGELOG.md](./CHANGELOG.md)** for every release. The image under the banner shows the two latest versions.
-
+See **[CHANGELOG.md](./CHANGELOG.md)** for every release.
 
 ## License
 

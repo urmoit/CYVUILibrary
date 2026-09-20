@@ -6,6 +6,20 @@ Full release history. The README image only highlights the latest two versions.
 
 ---
 
+## v1.1.1 — 2026-09-20 — **Stability**
+
+- **Dropdown redesigned**: new layout, search field, Select All / Deselect All (multi), compact labels, accent border when open, outside-click close
+- **Settings fixed**: theme preset swatches use reliable click handlers; theme apply updates accent surfaces live; UI transparency affects main frame + panels; Destroy UI cleans notify holder
+- **Notifications match main UI**: panel/border/text colors from theme; type color only on accent bar + progress line; respects Notifications toggle
+- **Floating toggle always on**: rounded square always created (PC + mobile), draggable, click toggles UI — no `MobileToggle` flag needed
+- **Subtab polish**: chip-style active state
+- Single active window guard (CreateWindow destroys previous)
+- **Watermark**: real on-screen watermark (title · hub · version + fps/ping), toggle in Settings → General
+- **Config**: built-in Save/Load via `CYVUI_<name>.json` when writefile/readfile exist; OnSave/OnLoad hooks still supported
+- **Reload purge**: loading any CYVUI script destroys prior CYVUI ScreenGuis (tracked + CoreGui/PlayerGui leftovers)
+
+---
+
 ## v1.1.0 — 2026-09-07 — **Redesign**
 
 - **New layout** (Ironite-inspired):
