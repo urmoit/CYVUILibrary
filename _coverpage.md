@@ -1,32 +1,31 @@
-<p class="hero-badge">v1.1.0 · Ironite-inspired redesign</p>
+# CYVUI
 
-# CYVUI <span>Library</span>
+> A native-style, high-performance Roblox UI library. Twenty-plus widgets, a live theme engine, and built-in Home and Settings layouts — one file, no dependencies.
 
-<p class="hero-sub">Dark, modern, and high-performance Roblox UI library. Dashboard Home, shared Settings, Lucide icons, live theme engine — one file, zero dependencies.</p>
-
-<div class="hero-cards">
-  <div class="hero-card">
-    <div class="hc-ico">🛠️</div>
-    <h4>20+ widgets</h4>
-    <p>Toggle, slider, dropdown, textbox, keybind, color picker, paragraph, button.</p>
-  </div>
-  <div class="hero-card">
-    <div class="hc-ico">🏠</div>
-    <h4>Home &amp; Settings</h4>
-    <p>Built-in dashboard and config layouts that look identical in every game.</p>
-  </div>
-  <div class="hero-card">
-    <div class="hc-ico">🎨</div>
-    <h4>Live theme engine</h4>
-    <p>Swap accents at runtime — every bound element recolors instantly.</p>
-  </div>
-</div>
-
-<div class="hero-code">
-  <code><span class="f">loadstring</span>(game:<span class="f">HttpGet</span>(<span class="s">'https://raw.githubusercontent.com/urmoit/CYVHub/refs/heads/main/Key_Sytem.lua'</span>))()</code>
-</div>
+- v1.1.0
+- 20+ widgets
+- Live theme engine
+- Home & Settings layouts
+- Zero dependencies
 
 [Get Started](#/DOCS)
 [View on GitHub](https://github.com/urmoit/CYVUILibrary)
 
-<div class="hero-scroll">Scroll to explore</div>
+```lua
+local CYVUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/urmoit/CYVUILibrary/main/Library.lua"))()
+
+local Window = CYVUI:Window({ Title = "CYVUI", Theme = "Graphite" })
+local Tab    = Window:Tab({ Title = "General", Icon = "sliders" })
+local Group  = Tab:Section({ Title = "Aim" })
+
+Group:Toggle({ Title = "Enabled", Value = true, Flag = "AimEnabled" })
+Group:Slider({ Title = "FOV", Min = 0, Max = 120, Value = 60, Flag = "AimFOV" })
+```
+
+| | |
+|---|---|
+| Widgets | Toggle, slider, dropdown, textbox, keybind, color picker, paragraph, button |
+| Layouts | Dashboard Home and a shared Settings view that render identically in every game |
+| Theming | Swap accents at runtime; every bound element recolours on the same frame |
+| Footprint | Single `Library.lua`, no external dependencies |
+

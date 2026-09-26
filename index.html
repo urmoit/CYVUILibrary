@@ -778,22 +778,29 @@
       list-style: none !important;
     }
     section.cover ul li {
-      padding: 0 !important;
-      font-size: 0 !important;
+      display: inline-block;
+      padding: 3px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 99px;
+      background: var(--panel);
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: var(--btn-shadow);
     }
     section.cover ul li a {
       display: inline-block;
-      padding: 4px 10px;
-      border: 1px solid var(--line-strong) !important;
-      border-radius: 99px !important;
-      background: var(--panel) !important;
+      padding: 0;
+      border: none !important;
+      border-radius: 0 !important;
+      background: none !important;
       color: var(--text-2) !important;
       font-size: 12px !important;
       font-weight: 500;
+      box-shadow: none;
       text-decoration: none !important;
-      box-shadow: var(--btn-shadow);
     }
-    section.cover ul li a:hover { background: var(--panel-2) !important; color: var(--text) !important; }
+    section.cover ul li a:hover { color: var(--text) !important; }
     section.cover .buttons { margin: 0 !important; }
     section.cover .buttons a, section.cover p:not(:last-child) a, section.cover a:not([href^="#/"]) {
       display: inline-block;
