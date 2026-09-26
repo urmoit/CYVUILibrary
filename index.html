@@ -2,9 +2,9 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <title>CYVUI · Documentation</title>
+  <title>CYVUI Â· Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <meta name="description" content="CYVUI — a native-style, high-performance Roblox UI library. 20+ widgets, live theme engine, built-in Home &amp; Settings layouts.">
+  <meta name="description" content="CYVUI â€” a native-style, high-performance Roblox UI library. 20+ widgets, live theme engine, built-in Home &amp; Settings layouts.">
   <meta name="theme-color" content="#1c1c1e">
 
   <!-- Resolve the appearance before the first paint so a light-mode visitor
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
 
   <style>
-    /* ══════════════════════════════════════════════════════════════
-       CYVUI Docs — native (macOS) theme
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       CYVUI Docs â€” native (macOS) theme
 
        Modelled on a macOS app window: graphite surfaces, 1px hairline
        separators, continuous-corner radii, system fonts, sidebar chrome,
@@ -48,12 +48,12 @@
        blobs, no blurred radial light, no gradient-clipped text, no pills.
        Appearance follows the OS (light or dark) and can be pinned with the
        segmented Appearance control at the bottom of the sidebar.
-       ══════════════════════════════════════════════════════════════ */
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
     :root {
       color-scheme: dark;
 
-      /* ── window surfaces ──────────────────────────────────── */
+      /* â”€â”€ window surfaces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --bg:            #1c1c1e;   /* content area           */
       --bg-pane:       #262628;   /* sidebar                */
       --bg-pane-2:     #2d2d30;
@@ -66,16 +66,16 @@
       --code-bg:       #1f1f21;
       --code-bar:      #26262a;
 
-      /* ── separators ───────────────────────────────────────── */
+      /* â”€â”€ separators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --line:          rgba(255,255,255,.10);
       --line-strong:   rgba(255,255,255,.17);
 
-      /* ── labels (macOS label hierarchy) ───────────────────── */
+      /* â”€â”€ labels (macOS label hierarchy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --text:          #ececee;
       --muted:         #9b9ba2;   /* secondary label */
       --faint:         #6d6d74;   /* tertiary label  */
 
-      /* ── accent: Apple system blue, desaturated ───────────── */
+      /* â”€â”€ accent: Apple system blue, desaturated â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --accent:        #4b9cd6;
       --accent-fill:   #2f6ba1;
       --accent-fill-h: #3a7cb6;
@@ -83,20 +83,20 @@
       --on-accent:     #f7fafc;
       --focus:         rgba(75,156,214,.38);
 
-      /* ── interaction tints ────────────────────────────────── */
+      /* â”€â”€ interaction tints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --hover:         rgba(255,255,255,.055);
       --active:        rgba(255,255,255,.09);
       --sel:           rgba(75,156,214,.30);
       --scroll:        rgba(255,255,255,.16);
       --scroll-h:      rgba(255,255,255,.30);
 
-      /* ── traffic lights (standard window controls) ────────── */
+      /* â”€â”€ traffic lights (standard window controls) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --tl-r:   #e0574f;
       --tl-a:   #d8a13c;
       --tl-g:   #57a860;
       --tl-off: rgba(255,255,255,.14);
 
-      /* ── elevation / inset ────────────────────────────────── */
+      /* â”€â”€ elevation / inset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --win-shadow:    0 1px 2px rgba(0,0,0,.32), 0 26px 64px rgba(0,0,0,.46);
       --field-shadow:  0 1px 0 rgba(255,255,255,.05) inset;
       --btn-shadow:    0 1px 0 rgba(255,255,255,.07) inset, 0 1px 2px rgba(0,0,0,.30);
@@ -111,7 +111,7 @@
       --sel-strong:    rgba(255,255,255,.12); /* source-list selection (inactive) */
       --inset-shadow:  0 1px 1px rgba(0,0,0,.28) inset, 0 1px 0 rgba(255,255,255,.05);
 
-      /* ── syntax (Xcode-style, low saturation) ─────────────── */
+      /* â”€â”€ syntax (Xcode-style, low saturation) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --syn-txt:  #dfe1e5;
       --syn-com:  #7c818a;
       --syn-pun:  #a2a6ad;
@@ -124,14 +124,14 @@
       --syn-op:   #b3b7bd;
       --syn-tag:  #c68d84;
 
-      /* ── metrics ──────────────────────────────────────────── */
+      /* â”€â”€ metrics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
       --sidebar-w:  272px;
       --radius:     10px;
       --radius-sm:  7px;
       --radius-xs:  5px;
       --row-h:      28px;
 
-      /* ── system fonts (no webfonts — native by definition) ── */
+      /* â”€â”€ system fonts (no webfonts â€” native by definition) â”€â”€ */
       --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
               "Segoe UI", Roboto, Arial, sans-serif;
       --display: -apple-system, BlinkMacSystemFont, "SF Pro Display",
@@ -140,7 +140,7 @@
               "Liberation Mono", monospace;
     }
 
-    /* ── light appearance (aqua) ──────────────────────────────── */
+    /* â”€â”€ light appearance (aqua) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     :root[data-theme="light"] {
       color-scheme: light;
 
@@ -205,12 +205,12 @@
       --syn-tag:  #9a4a42;
     }
 
-    /* ══════════════════════════════════════════════════════════════
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        Docsify-themeable token map
        theme-simple-dark ships hue-driven HSL ramps; pinning the hue and
        every colour token below means one native palette drives both the
        themeable layout and the hand-written rules further down.
-       ══════════════════════════════════════════════════════════════ */
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     :root {
       --theme-color:        var(--accent);
       --theme-hue:          208;
@@ -362,9 +362,9 @@
 
 
 
-    /* ══════════════════════════════════════════════════════════════
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        Base
-       ══════════════════════════════════════════════════════════════ */
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     *, *::before, *::after { box-sizing: border-box; }
 
     html, body {
@@ -381,7 +381,7 @@
 
     ::selection { background: var(--sel); color: var(--text); }
 
-    /* Overlay scrollbars — thin and rounded, like a Finder scroll view */
+    /* Overlay scrollbars â€” thin and rounded, like a Finder scroll view */
     ::-webkit-scrollbar { width: 9px; height: 9px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb {
@@ -402,11 +402,11 @@
     }
     a:focus-visible, .sidebar-nav a:focus-visible { border-radius: var(--radius-sm); }
 
-    /* The GitHub octocat corner is not a desktop control — GitHub lives in
+    /* The GitHub octocat corner is not a desktop control â€” GitHub lives in
        the toolbar and the sidebar footer instead. */
     .github-corner { display: none !important; }
 
-    /* Flat 3px load / scroll indicators — no glow */
+    /* Flat 3px load / scroll indicators â€” no glow */
     .progress { height: 3px !important; background-color: var(--accent-fill) !important; }
     .scroll-progress {
       position: fixed; top: 0; left: 0; z-index: 60;
@@ -428,7 +428,7 @@
     .win-dots:hover i:nth-child(2) { background: var(--tl-a); }
     .win-dots:hover i:nth-child(3) { background: var(--tl-g); }
 
-    /* Back to top — square toolbar button */
+    /* Back to top â€” square toolbar button */
     .to-top {
       position: fixed; right: 20px; bottom: 20px; z-index: 60;
       width: 36px; height: 36px;
@@ -448,9 +448,9 @@
     .to-top:hover { color: var(--text); }
     .to-top:active { transform: translateY(1px); }
 
-    /* ══════════════════════════════════════════════════════════════
-       Toolbar (navbar) — flat text buttons over the content surface
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Toolbar (navbar) â€” flat text buttons over the content surface
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .app-nav {
       margin: 14px 22px 0 0 !important;
       background: transparent !important;
@@ -480,9 +480,9 @@
     }
     .app-name, .app-name-link { display: none !important; }
 
-    /* ══════════════════════════════════════════════════════════════
-       Sidebar — Finder source list
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Sidebar â€” Finder source list
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .sidebar {
       background: var(--chrome) !important;
       border-right: 1px solid var(--line) !important;
@@ -490,7 +490,29 @@
       backdrop-filter: saturate(1.6) blur(18px);
       -webkit-backdrop-filter: saturate(1.6) blur(18px);
     }
-    .sidebar-toggle { display: none !important; }
+    /* Sidebar toggle â€” hidden on desktop (sidebar is always docked),
+       styled as a small square toolbar button on narrow windows. */
+    .sidebar-toggle,
+    .sidebar-button {
+      display: none !important;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: var(--radius-sm) !important;
+      background: var(--panel-2) !important;
+      box-shadow: var(--btn-shadow) !important;
+      color: var(--muted) !important;
+      width: 34px; height: 30px;
+      left: 12px !important;
+      top: 12px !important;
+      bottom: auto !important;
+      right: auto !important;
+      padding: 0 !important;
+      z-index: 40;
+    }
+    .sidebar-toggle .sidebar-toggle-button, .sidebar-toggle svg { color: var(--muted); }
+    @media screen and (max-width: 768px) {
+      .sidebar-toggle, .sidebar-button { display: block !important; }
+      body.close .sidebar { display: none; }
+    }
 
     .cyv-side {
       display: flex;
@@ -533,7 +555,7 @@
       color: var(--muted);
     }
 
-    /* Search field — NSSearchField style */
+    /* Search field â€” NSSearchField style */
     .cyv-search {
       position: relative;
       margin: 2px 12px 10px;
@@ -579,7 +601,7 @@
     }
     .cyv-search .clear { position: absolute; right: 4px; top: 3px; }
 
-    /* Section label — small caps like an NSOutlineView group header */
+    /* Section label â€” small caps like an NSOutlineView group header */
     .cyv-section {
       padding: 8px 14px 4px;
       font-size: 11px;
@@ -650,9 +672,9 @@
     .cyv-foot a { color: var(--muted); text-decoration: none; }
     .cyv-foot a:hover { color: var(--text); text-decoration: underline; }
 
-    /* ══════════════════════════════════════════════════════════════
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        Content pane
-       ══════════════════════════════════════════════════════════════ */
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .content {
       background: var(--bg) !important;
       top: 0 !important;
@@ -675,7 +697,7 @@
     .markdown-section strong { color: var(--text); font-weight: 620; }
     .markdown-section em { color: var(--text-2); }
 
-    /* Links — plain system blue, underline only on hover */
+    /* Links â€” plain system blue, underline only on hover */
     .markdown-section a {
       color: var(--link);
       text-decoration: none;
@@ -684,7 +706,7 @@
     }
     .markdown-section a:hover { text-decoration: underline; text-underline-offset: 2px; }
 
-    /* Headings — SF Pro Display-ish, tight tracking */
+    /* Headings â€” SF Pro Display-ish, tight tracking */
     .markdown-section h1, .markdown-section h2, .markdown-section h3,
     .markdown-section h4, .markdown-section h5, .markdown-section h6 {
       color: var(--text);
@@ -731,9 +753,9 @@
     }
     .markdown-section blockquote p { margin: 0; font-size: 14.5px; color: var(--muted); }
 
-    /* ══════════════════════════════════════════════════════════════
-       Cover — a plain app header, not a poster
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Cover â€” a plain app header, not a poster
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     section.cover {
       display: block !important;
       padding: 44px 0 8px !important;
@@ -884,9 +906,9 @@
       color: var(--text);
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       Code — a code-listing view, not a terminal neon box
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Code â€” a code-listing view, not a terminal neon box
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .markdown-section code {
       background: var(--panel);
       color: var(--text);
@@ -935,7 +957,7 @@
     .token.important, .token.bold { font-weight: 600; }
     .token.italic { font-style: italic; }
 
-    /* copy-to-clipboard — a quiet button in the corner */
+    /* copy-to-clipboard â€” a quiet button in the corner */
     .docsify-copy-code-button {
       position: absolute !important;
       top: 7px !important; right: 8px !important;
@@ -957,9 +979,9 @@
 
     .markdown-section pre { position: relative; }
 
-    /* ══════════════════════════════════════════════════════════════
-       Tables — a plain source-view table
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Tables â€” a plain source-view table
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .markdown-section table {
       display: table !important;
       width: 100% !important;
@@ -989,9 +1011,9 @@
     .markdown-section tbody tr:hover { background: var(--hover); }
     .markdown-section table code { font-size: .84em; }
 
-    /* ══════════════════════════════════════════════════════════════
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        Images / alerts / pagination
-       ══════════════════════════════════════════════════════════════ */
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .markdown-section img {
       max-width: 100%;
       border-radius: var(--radius);
@@ -1044,7 +1066,7 @@
       color: var(--accent) !important;
     }
 
-    /* Docsify's search plugin renders a .search wrapper — neutralise its
+    /* Docsify's search plugin renders a .search wrapper â€” neutralise its
        own positioning so the field sits inside the native search holder. */
     .cyv-search .search { position: static !important; margin: 0 !important; padding: 0 !important; }
     .cyv-search .input-wrap { position: static !important; }
@@ -1062,7 +1084,7 @@
     }
     .cyv-search .clear-button.show { display: grid !important; }
     .cyv-search .clear-button svg { display: none; }
-    .cyv-search .clear-button::before { content: "✕"; font-size: 9px; }
+    .cyv-search .clear-button::before { content: "âœ•"; font-size: 9px; }
 
     /* Sidebar owns its own scroll; the chrome stays put */
     .sidebar { overflow: hidden !important; }
@@ -1095,9 +1117,9 @@
       background: transparent !important;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       Appearance control — NSSegmentedControl
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Appearance control â€” NSSegmentedControl
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .cyv-seg {
       display: inline-flex;
       padding: 2px;
@@ -1139,9 +1161,9 @@
     .cyv-dots i:nth-child(3) { animation-delay: .32s; }
     @keyframes cyv-pulse { 0%,100% { opacity: .35 } 50% { opacity: 1 } }
 
-    /* ══════════════════════════════════════════════════════════════
-       Responsive — sidebar becomes a sheet, as on a narrow window
-       ══════════════════════════════════════════════════════════════ */
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       Responsive â€” sidebar becomes a sheet, as on a narrow window
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     @media screen and (max-width: 768px) {
       .markdown-section { padding: 26px 20px 64px !important; }
       .markdown-section h1 { font-size: 25px; }
@@ -1179,26 +1201,6 @@
   </style>
 </head>
 <body>
-  <div class="scroll-progress" id="scrollProgress"></div>
-
-  <div id="app">
-    <div class="cyv-boot">
-      <div class="cyv-boot-box">
-        <span class="cyv-dots"><i></i><i></i><i></i></span>
-        <p>Loading CYVUI documentation…</p>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-lua.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
-
   <script>
     window.$docsify = {
       name: 'CYVUI',
@@ -1229,6 +1231,27 @@
       plugins: []
     };
   </script>
+
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <div id="app">
+    <div class="cyv-boot">
+      <div class="cyv-boot-box">
+        <span class="cyv-dots"><i></i><i></i><i></i></span>
+        <p>Loading CYVUI documentationâ€¦</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-lua.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+
   <script>
     /* Native chrome: injects the window titlebar, the appearance control and
        the back-to-top button around the markup Docsify generates, then keeps
@@ -1303,7 +1326,7 @@
         wrap.appendChild(foot);
         side.appendChild(wrap);
 
-        // Docsify renders its search box as a sibling — pull it into the field.
+        // Docsify renders its search box as a sibling â€” pull it into the field.
         var box = side.querySelector('.search, .sidebar .search');
         if (box && box.parentNode === side) search.appendChild(box);
 
@@ -1350,7 +1373,7 @@
           buildSidebar();
           buildToTop();
           trackScroll();
-          // Docsify mounts the search box a tick after ready — adopt it then.
+          // Docsify mounts the search box a tick after ready â€” adopt it then.
           setTimeout(function () {
             var side = document.querySelector('.sidebar');
             var holder = document.querySelector('.cyv-search');
