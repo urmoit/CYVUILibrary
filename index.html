@@ -465,6 +465,176 @@
     }
     .app-name, .app-name-link { display: none !important; }
 
+    /* ══════════════════════════════════════════════════════════════
+       Sidebar — Finder source list
+       ══════════════════════════════════════════════════════════════ */
+    .sidebar {
+      background: var(--chrome) !important;
+      border-right: 1px solid var(--line) !important;
+      padding: 0 !important;
+      backdrop-filter: saturate(1.6) blur(18px);
+      -webkit-backdrop-filter: saturate(1.6) blur(18px);
+    }
+    .sidebar-toggle { display: none !important; }
+
+    .cyv-side {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 0 0 10px;
+    }
+
+    /* Title bar */
+    .cyv-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 13px 10px;
+      flex: none;
+    }
+    .cyv-title .mark {
+      width: 26px; height: 26px;
+      flex: none;
+      display: grid; place-items: center;
+      border-radius: 7px;
+      background: var(--accent-fill);
+      color: var(--on-accent);
+      font-size: 12px;
+      font-weight: 650;
+      box-shadow: var(--btn-shadow);
+    }
+    .cyv-title .name {
+      font-size: 13px;
+      font-weight: 640;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cyv-title .name small {
+      display: block;
+      font-size: 11px;
+      font-weight: 450;
+      color: var(--muted);
+    }
+
+    /* Search field — NSSearchField style */
+    .cyv-search {
+      position: relative;
+      margin: 2px 12px 10px;
+      flex: none;
+    }
+    .cyv-search input {
+      width: 100% !important;
+      height: 26px !important;
+      margin: 0 !important;
+      padding: 0 22px 0 26px !important;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: 6px !important;
+      background: var(--field) !important;
+      background-image: none !important;
+      box-shadow: var(--inset-shadow) !important;
+      color: var(--text) !important;
+      font: 400 12.5px/26px var(--sans) !important;
+      outline: none !important;
+    }
+    .cyv-search input:focus {
+      border-color: var(--accent-fill) !important;
+      box-shadow: 0 0 0 3px var(--focus), var(--inset-shadow) !important;
+    }
+    .cyv-search::before {
+      content: "";
+      position: absolute;
+      left: 8px; top: 50%;
+      width: 11px; height: 11px;
+      margin-top: -6px;
+      border: 1.5px solid var(--faint);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .cyv-search::after {
+      content: "";
+      position: absolute;
+      left: 17px; top: 62%;
+      width: 4px; height: 1.5px;
+      background: var(--faint);
+      border-radius: 1px;
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+    .cyv-search .clear { position: absolute; right: 4px; top: 3px; }
+
+    /* Section label — small caps like an NSOutlineView group header */
+    .cyv-section {
+      padding: 8px 14px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--faint);
+      flex: none;
+    }
+
+    /* Source list rows */
+    .sidebar-nav { flex: 1 1 auto; overflow: auto; padding: 0 8px !important; }
+    .sidebar-nav > ul { padding: 0 !important; margin: 0 !important; }
+    .sidebar-nav ul { padding-left: 0; margin: 0; }
+    .sidebar-nav li { margin: 0 !important; }
+    .sidebar-nav > ul > li > ul { margin-left: 14px; border-left: 1px solid var(--line); }
+
+    .sidebar-nav li a {
+      display: block;
+      padding: 4px 8px !important;
+      margin: 1px 0;
+      border: none !important;
+      border-radius: var(--radius-sm) !important;
+      color: var(--text-2) !important;
+      font-size: 13px !important;
+      font-weight: 450;
+      line-height: 1.45 !important;
+      transition: background .1s ease, color .1s ease !important;
+    }
+    .sidebar-nav li a:hover {
+      background: var(--hover) !important;
+      color: var(--text) !important;
+    }
+    .sidebar-nav li.active > a,
+    .sidebar-nav li a.active {
+      background: var(--sel-strong) !important;
+      color: var(--text) !important;
+      font-weight: 550 !important;
+    }
+    .sidebar-nav li.collapse > a::after,
+    .sidebar-nav li.open > a::after { display: none !important; }
+
+    /* Group headings in the outline */
+    .sidebar-nav > ul > li > strong,
+    .sidebar-nav > ul > li > p {
+      display: block;
+      padding: 10px 8px 3px !important;
+      margin: 0 !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--faint) !important;
+    }
+
+    /* Footer */
+    .cyv-foot {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px 2px;
+      border-top: 1px solid var(--line);
+      margin-top: 6px;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+    .cyv-foot a { color: var(--muted); text-decoration: none; }
+    .cyv-foot a:hover { color: var(--text); text-decoration: underline; }
+
   </style>
 </head>
 </html>
