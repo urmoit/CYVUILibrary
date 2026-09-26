@@ -103,6 +103,14 @@
       --flyout-shadow: 0 1px 2px rgba(0,0,0,.34), 0 14px 34px rgba(0,0,0,.44);
       --ico:           #c2c4c9;
       --ico-bg:        #343438;
+
+      /* derived chrome / label aliases used by the rules below */
+      --chrome:        rgba(38,38,40,.82);   /* translucent sidebar material */
+      --text-2:        #d6d7db;              /* label, one step under primary */
+      --link:          #6ba4d8;
+      --sel-strong:    rgba(255,255,255,.12); /* source-list selection (inactive) */
+      --inset-shadow:  0 1px 1px rgba(0,0,0,.28) inset, 0 1px 0 rgba(255,255,255,.05);
+
       /* ── syntax (Xcode-style, low saturation) ─────────────── */
       --syn-txt:  #dfe1e5;
       --syn-com:  #7c818a;
@@ -176,6 +184,13 @@
       --flyout-shadow: 0 1px 2px rgba(0,0,0,.10), 0 14px 30px rgba(0,0,0,.18);
       --ico:           #4e4e55;
       --ico-bg:        #ececee;
+
+      --chrome:        rgba(246,246,248,.86);
+      --text-2:        #33343a;
+      --link:          #1c6cb4;
+      --sel-strong:    rgba(0,0,0,.07);
+      --inset-shadow:  0 1px 1px rgba(0,0,0,.07) inset, 0 1px 0 rgba(255,255,255,.9);
+
 
       --syn-txt:  #24252a;
       --syn-com:  #7b8189;
@@ -800,6 +815,166 @@
     }
     section.cover .buttons a:hover, section.cover a:hover { opacity: 1 !important; }
     .cover-main > p { color: var(--muted); }
+
+    /* ══════════════════════════════════════════════════════════════
+       Code — a code-listing view, not a terminal neon box
+       ══════════════════════════════════════════════════════════════ */
+    .markdown-section code {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xs);
+      padding: 1.5px 5px;
+      font-family: var(--mono);
+      font-size: .855em;
+      font-weight: 400;
+    }
+    .markdown-section pre {
+      background: var(--code-bg) !important;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin: 18px 0;
+      padding: 0 !important;
+      overflow: hidden;
+    }
+    .markdown-section pre > code {
+      display: block;
+      background: transparent !important;
+      border: none;
+      color: var(--syn-txt) !important;
+      padding: 14px 16px !important;
+      font-family: var(--mono) !important;
+      font-size: 13px !important;
+      line-height: 1.62 !important;
+      overflow-x: auto;
+      white-space: pre;
+      text-shadow: none !important;
+    }
+    .markdown-section pre::after { display: none !important; }
+
+    /* prism token recolour (docsify default classes) */
+    .token.comment, .token.prolog, .token.doctype, .token.cdata { color: var(--syn-com); }
+    .token.punctuation { color: var(--syn-pun); }
+    .token.keyword, .token.boolean, .token.control, .token.directive,
+    .token.unit { color: var(--syn-kw); }
+    .token.string, .token.attr-value, .token.regex, .token.value, .token.url { color: var(--syn-str); }
+    .token.number, .token.angle { color: var(--syn-num); }
+    .token.function, .token.function-variable { color: var(--syn-fn); }
+    .token.class-name, .token.maybe-class-name, .token.builtin { color: var(--syn-cls); }
+    .token.property, .token.property-access, .token.attr-name, .token.variable { color: var(--syn-prop); }
+    .token.operator, .token.entity, .token.rule { color: var(--syn-op); }
+    .token.tag, .token.selector { color: var(--syn-tag); }
+    .token.important, .token.bold { font-weight: 600; }
+    .token.italic { font-style: italic; }
+
+    /* copy-to-clipboard — a quiet button in the corner */
+    .docsify-copy-code-button {
+      position: absolute !important;
+      top: 7px !important; right: 8px !important;
+      z-index: 2;
+      padding: 3px 9px !important;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: var(--radius-xs) !important;
+      background: var(--panel-2) !important;
+      color: var(--muted) !important;
+      font: 500 11px/1.5 var(--sans) !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+      box-shadow: var(--btn-shadow) !important;
+      opacity: 1 !important;
+    }
+    .docsify-copy-code-button span { font-size: 11px !important; }
+    .docsify-copy-code-button:hover { color: var(--text) !important; }
+    .docsify-copy-code-button:active { transform: translateY(1px); }
+
+    .markdown-section pre { position: relative; }
+
+    /* ══════════════════════════════════════════════════════════════
+       Tables — a plain source-view table
+       ══════════════════════════════════════════════════════════════ */
+    .markdown-section table {
+      display: table !important;
+      width: 100% !important;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+      font-size: 14px;
+    }
+    .markdown-section thead { background: var(--code-bar); }
+    .markdown-section th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      padding: 9px 14px !important;
+      border-bottom: 1px solid var(--line-strong) !important;
+    }
+    .markdown-section td {
+      padding: 9px 14px !important;
+      border-bottom: 1px solid var(--line) !important;
+      color: var(--text-2);
+    }
+    .markdown-section tr:last-child td { border-bottom: none !important; }
+    .markdown-section tbody tr:hover { background: var(--hover); }
+    .markdown-section table code { font-size: .84em; }
+
+    /* ══════════════════════════════════════════════════════════════
+       Images / alerts / pagination
+       ══════════════════════════════════════════════════════════════ */
+    .markdown-section img {
+      max-width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+    }
+    .markdown-section img.emoji { width: 1.1em; border: none; border-radius: 0; vertical-align: -.15em; }
+
+    .markdown-section .tip, .markdown-section .warn,
+    .markdown-section .important, .markdown-section .caution,
+    .markdown-section .note {
+      border: none !important;
+      border-left: 3px solid var(--line-strong) !important;
+      border-radius: var(--radius-sm) !important;
+      background: var(--panel) !important;
+      color: var(--text-2) !important;
+      padding: 11px 14px !important;
+      margin: 18px 0 !important;
+    }
+    .markdown-section .tip { border-left-color: var(--accent-fill) !important; }
+    .markdown-section .warn, .markdown-section .important { border-left-color: #b08a3e !important; }
+    .markdown-section .caution { border-left-color: #b0564f !important; }
+
+    .page-toc { display: none; }
+
+    .docsify-pagination-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 46px 0 0;
+      padding: 18px 0 0;
+      border-top: 1px solid var(--line);
+    }
+    .docsify-pagination-container .pagination-item-title {
+      color: var(--text) !important;
+      font-size: 14px !important;
+      font-weight: 550 !important;
+    }
+    .docsify-pagination-container .pagination-item-label {
+      color: var(--faint) !important;
+      font-size: 11px !important;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .docsify-pagination-container .pagination-item-divider {
+      background: var(--line-strong) !important;
+      height: 1px !important;
+    }
+    .docsify-pagination-container .pagination-item:hover .pagination-item-title {
+      text-decoration: none;
+      color: var(--accent) !important;
+    }
 
   </style>
 </head>
