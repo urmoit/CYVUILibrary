@@ -751,8 +751,9 @@
       margin: 0 0 6px !important;
       padding: 0 !important;
     }
-    section.cover h1 .cover-main, section.cover h1 img { display: none; }
-    section.cover p:last-child, section.cover blockquote p { display: none; }
+    section.cover h1 .cover-main, section.cover h1 img, section.cover h1 span { display: none; }
+    section.cover h1 { display: block !important; }
+    section.cover .hero-scroll { display: none; }
     section.cover > blockquote, section.cover blockquote {
       margin: 0 0 14px !important;
       padding: 0 !important;
@@ -815,6 +816,66 @@
     }
     section.cover .buttons a:hover, section.cover a:hover { opacity: 1 !important; }
     .cover-main > p { color: var(--muted); }
+
+    /* Cover body copy: code listing and spec table inherit the pane styles */
+    section.cover pre {
+      background: var(--code-bg) !important;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin: 20px 0;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    section.cover pre > code {
+      display: block;
+      background: transparent;
+      color: var(--syn-txt);
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.62;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    section.cover pre::after { display: none; }
+    section.cover table {
+      display: table !important;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+    }
+    section.cover thead { display: none; }
+    section.cover td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--text-2);
+      font-size: 14px;
+      vertical-align: top;
+    }
+    section.cover tr:first-child td { border-top: none; }
+    section.cover td:first-child {
+      width: 1%;
+      white-space: nowrap;
+      color: var(--muted);
+      font-weight: 560;
+      background: var(--code-bar);
+    }
+    section.cover tr:last-child td { border-bottom: none; }
+    section.cover code {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xs);
+      padding: 1.5px 5px;
+      font-family: var(--mono);
+      font-size: .855em;
+      color: var(--text);
+    }
 
     /* ══════════════════════════════════════════════════════════════
        Code — a code-listing view, not a terminal neon box
@@ -974,6 +1035,57 @@
     .docsify-pagination-container .pagination-item:hover .pagination-item-title {
       text-decoration: none;
       color: var(--accent) !important;
+    }
+
+    /* Docsify's search plugin renders a .search wrapper — neutralise its
+       own positioning so the field sits inside the native search holder. */
+    .cyv-search .search { position: static !important; margin: 0 !important; padding: 0 !important; }
+    .cyv-search .input-wrap { position: static !important; }
+    .cyv-search .clear-button {
+      position: absolute !important;
+      right: 5px !important; top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 16px; height: 16px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: var(--faint);
+      color: var(--field);
+      font-size: 11px !important;
+      line-height: 1 !important;
+    }
+    .cyv-search .clear-button.show { display: grid !important; }
+    .cyv-search .clear-button svg { display: none; }
+    .cyv-search .clear-button::before { content: "✕"; font-size: 9px; }
+
+    /* Sidebar owns its own scroll; the chrome stays put */
+    .sidebar { overflow: hidden !important; }
+    .search { position: static !important; }
+
+    /* Results list under the field */
+    .search-result { margin-top: 6px !important; }
+    .search-result li {
+      border-bottom: 1px solid var(--line) !important;
+      padding: 0 !important;
+    }
+    .search-result-list { margin: 0 !important; padding: 0 !important; }
+    .search-result-list a {
+      display: block;
+      padding: 6px 8px !important;
+      color: var(--text-2) !important;
+      font-size: 12.5px !important;
+    }
+    .search-result-list a:hover { background: var(--hover) !important; }
+    .search-result-list a .search-keyword {
+      background: var(--accent-dim) !important;
+      color: var(--accent) !important;
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+    .search .no-results {
+      padding: 6px 8px !important;
+      color: var(--faint) !important;
+      font-size: 12.5px !important;
+      background: transparent !important;
     }
 
     /* ══════════════════════════════════════════════════════════════
