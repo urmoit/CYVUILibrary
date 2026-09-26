@@ -635,6 +635,172 @@
     .cyv-foot a { color: var(--muted); text-decoration: none; }
     .cyv-foot a:hover { color: var(--text); text-decoration: underline; }
 
+    /* ══════════════════════════════════════════════════════════════
+       Content pane
+       ══════════════════════════════════════════════════════════════ */
+    .content {
+      background: var(--bg) !important;
+      top: 0 !important;
+      padding-top: 0 !important;
+    }
+    .content, .markdown-section { color: var(--text); }
+
+    .markdown-section {
+      max-width: 780px !important;
+      padding: 40px 48px 80px !important;
+      line-height: 1.72 !important;
+      background: transparent !important;
+    }
+
+    .markdown-section p, .markdown-section li, .markdown-section td, .markdown-section th {
+      font-size: 15px;
+      color: var(--text-2);
+    }
+    .markdown-section p { margin: 0 0 15px; }
+    .markdown-section strong { color: var(--text); font-weight: 620; }
+    .markdown-section em { color: var(--text-2); }
+
+    /* Links — plain system blue, underline only on hover */
+    .markdown-section a {
+      color: var(--link);
+      text-decoration: none;
+      font-weight: inherit;
+      border-bottom: none !important;
+    }
+    .markdown-section a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+    /* Headings — SF Pro Display-ish, tight tracking */
+    .markdown-section h1, .markdown-section h2, .markdown-section h3,
+    .markdown-section h4, .markdown-section h5, .markdown-section h6 {
+      color: var(--text);
+      font-weight: 660;
+      letter-spacing: -0.022em;
+      line-height: 1.25;
+      margin: 34px 0 12px;
+      scroll-margin-top: 24px;
+    }
+    .markdown-section h1 {
+      font-size: 30px;
+      font-weight: 700;
+      margin-top: 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .markdown-section h2 { font-size: 21px; margin-top: 42px; }
+    .markdown-section h3 { font-size: 17px; }
+    .markdown-section h4 { font-size: 15px; }
+    .markdown-section h2 + p, .markdown-section h3 + p { margin-top: 8px; }
+
+    .markdown-section hr {
+      height: 1px;
+      border: none;
+      background: var(--line);
+      margin: 32px 0;
+    }
+
+    .markdown-section ul, .markdown-section ol { padding-left: 24px; margin: 0 0 15px; }
+    .markdown-section li { margin: 4px 0; }
+    .markdown-section li::marker { color: var(--muted); }
+
+    /* Lists inside tables / tight lists */
+    .markdown-section ul li + ul li { font-size: 14px; }
+
+    /* Blockquote */
+    .markdown-section blockquote {
+      margin: 18px 0;
+      padding: 11px 15px;
+      border-left: 3px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: var(--panel);
+      color: var(--muted);
+    }
+    .markdown-section blockquote p { margin: 0; font-size: 14.5px; color: var(--muted); }
+
+    /* ══════════════════════════════════════════════════════════════
+       Cover — a plain app header, not a poster
+       ══════════════════════════════════════════════════════════════ */
+    section.cover {
+      display: block !important;
+      padding: 44px 0 8px !important;
+      border-bottom: 1px solid var(--line) !important;
+      margin-bottom: 30px !important;
+      text-align: left !important;
+    }
+    section.cover .cover-main { max-width: 780px; margin: 0; }
+    section.cover h1 {
+      font-size: 34px !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.03em !important;
+      color: var(--text) !important;
+      border: none !important;
+      margin: 0 0 6px !important;
+      padding: 0 !important;
+    }
+    section.cover h1 .cover-main, section.cover h1 img { display: none; }
+    section.cover p:last-child, section.cover blockquote p { display: none; }
+    section.cover > blockquote, section.cover blockquote {
+      margin: 0 0 14px !important;
+      padding: 0 !important;
+      border: none !important;
+      background: none !important;
+    }
+    section.cover blockquote p {
+      display: block !important;
+      font-size: 16px !important;
+      font-weight: 420;
+      color: var(--muted) !important;
+      line-height: 1.55 !important;
+      max-width: 620px;
+      margin: 0 !important;
+    }
+    section.cover ul {
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 6px !important;
+      margin: 0 0 18px !important;
+      padding: 0 !important;
+      list-style: none !important;
+    }
+    section.cover ul li {
+      padding: 0 !important;
+      font-size: 0 !important;
+    }
+    section.cover ul li a {
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: 99px !important;
+      background: var(--panel) !important;
+      color: var(--text-2) !important;
+      font-size: 12px !important;
+      font-weight: 500;
+      text-decoration: none !important;
+      box-shadow: var(--btn-shadow);
+    }
+    section.cover ul li a:hover { background: var(--panel-2) !important; color: var(--text) !important; }
+    section.cover .buttons { margin: 0 !important; }
+    section.cover .buttons a, section.cover p:not(:last-child) a, section.cover a:not([href^="#/"]) {
+      display: inline-block;
+      padding: 6px 14px;
+      margin: 0 6px 0 0;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: var(--radius-sm) !important;
+      background: var(--panel-2) !important;
+      color: var(--text) !important;
+      font-size: 13px !important;
+      font-weight: 520;
+      box-shadow: var(--btn-shadow);
+      text-decoration: none !important;
+      opacity: 1 !important;
+    }
+    section.cover .buttons a:first-child {
+      background: var(--accent-fill) !important;
+      border-color: var(--accent-fill) !important;
+      color: var(--on-accent) !important;
+    }
+    section.cover .buttons a:hover, section.cover a:hover { opacity: 1 !important; }
+    .cover-main > p { color: var(--muted); }
+
   </style>
 </head>
 </html>
